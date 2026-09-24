@@ -1,799 +1,1429 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import { FaArrowLeft, FaRotateLeft, FaUserPlus } from "react-icons/fa6";
-import CardForm from "./CardForm";
-import CardPreviewPane from "./CardPreviewPane";
-import DownloadActions from "./DownloadActions";
-import Toast from "./Toast";
-import { useCardFormPersistence } from "../hooks/useCardFormPersistence";
-import { encodeCardData } from "../lib/encodeCardData";
-import { decodeCardData } from "../lib/decodeCardData";
+import { COMPANY_CONFIG, COMPANY_OPTIONS, DEFAULT_COMPANY_ID } from "../lib/companyConfig";
+
+import {
+  FaWhatsapp,
+  FaIdCard,
+  FaEnvelope,
+  FaBuilding,
+  FaUser,
+  FaEye,
+  FaLocationDot,
+  FaChartColumn,
+  FaUserTie,
+  FaGear,
+  FaPeopleGroup,
+  FaBriefcase,
+  FaDownload,
+  FaArrowRight,
+  FaHeart,
+  FaPhone,
+  FaGlobe,
+  FaWandMagicSparkles,
+  FaFilePdf,
+  FaShareNodes,
+  FaLink,
+  FaIdBadge,
+  FaGem,
+  FaCheck,
+} from "react-icons/fa6";
+
+import CardFront from "./CardFront";
+import CardBack from "./CardBack";
+import WhatsAppDPGenerator from "./WhatsAppDPGenerator";
+import EmailSignatureGenerator from "./EmailSignatureGenerator";
 import { defaultCardData } from "../lib/defaultCardData";
-import { COMPANY } from "../lib/cardConfig";
 
-const STEPS = ["Fill your details", "Preview & flip", "Download / Share"];
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
 
-export default function HomeShell() {
-  const searchParams = useSearchParams();
-  const reduced = useReducedMotion();
-  const [sharedData, setSharedData] = useState(null);
-  const [sharedError, setSharedError] = useState(false);
-  const { data, setData, update, clear } = useCardFormPersistence("aarambhcard:form:v1", defaultCardData);
-  const [stage, setStage] = useState("form");
-  const [activeTab, setActiveTab] = useState("form");
-  const [landscapeFlipped, setLandscapeFlipped] = useState(false);
-  const [portraitFlipped, setPortraitFlipped] = useState(false);
-  const [orientation, setOrientation] = useState("landscape");
-  const [toast, setToast] = useState(null);
-  const [shareUrl, setShareUrl] = useState("");
-  const landscapeFrontRef = useRef(null);
-  const landscapeBackRef = useRef(null);
-  const portraitFrontRef = useRef(null);
-  const portraitBackRef = useRef(null);
-  const cardSectionRef = useRef(null);
+/* ================================================================== */
+/* DEFAULT THEME                                                      */
+/* ================================================================== */
 
-  useEffect(() => {
-    const payload = searchParams.get("data");
+const DEFAULT_THEME = {
+  primary: "#00275E",
+  secondary: "#159B24",
+  accent: "#FA7800",
+  primaryLight: "#EAF1F8",
+  secondaryLight: "#EAF7EC",
+  accentLight: "#FFF3E8",
+  background: "#FAFAFA",
+  surface: "#FFFFFF",
+  text: "#00275E",
+  muted: "#64748B",
+  border: "#D9E2EC",
+  gradient: "linear-gradient(135deg, #00275E, #159B24)",
+};
 
-    if (!payload) {
-      return;
-    }
+/* ================================================================== */
+/* GENERAL MODES                                                      */
+/* ================================================================== */
 
-    const decoded = decodeCardData(payload);
+const DEPTS = [
+  { id: "Sales", icon: FaChartColumn },
+  { id: "Admin", icon: FaUserTie },
+  { id: "Operations", icon: FaGear },
+  { id: "Management", icon: FaPeopleGroup },
+];
 
-    if (decoded?.name) {
-      setSharedData({
-        ...defaultCardData,
-        ...decoded,
-      });
-    } else {
-      setSharedError(true);
-    }
-  }, [searchParams]);
+const STEPS = [
+  {
+    id: "s-org",
+    title: "Organization",
+    sub: "Select company & department",
+    icon: FaBuilding,
+  },
+  {
+    id: "s-info",
+    title: "Personal Information",
+    sub: "Add your details",
+    icon: FaUser,
+  },
+  {
+    id: "s-photo",
+    title: "Photo & Appearance",
+    sub: "Upload photo & choose theme",
+    icon: FaEye,
+  },
+  {
+    id: "s-out",
+    title: "Preview & Download",
+    sub: "View and get your profile",
+    icon: FaEye,
+  },
+];
 
-  const displayData = sharedData || data;
+/* ================================================================== */
+/* BUSINESS CARD MODE                                                 */
+/* ================================================================== */
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
+const CARD_STEPS = [
+  {
+    id: "c-org",
+    title: "Organization",
+    sub: "Select company & department",
+    icon: FaBuilding,
+  },
+  {
+    id: "c-info",
+    title: "Personal Information",
+    sub: "Add your details",
+    icon: FaUser,
+  },
+  {
+    id: "c-out",
+    title: "Preview & Download",
+    sub: "View and get your card",
+    icon: FaEye,
+  },
+];
 
-    setShareUrl(`${window.location.origin}/?data=${encodeCardData(displayData)}`);
-  }, [displayData]);
+const CARD_START = {
+  dept: "Sales",
+  name: "",
+  designation: "",
+  phone: "",
+  email: "",
+  website: "",
+  address: "",
+};
 
-  const showToast = useCallback((message, type = "success") => {
-    setToast({
-      id: Date.now(),
-      message,
-      type,
-    });
-  }, []);
+const CARD_KEY = "aarambh:studio:card:v3";
 
-  const handleGenerate = useCallback(() => {
-    setStage("card");
+const CARD_SIZE = {
+  landscape: [1050, 600],
+  portrait: [1080, 1920],
+};
 
-    setTimeout(() => {
-      cardSectionRef.current?.scrollIntoView({
-        behavior: reduced ? "auto" : "smooth",
-        block: "start",
-      });
-    }, 80);
-  }, [reduced]);
+const enc = (o) => encodeURIComponent(btoa(encodeURIComponent(JSON.stringify(o))));
 
-  const handleEdit = () => {
-    setStage("form");
-    setActiveTab("form");
+const dec = (s) => JSON.parse(decodeURIComponent(atob(decodeURIComponent(s))));
 
-    window.scrollTo({
-      top: 0,
-      behavior: reduced ? "auto" : "smooth",
-    });
-  };
+/* ================================================================== */
+/* SWOOSH                                                            */
+/* ================================================================== */
 
-  const handleStartOver = () => {
-    if (!window.confirm("Start over? This clears your saved details.")) {
-      return;
-    }
-
-    clear();
-
-    setData(defaultCardData);
-    setStage("form");
-    setLandscapeFlipped(false);
-    setPortraitFlipped(false);
-    setOrientation("landscape");
-    setActiveTab("form");
-    showToast("Cleared — start fresh!");
-  };
-
-  const firstName = (displayData.name || "").trim().split(/\s+/)[0];
-  const selectedFlipped = orientation === "portrait" ? portraitFlipped : landscapeFlipped;
-
-  const handleToggleSelectedFlip = () => {
-    if (orientation === "portrait") {
-      setPortraitFlipped((current) => !current);
-    } else {
-      setLandscapeFlipped((current) => !current);
-    }
-  };
-
-  const selectedFrontRef = orientation === "portrait" ? portraitFrontRef : landscapeFrontRef;
-  const selectedBackRef = orientation === "portrait" ? portraitBackRef : landscapeBackRef;
-
-  const renderSelectedPreview = (variant = "preview") => (
-    <CardPreviewPane
-      variant={variant}
-      orientation={orientation}
-      data={displayData}
-      flipped={selectedFlipped}
-      onToggleFlip={handleToggleSelectedFlip}
-      frontFaceRef={selectedFrontRef}
-      backFaceRef={selectedBackRef}
-      onOrientationChange={setOrientation}
-    />
-  );
+function Swoosh({ className = "", flip = false, theme = DEFAULT_THEME }) {
+  const T = theme || DEFAULT_THEME;
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#eef1f5] text-slate-900">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-brand-orange/10 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-brand-green/10 blur-3xl" />
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 220 140"
+      className={`pointer-events-none absolute ${className}`}
+      style={{
+        transform: flip ? "scaleX(-1)" : undefined,
+      }}
+    >
+      <path d="M0 140C70 120 160 70 220 0v40C170 100 90 130 0 140z" fill={T.accent} opacity=".85" />
+
+      <path d="M30 140C100 130 175 90 220 40v30c-50 45-120 65-190 70z" fill={T.secondary} opacity=".9" />
+    </svg>
+  );
+}
+
+/* ================================================================== */
+/* CARD SECTION                                                       */
+/* ================================================================== */
+
+function CardSection({ id, no, title, sub, icon: Icon, right, children, theme = DEFAULT_THEME }) {
+  const T = theme || DEFAULT_THEME;
+
+  return (
+    <section
+      id={id}
+      className="scroll-mt-24 rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+      style={{
+        borderColor: T.border,
+        background: T.surface,
+      }}
+    >
+      <div className="mb-4 flex items-center gap-4">
+        <span
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-white shadow-md"
+          style={{
+            background: T.gradient,
+          }}
+        >
+          <Icon size={20} />
+        </span>
+
+        <div className="flex-1">
+          <h2
+            className="text-lg font-extrabold"
+            style={{
+              color: T.primary,
+            }}
+          >
+            {no}. {title}
+          </h2>
+
+          <p
+            className="text-xs"
+            style={{
+              color: T.muted,
+            }}
+          >
+            {sub}
+          </p>
+        </div>
+
+        {right}
       </div>
 
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-          <div className="flex items-center gap-2.5">
-            <div>
-              <p className="text-sm font-extrabold leading-none">
-                <span className="text-brand-navy">{COMPANY.brandName}</span>
-                <span className="text-brand-green">{COMPANY.brandNameAccent}</span>
-                <span className="text-slate-400"> — Group of Companies</span>
-              </p>
+      {children}
+    </section>
+  );
+}
 
-              <p className="mt-0.5 text-[10px] text-slate-500">Digital business cards</p>
-            </div>
+/* ================================================================== */
+/* CARD FIELD                                                         */
+/* ================================================================== */
+
+function CardField({ label, optional, icon: Icon, value, onChange, placeholder, type = "text", theme = DEFAULT_THEME }) {
+  const T = theme || DEFAULT_THEME;
+
+  return (
+    <label className="block">
+      <span
+        className="mb-1.5 block text-xs font-bold"
+        style={{
+          color: T.primary,
+        }}
+      >
+        {label}{" "}
+        {optional && (
+          <span
+            className="font-normal"
+            style={{
+              color: T.muted,
+            }}
+          >
+            (Optional)
+          </span>
+        )}
+      </span>
+
+      <span
+        className="flex items-center gap-3 rounded-lg border bg-white px-3.5 py-3"
+        style={{
+          borderColor: T.border,
+        }}
+      >
+        <Icon size={14} color={T.primary} />
+
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="w-full bg-transparent text-sm outline-none"
+        />
+      </span>
+    </label>
+  );
+}
+
+/* ================================================================== */
+/* CHOICE                                                             */
+/* ================================================================== */
+
+function Choice({ on, onClick, icon: I, children, theme = DEFAULT_THEME }) {
+  const T = theme || DEFAULT_THEME;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="relative flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 py-4 text-xs font-semibold transition"
+      style={
+        on
+          ? {
+              background: T.gradient,
+              borderColor: T.primary,
+              color: "#fff",
+            }
+          : {
+              background: T.surface,
+              borderColor: T.border,
+              color: T.primary,
+            }
+      }
+    >
+      {on && (
+        <span
+          className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full text-white"
+          style={{
+            background: T.accent,
+          }}
+        >
+          <FaCheck size={9} />
+        </span>
+      )}
+
+      <I size={20} />
+
+      {children}
+    </button>
+  );
+}
+
+/* ================================================================== */
+/* BUSINESS CARD STUDIO                                               */
+/* ================================================================== */
+
+function BusinessCardStudio({ company, profile, theme }) {
+  const T = theme || company?.theme || DEFAULT_THEME;
+
+  const companyData = company?.data || {};
+
+  const [c, setC] = useState(CARD_START);
+
+  const setField = (k, v) =>
+    setC((p) => ({
+      ...p,
+      [k]: v,
+    }));
+
+  const [orientation, setOrientation] = useState("landscape");
+  const [side, setSide] = useState("front");
+
+  const [active, setActive] = useState("c-org");
+
+  const [note, setNote] = useState("");
+
+  const [busy, setBusy] = useState(false);
+
+  const [W, H] = CARD_SIZE[orientation];
+
+  const cardData = useMemo(
+    () => ({
+      ...defaultCardData,
+
+      company: company?.fullName || profile?.company || defaultCardData.company,
+
+      logo: company?.logo || defaultCardData.logo,
+
+      website: companyData.website || c.website || defaultCardData.website,
+
+      location: companyData.address || c.address || defaultCardData.location,
+
+      name: c.name,
+
+      title: c.designation,
+
+      phone: c.phone,
+
+      email: c.email,
+
+      department: c.dept,
+    }),
+    [c, company, companyData, profile],
+  );
+
+  useEffect(() => {
+    setC((previous) => ({
+      ...previous,
+      website: companyData.website || "",
+      address: companyData.address || "",
+    }));
+  }, [company?.id, companyData.website, companyData.address]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(CARD_KEY);
+
+      if (saved) {
+        setC((p) => ({
+          ...p,
+          ...JSON.parse(saved),
+        }));
+      }
+    } catch {
+      /* ignore */
+    }
+
+    try {
+      const q = new URLSearchParams(window.location.search).get("card");
+
+      if (q) {
+        setC((p) => ({
+          ...p,
+          ...dec(q),
+        }));
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CARD_KEY, JSON.stringify(c));
+    } catch {
+      /* ignore */
+    }
+  }, [c]);
+
+  useEffect(() => {
+    const els = CARD_STEPS.map((s) => document.getElementById(s.id)).filter(Boolean);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.find((e) => e.isIntersecting);
+
+        if (hit) {
+          setActive(hit.target.id);
+        }
+      },
+      {
+        rootMargin: "-20% 0px -60% 0px",
+      },
+    );
+
+    els.forEach((e) => io.observe(e));
+
+    return () => io.disconnect();
+  }, []);
+
+  const done = [true, !!c.name && !!c.designation, !!(c.phone || c.email)];
+
+  const goto = (id) => {
+    setActive(id);
+
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const flash = (m) => {
+    setNote(m);
+
+    setTimeout(() => setNote(""), 2200);
+  };
+
+  const snap = async (el) => {
+    if (!el) {
+      throw new Error("Card element not found");
+    }
+
+    const { toPng } = await import("html-to-image");
+
+    return toPng(el, {
+      pixelRatio: 2,
+      cacheBust: true,
+
+      style: {
+        transform: "none",
+        backfaceVisibility: "visible",
+        WebkitBackfaceVisibility: "visible",
+      },
+    });
+  };
+
+  const fileBase = (c.name || "business-card").trim().replace(/\s+/g, "-");
+
+  const downloadPNG = async () => {
+    setBusy(true);
+
+    try {
+      const el = side === "front" ? document.querySelector("[data-card-front-export]") : document.querySelector("[data-card-back-export]");
+
+      const url = await snap(el);
+
+      const a = document.createElement("a");
+
+      a.download = `${fileBase}-${side}.png`;
+
+      a.href = url;
+
+      a.click();
+    } catch {
+      flash("Could not create PNG");
+    }
+
+    setBusy(false);
+  };
+
+  const downloadPDF = async () => {
+    setBusy(true);
+
+    try {
+      const { jsPDF } = await import("jspdf");
+
+      const frontEl = document.querySelector("[data-card-front-export]");
+
+      const backEl = document.querySelector("[data-card-back-export]");
+
+      const front = await snap(frontEl);
+
+      const back = await snap(backEl);
+
+      const o = W > H ? "landscape" : "portrait";
+
+      const pdf = new jsPDF({
+        orientation: o,
+        unit: "px",
+        format: [W, H],
+      });
+
+      pdf.addImage(front, "PNG", 0, 0, W, H);
+
+      pdf.addPage([W, H], o);
+
+      pdf.addImage(back, "PNG", 0, 0, W, H);
+
+      pdf.save(`${fileBase}.pdf`);
+    } catch {
+      flash("Could not create PDF");
+    }
+
+    setBusy(false);
+  };
+
+  const shareLink = () => `${window.location.origin}${window.location.pathname}?card=${enc(c)}`;
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareLink());
+
+      flash("Link copied");
+    } catch {
+      flash("Copy blocked by browser");
+    }
+  };
+
+  const share = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${c.name || "My"} — Digital Business Card`,
+          url: shareLink(),
+        });
+      } catch {
+        /* cancelled */
+      }
+    } else {
+      copyLink();
+    }
+  };
+
+  const actions = [
+    {
+      label: "Download PNG",
+      icon: FaDownload,
+      fn: downloadPNG,
+    },
+    {
+      label: "Download PDF",
+      icon: FaFilePdf,
+      fn: downloadPDF,
+    },
+    {
+      label: "Share",
+      icon: FaShareNodes,
+      fn: share,
+    },
+    {
+      label: "Copy Link",
+      icon: FaLink,
+      fn: copyLink,
+    },
+  ];
+
+  return (
+    <>
+      {/* ============================ SIDEBAR ============================ */}
+
+      <aside
+        className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 flex-col justify-between overflow-hidden lg:flex"
+        style={{
+          background: `linear-gradient(180deg, ${T.primary}, ${T.primary})`,
+        }}
+      >
+        <div className="p-4 pt-6">
+          <div className="mb-5 border-b border-white/10 px-2 pb-5 text-white">
+            <p className="text-sm opacity-90">Create Your</p>
+
+            <p className="text-xl font-extrabold">Digital Business Card</p>
+
+            <p className="mt-1 text-xs leading-snug text-white/65">Build your identity. Share your profile professionally.</p>
           </div>
 
-          {/* STEPS */}
-          <div className="hidden items-center gap-2 sm:flex">
-            {STEPS.map((step, index) => (
-              <span key={step} className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-                <span className="grid h-5 w-5 place-items-center rounded-full bg-brand-navy/10 text-[10px] font-extrabold text-brand-navy">
-                  {index + 1}
-                </span>
-                {step}
-                {index < STEPS.length - 1 && <span className="ml-1 text-slate-300">→</span>}
+          <ol className="space-y-2.5">
+            {CARD_STEPS.map((s, i) => {
+              const on = active === s.id;
+
+              return (
+                <li key={s.id}>
+                  <button
+                    type="button"
+                    onClick={() => goto(s.id)}
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-white transition hover:bg-white/10"
+                    style={
+                      on
+                        ? {
+                            background: `${T.secondary}55`,
+                            border: `1px solid ${T.secondary}`,
+                          }
+                        : {
+                            border: "1px solid transparent",
+                          }
+                    }
+                  >
+                    <span
+                      className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold"
+                      style={{
+                        background: on ? T.accent : done[i] && i ? T.secondary : "rgba(255,255,255,.22)",
+                      }}
+                    >
+                      {done[i] && i && !on ? <FaCheck size={12} /> : i + 1}
+                    </span>
+
+                    <s.icon size={20} className="shrink-0" />
+
+                    <span>
+                      <span className="block text-[13px] font-bold leading-tight">{s.title}</span>
+
+                      <span className="block text-[11px] leading-tight text-white/65">{s.sub}</span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+
+        <div className="relative z-10 m-4 mb-16 rounded-xl border border-white/15 bg-white/5 p-4 text-white">
+          <p className="text-sm opacity-85">Build Your</p>
+
+          <p className="text-lg font-extrabold leading-tight">Professional Identity</p>
+
+          <p className="text-sm opacity-85">in Just a Few Clicks</p>
+
+          <FaArrowRight className="mt-2" size={16} />
+
+          <div className="mt-3 grid grid-cols-3 gap-1 border-t border-white/15 pt-3 text-center text-[10px]">
+            {[
+              [FaIdBadge, "Professional Look"],
+              [FaShareNodes, "Easy Sharing"],
+              [FaGem, "High Quality"],
+            ].map(([I, l]) => (
+              <span key={l} className="flex flex-col items-center gap-1">
+                <I size={16} />
+                {l}
               </span>
             ))}
           </div>
         </div>
-      </header>
 
-      <main className="relative">
+        <Swoosh className="-bottom-2 -left-4 h-36 w-72" theme={T} />
+      </aside>
 
-        {sharedError && (
-          <section className="mx-auto max-w-lg px-4 py-24 text-center">
-            <h1 className="text-xl font-extrabold text-brand-navy">This card link looks broken</h1>
+      {/* ============================ MAIN ============================ */}
 
-            <p className="mt-2 text-sm text-slate-500">
-              The shared data could not be read. You can create your own card instead — it only takes a minute.
-            </p>
+      <main className="grid min-w-0 flex-1 gap-5 p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:p-5">
+        {/* ---------- LEFT ---------- */}
 
-            <Link
-              href="/"
-              className="mt-6 inline-flex items-center gap-2 rounded-md bg-brand-navy px-5 py-2.5 text-sm font-extrabold text-white"
-            >
-              <FaUserPlus />
-              Create your own card
-            </Link>
-          </section>
-        )}
-
-        {sharedData && (
-          <section className="mx-auto max-w-6xl px-4 pb-20 pt-8 text-center">
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.45,
-              }}
-            >
-              <p className="mb-8 inline-block rounded-full border border-brand-orange/40 bg-brand-orange/10 px-4 py-1.5 text-xs font-bold text-brand-orange">
-                You&apos;re viewing {firstName}&apos;s shared card
-              </p>
-
-              {/* PREVIEW */}
-              <div className="flex justify-center">{renderSelectedPreview("final")}</div>
-
-              {/* DOWNLOAD */}
-              <div className="mt-10 flex justify-center">
-                <DownloadActions
-                  data={sharedData}
-                  landscapeFrontRef={landscapeFrontRef}
-                  landscapeBackRef={landscapeBackRef}
-                  portraitFrontRef={portraitFrontRef}
-                  portraitBackRef={portraitBackRef}
-                  orientation={orientation}
-                  shareUrl={shareUrl}
-                />
-              </div>
-
-              <Link
-                href="/"
-                className="mt-8 inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:border-brand-orange"
-              >
-                <FaArrowLeft size={13} />
-                Create your own card
-              </Link>
-            </motion.div>
-          </section>
-        )}
-
-        {!sharedData && !sharedError && (
-          <>
-            <section className="mx-auto max-w-6xl px-4 pb-20 pt-10">
-              {/* HERO */}
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 16,
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                transition={{
-                  duration: 0.5,
-                }}
-                className="mx-auto max-w-2xl text-center"
-              >
-                <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-                  <span className="text-brand-navy">{COMPANY.brandName}</span>
-                  <span className="text-brand-green">{COMPANY.brandNameAccent}</span>{" "}
-                  <span className="text-slate-700">Digital Business Card</span>
-                </h1>
-
-                <p className="mt-3 text-sm text-slate-500 sm:text-base">
-                  Fill in your details and watch your digital business card build itself live. Download it as an image, PDF or contact file
-                  — everything stays in your browser.
-                </p>
-              </motion.div>
-
-              {/* MOBILE TABS */}
-              <div
-                role="tablist"
-                aria-label="Form and preview"
-                className="mx-auto mt-8 grid max-w-md grid-cols-2 gap-1 rounded-md bg-slate-200/70 p-1 lg:hidden"
-              >
-                {[
-                  {
-                    id: "form",
-                    label: "Edit Details",
-                  },
-                  {
-                    id: "preview",
-                    label: "Preview",
-                  },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeTab === tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`rounded-md py-2 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange ${
-                      activeTab === tab.id ? "bg-white text-brand-navy shadow-soft" : "text-slate-500"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
+        <div className="space-y-5">
+          <CardSection
+            id="c-org"
+            no="1"
+            title="Organization"
+            sub="Choose your company and department to get started."
+            icon={FaBuilding}
+            theme={T}
+            right={
+              <div className="hidden gap-1.5 sm:flex">
+                {done.map((d, i) => (
+                  <span
+                    key={i}
+                    className="h-1 w-8 rounded"
+                    style={{
+                      background: d ? T.secondary : T.border,
+                    }}
+                  />
                 ))}
               </div>
+            }
+          >
+            <p
+              className="mb-2 flex items-center gap-2 text-xs font-bold"
+              style={{
+                color: T.primary,
+              }}
+            >
+              <FaBuilding />
+              Department Type
+            </p>
 
-              {/* FORM + PREVIEW */}
-              <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_1.1fr]">
-                {/* FORM */}
-                <div className={activeTab === "form" ? "block" : "hidden lg:block"}>
-                  <CardForm data={data} update={update} onGenerate={handleGenerate} />
-                </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {DEPTS.map(({ id, icon }) => (
+                <Choice key={id} on={c.dept === id} onClick={() => setField("dept", id)} icon={icon} theme={T}>
+                  {id}
+                </Choice>
+              ))}
+            </div>
 
-                {/* PREVIEW */}
-                <div className={activeTab === "preview" ? "block" : "hidden lg:block"}>
-                  <div className="flex justify-center">{renderSelectedPreview("preview")}</div>
-                </div>
-              </div>
-            </section>
+            <div
+              className="mt-5 rounded-xl border p-4"
+              style={{
+                borderColor: T.border,
+                background: T.primaryLight,
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <img
+                  src={company?.logo || "/aarambh.png"}
+                  alt={company?.fullName || "Company"}
+                  className="h-10 w-auto max-w-[170px] object-contain"
+                />
 
-            {/* =================================================
-                  GENERATED CARD
-              ================================================== */}
-
-            {stage === "card" && (
-              <section ref={cardSectionRef} className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-24 pt-6 text-center">
-                <motion.div
-                  initial={{
-                    opacity: 0,
-                    y: 24,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                  }}
-                  transition={{
-                    duration: 0.5,
-                  }}
-                >
-                  <h2 className="text-2xl font-extrabold text-brand-navy">
-                    Your card is ready
-                    {firstName ? `, ${firstName}` : ""}!
-                  </h2>
-
-                  <p className="mt-2 text-sm text-slate-500">
-                    Choose Landscape or Portrait, flip the card, check every detail, then download.
+                <div className="min-w-0">
+                  <p
+                    className="text-[11px] font-semibold"
+                    style={{
+                      color: T.muted,
+                    }}
+                  >
+                    Selected Company
                   </p>
 
-                  {/* FINAL PREVIEW */}
-                  <div className="mt-10 flex justify-center">{renderSelectedPreview("final")}</div>
+                  <p
+                    className="truncate text-sm font-extrabold"
+                    style={{
+                      color: T.primary,
+                    }}
+                  >
+                    {company?.fullName || "AarambhGrow Group of Companies"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardSection>
 
-                  {/* DOWNLOAD */}
-                  <div className="mt-10 flex justify-center">
-                    <DownloadActions
-                      data={data}
-                      landscapeFrontRef={landscapeFrontRef}
-                      landscapeBackRef={landscapeBackRef}
-                      portraitFrontRef={portraitFrontRef}
-                      portraitBackRef={portraitBackRef}
-                      orientation={orientation}
-                      shareUrl={shareUrl}
-                    />
-                  </div>
+          <CardSection id="c-info" no="2" title="Personal Information" sub="Enter your details" icon={FaUser} theme={T}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <CardField
+                label="Full Name"
+                icon={FaUser}
+                value={c.name}
+                onChange={(v) => setField("name", v)}
+                placeholder="Your Name"
+                theme={T}
+              />
 
-                  {/* EDIT / START OVER */}
-                  <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                    <button
-                      type="button"
-                      onClick={handleEdit}
-                      className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-brand-orange"
-                    >
-                      <FaArrowLeft size={12} />
-                      Edit Details
-                    </button>
+              <CardField
+                label="Designation"
+                icon={FaBriefcase}
+                value={c.designation}
+                onChange={(v) => setField("designation", v)}
+                placeholder="Your Designation"
+                theme={T}
+              />
 
-                    <button
-                      type="button"
-                      onClick={handleStartOver}
-                      className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-bold text-red-500 transition hover:bg-red-500/10"
-                    >
-                      <FaRotateLeft size={12} />
-                      Start Over
-                    </button>
-                  </div>
-                </motion.div>
-              </section>
+              <CardField
+                label="Phone Number"
+                icon={FaPhone}
+                type="tel"
+                value={c.phone}
+                onChange={(v) => setField("phone", v)}
+                placeholder="+91 98765 43210"
+                theme={T}
+              />
+
+              <CardField
+                label="Email Address"
+                icon={FaEnvelope}
+                type="email"
+                value={c.email}
+                onChange={(v) => setField("email", v)}
+                placeholder="you@domain.com"
+                theme={T}
+              />
+
+              <CardField
+                label="Website"
+                optional
+                icon={FaGlobe}
+                value={c.website}
+                onChange={(v) => setField("website", v)}
+                placeholder="www.yourwebsite.com"
+                theme={T}
+              />
+
+              <CardField
+                label="Address"
+                optional
+                icon={FaLocationDot}
+                value={c.address}
+                onChange={(v) => setField("address", v)}
+                placeholder="Your Address"
+                theme={T}
+              />
+            </div>
+          </CardSection>
+
+          <button
+            type="button"
+            onClick={() => goto("c-out")}
+            className="inline-flex w-full items-center justify-center gap-3 rounded-xl py-4 text-sm font-bold text-white shadow-lg transition hover:brightness-110"
+            style={{
+              background: T.gradient,
+            }}
+          >
+            <FaWandMagicSparkles size={15} />
+            Generate Preview
+            <FaArrowRight size={14} />
+          </button>
+
+          <p
+            className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-[11px]"
+            style={{
+              color: T.muted,
+            }}
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <FaCheck color={T.accent} size={10} />
+              High-resolution PNG &amp; PDF
+            </span>
+
+            <span className="inline-flex items-center gap-1.5">
+              <FaCheck color={T.secondary} size={10} />
+              Company Certified
+            </span>
+          </p>
+        </div>
+
+        {/* ---------- RIGHT ---------- */}
+
+        <div className="space-y-5">
+          <section
+            id="c-out"
+            className="scroll-mt-24 rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            style={{
+              borderColor: T.border,
+              background: T.surface,
+            }}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span
+                  className="grid h-12 w-12 place-items-center rounded-full bg-white shadow-md"
+                  style={{
+                    color: T.primary,
+                  }}
+                >
+                  <FaEye size={22} />
+                </span>
+
+                <div>
+                  <h2
+                    className="text-lg font-extrabold"
+                    style={{
+                      color: T.primary,
+                    }}
+                  >
+                    Live Preview
+                  </h2>
+
+                  <p
+                    className="text-xs"
+                    style={{
+                      color: T.muted,
+                    }}
+                  >
+                    Your profile will appear like this
+                  </p>
+                </div>
+              </div>
+
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold"
+                style={{
+                  background: T.secondaryLight,
+                  color: T.secondary,
+                }}
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{
+                    background: T.accent,
+                  }}
+                />
+                REAL-TIME
+              </span>
+            </div>
+
+            <div
+              className="mx-auto w-full"
+              style={{
+                perspective: 1400,
+                maxWidth: orientation === "portrait" ? 300 : "100%",
+              }}
+            >
+              <div
+                className="relative w-full"
+                style={{
+                  aspectRatio: `${W} / ${H}`,
+                  transformStyle: "preserve-3d",
+                }}
+              >
+                <CardFront data={cardData} orientation={orientation} company={company} theme={T} />
+
+                <CardBack data={cardData} orientation={orientation} company={company} theme={T} />
+              </div>
+            </div>
+          </section>
+
+          <section
+            className="rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            style={{
+              borderColor: T.border,
+              background: T.surface,
+            }}
+          >
+            <div
+              className="flex items-center gap-2 border-b pb-3 text-sm font-extrabold"
+              style={{
+                color: T.primary,
+                borderColor: T.border,
+              }}
+            >
+              <FaBuilding />
+              {company?.name || "Company"} Portal
+            </div>
+
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <div>
+                <p
+                  className="text-sm font-extrabold"
+                  style={{
+                    color: T.primary,
+                  }}
+                >
+                  {company?.fullName || "AarambhGrow Group of Companies"}
+                </p>
+
+                <p
+                  className="text-xs"
+                  style={{
+                    color: T.muted,
+                  }}
+                >
+                  Full-Stack Support &amp; Business Solutions
+                </p>
+
+                <div className="mt-3 flex gap-2">
+                  <span
+                    className="rounded-full px-4 py-1 text-[11px] font-semibold"
+                    style={{
+                      background: T.primaryLight,
+                      color: T.primary,
+                    }}
+                  >
+                    {company?.name || "Company"}
+                  </span>
+
+                  <span
+                    className="rounded-full px-4 py-1 text-[11px] font-semibold"
+                    style={{
+                      background: T.secondaryLight,
+                      color: T.secondary,
+                    }}
+                  >
+                    {c.dept}
+                  </span>
+                </div>
+              </div>
+
+              <div
+                className="h-16 w-16 shrink-0 rounded-full bg-white p-1.5 shadow-md"
+                style={{
+                  border: `1px solid ${T.border}`,
+                }}
+              >
+                <img src={company?.logo || "/aarambh.png"} alt={company?.fullName || "Company"} className="h-full w-full object-contain" />
+              </div>
+            </div>
+
+            <p
+              className="mt-3 text-[11px]"
+              style={{
+                color: T.muted,
+              }}
+            >
+              Your profile appears across all company platforms
+            </p>
+          </section>
+
+          <section
+            className="rounded-2xl border bg-white p-2 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            style={{
+              borderColor: T.border,
+              background: T.surface,
+            }}
+          >
+            <div
+              className="grid grid-cols-2 divide-x sm:grid-cols-4"
+              style={{
+                borderColor: T.border,
+              }}
+            >
+              {actions.map(({ label, icon: I, fn }) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={fn}
+                  disabled={busy}
+                  className="flex items-center justify-center gap-2 px-2 py-3 text-xs font-semibold transition hover:bg-slate-50 disabled:opacity-50"
+                  style={{
+                    color: T.primary,
+                  }}
+                >
+                  <I size={16} />
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {(note || busy) && (
+              <p
+                className="px-3 pb-2 text-center text-[11px] font-semibold"
+                style={{
+                  color: T.secondary,
+                }}
+              >
+                {busy ? "Preparing file…" : note}
+              </p>
             )}
-          </>
-        )}
-
-        {/* FOOTER */}
-        <footer className="relative border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-          Nothing you type is uploaded anywhere — the whole studio runs in your browser.
-        </footer>
+          </section>
+        </div>
       </main>
-
-      <Toast toast={toast} onClose={() => setToast(null)} />
-    </div>
+    </>
   );
 }
 
-// "use client";
+/* ================================================================== */
+/* MAIN                                                               */
+/* ================================================================== */
 
-// import { useCallback, useEffect, useRef, useState } from "react";
-// import { useSearchParams } from "next/navigation";
-// import Link from "next/link";
-// import { motion, useReducedMotion } from "framer-motion";
-// import { FaArrowLeft, FaRotateLeft, FaUserPlus } from "react-icons/fa6";
+export default function HomeShell() {
+  const defaultCompany = COMPANY_CONFIG[DEFAULT_COMPANY_ID] || COMPANY_OPTIONS[0];
 
-// import CardForm from "./CardForm";
-// import CardPreviewPane from "./CardPreviewPane";
-// import DownloadActions from "./DownloadActions";
-// import Toast from "./Toast";
+  const [mode, setMode] = useState("dp");
 
-// import { useCardFormPersistence } from "../hooks/useCardFormPersistence";
-// import { encodeCardData } from "../lib/encodeCardData";
-// import { decodeCardData } from "../lib/decodeCardData";
-// import { defaultCardData } from "../lib/defaultCardData";
-// import { COMPANY } from "../lib/cardConfig";
+  const [profile, setProfile] = useState({
+    company: DEFAULT_COMPANY_ID,
+    dept: "Sales",
+    name: "",
+    designation: "",
+    photo: "",
+    gender: "Male",
+    theme: "Navy",
+    phone: "",
+    email: "",
+    website: defaultCompany?.data?.website || "",
+    address: defaultCompany?.data?.address || "",
+    logo: defaultCompany?.logo || "",
+  });
 
-// const STEPS = ["Fill your details", "Preview & flip", "Download / Share"];
+  const selectedCompany = COMPANY_CONFIG[profile.company] || defaultCompany;
 
-// export default function HomeShell() {
-//   const searchParams = useSearchParams();
-//   const reduced = useReducedMotion();
+  const T = selectedCompany?.theme || DEFAULT_THEME;
 
-//   const [sharedData, setSharedData] = useState(null);
-//   const [sharedError, setSharedError] = useState(false);
+  const setProfileField = (key, value) => {
+    setProfile((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
 
-//   const { data, setData, update, clear } = useCardFormPersistence("aarambhcard:form:v1", defaultCardData);
+  const changeCompany = (companyId) => {
+    const next = COMPANY_CONFIG[companyId] || defaultCompany;
 
-//   const [stage, setStage] = useState("form");
-//   const [activeTab, setActiveTab] = useState("form");
-//   const [flipped, setFlipped] = useState(false);
-//   const [toast, setToast] = useState(null);
-//   const [shareUrl, setShareUrl] = useState("");
+    setProfile((prev) => ({
+      ...prev,
+      company: next.id || companyId,
 
-//   const frontFaceRef = useRef(null);
-//   const backFaceRef = useRef(null);
-//   const cardSectionRef = useRef(null);
+      website: next?.data?.website || "",
 
-//   useEffect(() => {
-//     const payload = searchParams.get("data");
+      address: next?.data?.address || "",
 
-//     if (!payload) {
-//       return;
-//     }
+      logo: next?.logo || "",
+    }));
 
-//     const decoded = decodeCardData(payload);
+    setReady(false);
+  };
 
-//     if (decoded?.name) {
-//       setSharedData({
-//         ...defaultCardData,
-//         ...decoded,
-//       });
-//     } else {
-//       setSharedError(true);
-//     }
-//   }, [searchParams]);
+  const [active, setActive] = useState("s-org");
 
-//   const displayData = sharedData || data;
+  const [ready, setReady] = useState(false);
 
-//   useEffect(() => {
-//     if (typeof window === "undefined") {
-//       return;
-//     }
+  const [cardOrientation, setCardOrientation] = useState("landscape");
 
-//     setShareUrl(`${window.location.origin}/?data=${encodeCardData(displayData)}`);
-//   }, [displayData]);
+  useEffect(() => {
+    const steps = mode === "card" ? CARD_STEPS : STEPS;
 
-//   const showToast = useCallback((message, type = "success") => {
-//     setToast({
-//       id: Date.now(),
-//       message,
-//       type,
-//     });
-//   }, []);
+    const els = steps.map((s) => document.getElementById(s.id)).filter(Boolean);
 
-//   const handleGenerate = useCallback(() => {
-//     setStage("card");
+    if (!els.length) {
+      return;
+    }
 
-//     setTimeout(() => {
-//       cardSectionRef.current?.scrollIntoView({
-//         behavior: reduced ? "auto" : "smooth",
-//         block: "start",
-//       });
-//     }, 80);
-//   }, [reduced]);
+    const io = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.find((e) => e.isIntersecting);
 
-//   const handleEdit = () => {
-//     setStage("form");
-//     setActiveTab("form");
+        if (hit) {
+          setActive(hit.target.id);
+        }
+      },
+      {
+        rootMargin: "-20% 0px -60% 0px",
+      },
+    );
 
-//     window.scrollTo({
-//       top: 0,
-//       behavior: reduced ? "auto" : "smooth",
-//     });
-//   };
+    els.forEach((el) => io.observe(el));
 
-//   const handleStartOver = () => {
-//     if (!window.confirm("Start over? This clears your saved details.")) {
-//       return;
-//     }
+    return () => io.disconnect();
+  }, [mode]);
 
-//     clear();
-//     setData(defaultCardData);
-//     setStage("form");
-//     setFlipped(false);
-//     setActiveTab("form");
+  const goto = (id) => {
+    setActive(id);
 
-//     showToast("Cleared — start fresh!");
-//   };
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
-//   const handleExported = useCallback(() => {
-//     clear();
-//   }, [clear]);
+  const changeMode = (nextMode) => {
+    setMode(nextMode);
 
-//   const firstName = (displayData.name || "").trim().split(/\s+/)[0];
+    setReady(false);
 
-//   return (
-//     <div className="relative min-h-screen overflow-x-hidden bg-[#eef1f5] text-slate-900">
-//       {/* Background */}
-//       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-//         <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-brand-orange/10 blur-3xl" />
-//         <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-brand-green/10 blur-3xl" />
-//       </div>
+    if (nextMode === "card") {
+      setActive("c-org");
+    } else {
+      setActive("s-org");
+    }
+  };
 
-//       {/* Header */}
-//       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur">
-//         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+  const MODES = useMemo(
+    () => [
+      {
+        id: "dp",
+        label: "WhatsApp DP",
+        icon: FaWhatsapp,
+        bg: `linear-gradient(90deg,${T.secondary},${T.secondary})`,
+      },
+      {
+        id: "card",
+        label: "Business Card",
+        icon: FaIdCard,
+        bg: `linear-gradient(90deg,${T.primary},${T.primary})`,
+      },
+      {
+        id: "sig",
+        label: "Email Signature",
+        icon: FaEnvelope,
+        bg: `linear-gradient(90deg,${T.accent},${T.accent})`,
+      },
+    ],
+    [T],
+  );
 
-//           <div className="flex items-center gap-2.5">
-//             <div>
-//               <p className="text-sm font-extrabold leading-none">
-//                 <span className="text-brand-navy">{COMPANY.brandName}</span>
+  return (
+    <div
+      className={`min-h-screen ${plusJakartaSans.className}`}
+      style={{
+        background: T.background,
+        color: T.text,
+      }}
+    >
+      {/* ============================ HEADER ============================ */}
 
-//                 <span className="text-brand-green">{COMPANY.brandNameAccent}</span>
+      <header
+        className="sticky top-0 z-40 overflow-hidden border-b bg-white shadow-sm"
+        style={{
+          borderColor: T.border,
+          background: T.surface,
+        }}
+      >
+        <Swoosh className="right-0 top-0 h-full w-56 opacity-50" theme={T} />
 
-//                 <span className="text-slate-400"> — Card Studio</span>
-//               </p>
+        <div className="relative z-10 flex min-h-20 flex-wrap items-center justify-between gap-3 px-5 py-2">
+          <div className="flex items-center gap-4">
+            <img src={selectedCompany.logo} alt={selectedCompany.fullName} className="h-14 w-auto object-contain" />
 
-//               <p className="mt-0.5 text-[10px] text-slate-500">Digital business cards</p>
-//             </div>
-//           </div>
+            <span className="hidden h-12 w-px bg-slate-200 sm:block" />
 
-//           {/* STEPS */}
-//           <div className="hidden items-center gap-2 sm:flex">
-//             {STEPS.map((step, index) => (
-//               <span key={step} className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-//                 <span className="grid h-5 w-5 place-items-center rounded-full bg-brand-navy/10 text-[10px] font-extrabold text-brand-navy">
-//                   {index + 1}
-//                 </span>
+            <div className="hidden sm:block">
+              <p
+                className="text-2xl font-extrabold leading-tight"
+                style={{
+                  color: T.primary,
+                }}
+              >
+                Digital Profile Studio
+              </p>
 
-//                 {step}
+              <p
+                className="text-sm"
+                style={{
+                  color: T.muted,
+                }}
+              >
+                Your Professional Identity, Instantly
+              </p>
+            </div>
+          </div>
 
-//                 {index < STEPS.length - 1 && <span className="ml-1 text-slate-300">→</span>}
-//               </span>
-//             ))}
-//           </div>
-//         </div>
-//       </header>
+          <nav className="flex flex-wrap gap-3">
+            <div
+              className="flex items-center gap-2 rounded-xl border bg-white px-3 py-2 shadow-sm"
+              style={{
+                borderColor: T.border,
+              }}
+            >
+              <FaBuilding size={14} color={T.primary} />
 
-//       <main className="relative">
-//         {/* Shared card error */}
-//         {sharedError && (
-//           <section className="mx-auto max-w-lg px-4 py-24 text-center">
-//             <h1 className="text-xl font-extrabold text-brand-navy">This card link looks broken</h1>
+              <select
+                value={profile.company}
+                onChange={(e) => changeCompany(e.target.value)}
+                className="max-w-[190px] bg-transparent text-xs font-bold outline-none"
+                style={{
+                  color: T.primary,
+                }}
+                aria-label="Select company"
+              >
+                {COMPANY_OPTIONS.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-//             <p className="mt-2 text-sm text-slate-500">
-//               The shared data could not be read. You can create your own card instead — it only takes a minute.
-//             </p>
+            {MODES.map(({ id, label, icon: I, bg }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => changeMode(id)}
+                className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-xs font-bold text-white shadow-md transition hover:-translate-y-0.5"
+                style={{
+                  background: bg,
+                  opacity: mode === id ? 1 : 0.85,
 
-//             <Link
-//               href="/"
-//               className="mt-6 inline-flex items-center gap-2 rounded-md bg-brand-navy px-5 py-2.5 text-sm font-extrabold text-white"
-//             >
-//               <FaUserPlus />
-//               Create your own card
-//             </Link>
-//           </section>
-//         )}
+                  boxShadow: mode === id ? `0 0 0 2px #fff, 0 0 0 4px ${T.primary}33` : undefined,
+                }}
+              >
+                <I size={16} />
 
-//         {/* Shared card */}
-//         {sharedData && (
-//           <section className="mx-auto max-w-3xl px-4 pb-20 pt-8 text-center">
-//             <motion.div
-//               initial={{
-//                 opacity: 0,
-//                 y: 20,
-//               }}
-//               animate={{
-//                 opacity: 1,
-//                 y: 0,
-//               }}
-//               transition={{
-//                 duration: 0.45,
-//               }}
-//             >
-//               <p className="mb-6 inline-block rounded-full border border-brand-orange/40 bg-brand-orange/10 px-4 py-1.5 text-xs font-bold text-brand-orange">
-//                 You&apos;re viewing {firstName}&apos;s shared card
-//               </p>
+                {label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </header>
 
-//               <div className="flex justify-center">
-//                 <CardPreviewPane
-//                   variant="final"
-//                   data={sharedData}
-//                   flipped={flipped}
-//                   onToggleFlip={() => setFlipped((current) => !current)}
-//                   frontFaceRef={frontFaceRef}
-//                   backFaceRef={backFaceRef}
-//                 />
-//               </div>
+      {/* ============================ MODES ============================ */}
 
-//               <div className="mt-8 flex justify-center">
-//                 <DownloadActions
-//                   data={sharedData}
-//                   flipped={flipped}
-//                   frontFaceRef={frontFaceRef}
-//                   backFaceRef={backFaceRef}
-//                   shareUrl={shareUrl}
-//                   onToast={showToast}
-//                 />
-//               </div>
+      {mode === "card" ? (
+        <div className="flex">
+          <BusinessCardStudio company={selectedCompany} profile={profile} theme={T} />
+        </div>
+      ) : (
+        <div className="flex min-w-0">
+          {/* ============================ SIDEBAR ============================ */}
 
-//               <Link
-//                 href="/"
-//                 className="mt-8 inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:border-brand-orange"
-//               >
-//                 <FaArrowLeft size={13} />
-//                 Create your own card
-//               </Link>
-//             </motion.div>
-//           </section>
-//         )}
+          <aside
+            className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 flex-col justify-between overflow-hidden lg:flex"
+            style={{
+              background: `linear-gradient(180deg, ${T.primary}, ${T.primary})`,
+            }}
+          >
+            <ol className="relative space-y-2 p-3 pt-6">
+              <span className="absolute bottom-10 left-[31px] top-14 w-px bg-white/25" />
 
-//         {/* Main generator */}
-//         {!sharedData && !sharedError && (
-//           <>
-//             <section className="mx-auto max-w-6xl px-4 pb-20 pt-10">
-//               {/* HERO */}
-//               <motion.div
-//                 initial={{
-//                   opacity: 0,
-//                   y: 16,
-//                 }}
-//                 animate={{
-//                   opacity: 1,
-//                   y: 0,
-//                 }}
-//                 transition={{
-//                   duration: 0.5,
-//                 }}
-//                 className="mx-auto max-w-2xl text-center"
-//               >
-//                 <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-//                   <span className="text-brand-navy">{COMPANY.brandName}</span>
-//                   <span className="text-brand-green">{COMPANY.brandNameAccent}</span> <span className="text-slate-700">digital card</span>
-//                 </h1>
+              {STEPS.map((s, i) => {
+                const on = active === s.id;
 
-//                 <p className="mt-3 text-sm text-slate-500 sm:text-base">
-//                   Fill in your details and watch your digital business card build itself live. Download it as an image, PDF or contact file
-//                   — everything stays in your browser.
-//                 </p>
-//               </motion.div>
+                return (
+                  <li key={s.id} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => goto(s.id)}
+                      className="flex w-full items-center gap-3 rounded-lg px-2.5 py-3 text-left text-white transition hover:bg-white/10"
+                      style={
+                        on
+                          ? {
+                              background: `${T.secondary}55`,
+                              borderLeft: `4px solid ${T.accent}`,
+                            }
+                          : {
+                              borderLeft: "4px solid transparent",
+                            }
+                      }
+                    >
+                      <span
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold"
+                        style={{
+                          background: on ? T.accent : "rgba(255,255,255,.25)",
+                          color: "#fff",
+                        }}
+                      >
+                        {i + 1}
+                      </span>
 
-//               {/* Mobile tabs */}
-//               <div
-//                 role="tablist"
-//                 aria-label="Form and preview"
-//                 className="mx-auto mt-8 grid max-w-md grid-cols-2 gap-1 rounded-md bg-slate-200/70 p-1 lg:hidden"
-//               >
-//                 {[
-//                   {
-//                     id: "form",
-//                     label: "Edit Details",
-//                   },
-//                   {
-//                     id: "preview",
-//                     label: "Preview",
-//                   },
-//                 ].map((tab) => (
-//                   <button
-//                     key={tab.id}
-//                     type="button"
-//                     role="tab"
-//                     aria-selected={activeTab === tab.id}
-//                     onClick={() => setActiveTab(tab.id)}
-//                     className={`rounded-md py-2 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange ${
-//                       activeTab === tab.id ? "bg-white text-brand-navy shadow-soft" : "text-slate-500"
-//                     }`}
-//                   >
-//                     {tab.label}
-//                   </button>
-//                 ))}
-//               </div>
+                      <s.icon size={18} className="shrink-0 opacity-90" />
 
-//               {/* Form + Preview */}
-//               <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_480px]">
-//                 {/* FORM */}
-//                 <div className={activeTab === "form" ? "block" : "hidden lg:block"}>
-//                   <CardForm data={data} update={update} onGenerate={handleGenerate} />
-//                 </div>
+                      <span>
+                        <span className="block text-[13px] font-bold leading-tight">{s.title}</span>
 
-//                 {/* PREVIEW */}
-//                 <div className={`flex justify-center ${activeTab === "preview" ? "block" : "hidden lg:block"}`}>
-//                   <div className="lg:sticky lg:top-20">
-//                     <CardPreviewPane
-//                       variant="preview"
-//                       data={data}
-//                       flipped={flipped}
-//                       onToggleFlip={() => setFlipped((current) => !current)}
-//                       frontFaceRef={frontFaceRef}
-//                       backFaceRef={backFaceRef}
-//                     />
-//                   </div>
-//                 </div>
-//               </div>
-//             </section>
+                        <span className="block text-[11px] leading-tight text-white/65">{s.sub}</span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
 
-//             {/* Generated card */}
-//             {stage === "card" && (
-//               <section ref={cardSectionRef} className="mx-auto max-w-3xl scroll-mt-20 px-4 pb-24 pt-6 text-center">
-//                 <motion.div
-//                   initial={{
-//                     opacity: 0,
-//                     y: 24,
-//                   }}
-//                   animate={{
-//                     opacity: 1,
-//                     y: 0,
-//                   }}
-//                   transition={{
-//                     duration: 0.5,
-//                   }}
-//                 >
-//                   <h2 className="text-2xl font-extrabold text-brand-navy">
-//                     Your card is ready
-//                     {firstName ? `, ${firstName}` : ""}!
-//                   </h2>
+            <div className="relative p-6 pb-10 text-white">
+              <p className="text-lg opacity-85">Build Your</p>
 
-//                   <p className="mt-2 text-sm text-slate-500">Flip it, check it, then download or share it.</p>
+              <p className="text-xl font-extrabold leading-tight">Professional Identity</p>
 
-//                   <div className="mt-8 flex justify-center">
-//                     <CardPreviewPane
-//                       variant="final"
-//                       data={data}
-//                       flipped={flipped}
-//                       onToggleFlip={() => setFlipped((current) => !current)}
-//                       frontFaceRef={frontFaceRef}
-//                       backFaceRef={backFaceRef}
-//                     />
-//                   </div>
+              <p className="opacity-85">in Just a Few Clicks</p>
 
-//                   {/* DOWNLOAD ACTIONS */}
-//                   <div className="mt-8 flex justify-center">
-//                     <DownloadActions
-//                       data={data}
-//                       flipped={flipped}
-//                       frontFaceRef={frontFaceRef}
-//                       backFaceRef={backFaceRef}
-//                       shareUrl={shareUrl}
-//                       onToast={showToast}
-//                       onExported={handleExported}
-//                     />
-//                   </div>
+              <div
+                className="mt-3 h-1 w-16 rounded"
+                style={{
+                  background: `linear-gradient(90deg,${T.secondary},${T.accent})`,
+                }}
+              />
+            </div>
 
-//                   {/* EDIT / START OVER */}
-//                   <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-//                     <button
-//                       type="button"
-//                       onClick={handleEdit}
-//                       className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-brand-orange"
-//                     >
-//                       <FaArrowLeft size={12} />
-//                       Edit Details
-//                     </button>
+            <Swoosh className="-bottom-2 -left-4 h-36 w-72" theme={T} />
+          </aside>
 
-//                     <button
-//                       type="button"
-//                       onClick={handleStartOver}
-//                       className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-bold text-red-500 transition hover:bg-red-500/10"
-//                     >
-//                       <FaRotateLeft size={12} />
-//                       Start Over
-//                     </button>
-//                   </div>
-//                 </motion.div>
-//               </section>
-//             )}
-//           </>
-//         )}
+          {/* ============================ GENERATORS ============================ */}
 
-//         {/* Footer */}
-//         <footer className="relative border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-//           Nothing you type is uploaded anywhere — the whole studio runs in your browser.
-//         </footer>
-//       </main>
+          <main className="min-w-0 flex-1">
+            {mode === "dp" && (
+              <WhatsAppDPGenerator
+                data={profile}
+                setData={setProfileField}
+                onReady={() => {
+                  setReady(true);
+                  goto("s-out");
+                }}
+                ready={ready}
+                brand={selectedCompany.theme}
+                company={selectedCompany}
+                theme={T}
+              />
+            )}
 
-//       <Toast toast={toast} onClose={() => setToast(null)} />
-//     </div>
-//   );
-// }
+            {mode === "sig" && (
+              <EmailSignatureGenerator
+                data={profile}
+                setData={setProfileField}
+                onReady={() => {
+                  setReady(true);
+                  goto("s-out");
+                }}
+                ready={ready}
+                brand={selectedCompany.theme}
+                company={selectedCompany}
+                theme={T}
+              />
+            )}
+          </main>
+        </div>
+      )}
+
+      {/* ============================ FOOTER ============================ */}
+
+      <footer
+        className="grid items-center gap-3 border-t bg-white px-6 py-4 text-[11px] md:grid-cols-3"
+        style={{
+          borderColor: T.border,
+          color: T.muted,
+          background: T.surface,
+        }}
+      >
+        <img src={selectedCompany.logo} alt={selectedCompany.fullName} className="h-11 w-auto object-contain" />
+
+        <p className="text-center italic">
+          Developed with <FaHeart className="inline" color={T.accent} size={10} /> by Digital Team
+          <br />
+          at {selectedCompany.fullName}
+        </p>
+
+        <p className="text-right">
+          © {new Date().getFullYear()} {selectedCompany.fullName}
+          . All rights reserved.
+          <br />
+          <span
+            style={{
+              color: T.secondary,
+            }}
+          >
+            Digital Business Card Studio v1.0 • For internal company use only
+          </span>
+        </p>
+      </footer>
+    </div>
+  );
+}

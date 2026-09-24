@@ -6,6 +6,24 @@ import { QRCodeSVG } from "qrcode.react";
 import { BRAND, COMPANY } from "../lib/cardConfig";
 import { downloadVCard, generateVCard } from "../lib/generateVCard";
 
+const DEFAULT_THEME = {
+  primary: "#00275E",
+  secondary: "#159B24",
+  accent: "#FA7800",
+
+  primaryLight: "#EAF1F8",
+  secondaryLight: "#EAF7EC",
+  accentLight: "#FFF3E8",
+
+  background: "#FAFAFA",
+  surface: "#FFFFFF",
+  text: "#00275E",
+  muted: "#64748B",
+  border: "#D9E2EC",
+
+  gradient: "linear-gradient(135deg, #00275E, #159B24)",
+};
+
 const CARD_DESIGN = {
   landscape: {
     width: 1050,
@@ -15,19 +33,14 @@ const CARD_DESIGN = {
 
     qr: {
       columnWidth: "30%",
-
       paddingLeft: "4cqw",
       paddingRight: "2cqw",
-
       gap: "1.5cqw",
-
       buttonPadding: "0.7cqw",
       innerPadding: "0.8cqw",
-
       size: "16cqw",
       maxWidth: "110px",
       maxHeight: "110px",
-
       textSize: "2.1cqw",
       textMarginTop: "0cqw",
     },
@@ -52,12 +65,9 @@ const CARD_DESIGN = {
 
     vision: {
       gap: "1.5cqw",
-
       lineWidth: "5cqw",
       lineHeight: "0.35cqw",
-
       textSize: "2.1cqw",
-
       separatorLeft: "1.2cqw",
       separatorRight: "1.2cqw",
     },
@@ -141,12 +151,9 @@ const CARD_DESIGN = {
 
     vision: {
       gap: "2cqw",
-
       lineWidth: "5cqw",
       lineHeight: "0.35cqw",
-
       textSize: "2.6cqw",
-
       separatorLeft: "1.5cqw",
       separatorRight: "1.5cqw",
     },
@@ -178,23 +185,58 @@ const CARD_DESIGN = {
 
     motto: {
       gap: "2cqw",
-
       lineWidth: "5cqw",
       lineHeight: "0.35cqw",
-
       textSize: "2.4cqw",
     },
   },
 };
 
-export default function CardBack({ data, innerRef, orientation = "landscape" }) {
+export default function CardBack({ data, innerRef, orientation = "landscape", company, theme }) {
+  /*
+   * COMPANY_CONFIG theme is passed from HomeShell
+   * through BusinessCardStudio.
+   *
+   * Example:
+   * AarambhGrow → #00275E / #159B24 / #FA7800
+   * Infinity    → #111111 / #222222 / #FA5A00
+   * Nexera      → #001E44 / #B59145 / #B59145
+   * EuroAsia    → #002152 / #A9AEB7 / #002152
+   */
+  const T = theme || company?.theme || DEFAULT_THEME;
+
+  const primary = T.primary || DEFAULT_THEME.primary;
+  const secondary = T.secondary || DEFAULT_THEME.secondary;
+  const accent = T.accent || DEFAULT_THEME.accent;
+
+  const gradient = T.gradient || DEFAULT_THEME.gradient;
+
   const isPortrait = orientation === "portrait";
+
   const design = isPortrait ? CARD_DESIGN.portrait : CARD_DESIGN.landscape;
+
   const vcardValue = useMemo(() => generateVCard(data), [data]);
+
   const handleSaveContact = (event) => {
     event.stopPropagation();
     downloadVCard(data);
   };
+
+  /*
+   * Company-specific heading.
+   *
+   * Uses selected company first.
+   * Falls back to old COMPANY config only
+   * if company data is unavailable.
+   */
+  const companyName = company?.name || COMPANY.brandName || "AarambhGrow";
+
+  const companyFullName = company?.fullName || COMPANY.backHeadingTail || "";
+
+  /*
+   * Company-specific website is already included
+   * in data through BusinessCardStudio.
+   */
 
   return (
     <div
@@ -234,9 +276,10 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               type="button"
               onClick={handleSaveContact}
               aria-label="Save contact — scan the QR code or tap to download the vCard"
-              className="rounded-md bg-gradient-to-br from-[#F26522] via-[#157327] to-[#03254C] shadow-soft transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F26522]"
+              className="rounded-md shadow-soft transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-none"
               style={{
                 padding: design.qr.buttonPadding,
+                background: gradient,
               }}
             >
               <span
@@ -248,8 +291,8 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 <QRCodeSVG
                   value={vcardValue}
                   level="L"
-                  fgColor={BRAND.navy}
-                  bgColor={BRAND.white}
+                  fgColor={primary}
+                  bgColor="#FFFFFF"
                   style={{
                     width: design.qr.size,
                     height: design.qr.size,
@@ -263,10 +306,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
             </button>
 
             <p
-              className="text-center font-semibold leading-snug text-[#03254C]"
+              className="text-center font-semibold leading-snug"
               style={{
                 marginTop: design.qr.textMarginTop,
                 fontSize: design.qr.textSize,
+                color: primary,
               }}
             >
               Scan QR Code
@@ -280,11 +324,12 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
           ================================================= */}
 
           <div
-            className="bg-[#03254C]/20"
             style={{
               marginTop: design.divider.marginTop,
               width: design.divider.width,
               height: design.divider.height,
+              backgroundColor: primary,
+              opacity: 0.2,
             }}
           />
 
@@ -310,8 +355,22 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 fontSize: design.heading.size,
               }}
             >
-              <span className="text-[#03254C]">{COMPANY.brandName}</span>{" "}
-              <span className="font-semibold text-[#03254C]/70">{COMPANY.backHeadingTail}</span>
+              <span
+                style={{
+                  color: primary,
+                }}
+              >
+                {companyName}
+              </span>{" "}
+              <span
+                className="font-semibold"
+                style={{
+                  color: primary,
+                  opacity: 0.7,
+                }}
+              >
+                {companyFullName}
+              </span>
             </p>
 
             {/* ===============================================
@@ -325,26 +384,28 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               }}
             >
               <span
-                className="rounded bg-[#F26522]"
+                className="rounded"
                 style={{
                   width: design.vision.lineWidth,
                   height: design.vision.lineHeight,
+                  backgroundColor: accent,
                 }}
               />
 
               <p
-                className="whitespace-nowrap font-medium text-[#03254C]"
+                className="whitespace-nowrap font-medium"
                 style={{
                   fontSize: design.vision.textSize,
+                  color: primary,
                 }}
               >
                 {COMPANY.visionLine.left}
 
                 <span
-                  className="text-[#F26522]"
                   style={{
                     marginLeft: design.vision.separatorLeft,
                     marginRight: design.vision.separatorRight,
+                    color: accent,
                   }}
                 >
                   |
@@ -354,10 +415,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               </p>
 
               <span
-                className="rounded bg-[#157327]"
+                className="rounded"
                 style={{
                   width: design.vision.lineWidth,
                   height: design.vision.lineHeight,
+                  backgroundColor: secondary,
                 }}
               />
             </div>
@@ -388,10 +450,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               {/* DIVIDER */}
 
               <span
-                className="bg-[#03254C]/20"
                 style={{
                   width: design.logos.divider.width,
                   height: design.logos.divider.height,
+                  backgroundColor: primary,
+                  opacity: 0.2,
                 }}
               />
 
@@ -412,10 +475,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               {/* DIVIDER */}
 
               <span
-                className="bg-[#03254C]/20"
                 style={{
                   width: design.logos.divider.width,
                   height: design.logos.divider.height,
+                  backgroundColor: primary,
+                  opacity: 0.2,
                 }}
               />
 
@@ -444,27 +508,30 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               }}
             >
               <span
-                className="rounded bg-[#F26522]"
+                className="rounded"
                 style={{
                   width: design.motto.lineWidth,
                   height: design.motto.lineHeight,
+                  backgroundColor: accent,
                 }}
               />
 
               <p
-                className="whitespace-nowrap font-semibold text-[#03254C]"
+                className="whitespace-nowrap font-semibold"
                 style={{
                   fontSize: design.motto.textSize,
+                  color: primary,
                 }}
               >
                 {COMPANY.mottoLine}
               </p>
 
               <span
-                className="rounded bg-[#157327]"
+                className="rounded"
                 style={{
                   width: design.motto.lineWidth,
                   height: design.motto.lineHeight,
+                  backgroundColor: secondary,
                 }}
               />
             </div>
@@ -494,9 +561,10 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               type="button"
               onClick={handleSaveContact}
               aria-label="Save contact — scan the QR code or tap to download the vCard"
-              className="rounded-md bg-gradient-to-br from-[#F26522] via-[#157327] to-[#03254C] shadow-soft transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F26522]"
+              className="rounded-md shadow-soft transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-none"
               style={{
                 padding: design.qr.buttonPadding,
+                background: gradient,
               }}
             >
               <span
@@ -508,10 +576,9 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 <QRCodeSVG
                   value={vcardValue}
                   level="L"
-                  fgColor={BRAND.navy}
-                  bgColor={BRAND.white}
+                  fgColor={primary}
+                  bgColor="#FFFFFF"
                   style={{
-                    /* SAME QR SIZE */
                     width: design.qr.size,
                     height: design.qr.size,
                     maxWidth: design.qr.maxWidth,
@@ -524,9 +591,10 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
             </button>
 
             <p
-              className="text-center font-semibold leading-snug text-[#03254C]"
+              className="text-center font-semibold leading-snug"
               style={{
                 fontSize: design.qr.textSize,
+                color: primary,
               }}
             >
               Scan QR Code
@@ -540,11 +608,13 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
           ================================================= */}
 
           <div
-            className="shrink-0 bg-[#03254C]/20"
+            className="shrink-0"
             style={{
               marginTop: design.divider.marginTop,
               marginBottom: design.divider.marginBottom,
               width: design.divider.width,
+              backgroundColor: primary,
+              opacity: 0.2,
             }}
           />
 
@@ -572,8 +642,22 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 fontSize: design.heading.size,
               }}
             >
-              <span className="text-[#03254C]">{COMPANY.brandName}</span>{" "}
-              <span className="font-semibold text-[#03254C]/70">{COMPANY.backHeadingTail}</span>
+              <span
+                style={{
+                  color: primary,
+                }}
+              >
+                {companyName}
+              </span>{" "}
+              <span
+                className="font-semibold"
+                style={{
+                  color: primary,
+                  opacity: 0.7,
+                }}
+              >
+                {companyFullName}
+              </span>
             </p>
 
             {/* ===============================================
@@ -587,26 +671,28 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               }}
             >
               <span
-                className="rounded bg-[#F26522]"
+                className="rounded"
                 style={{
                   width: design.vision.lineWidth,
                   height: design.vision.lineHeight,
+                  backgroundColor: accent,
                 }}
               />
 
               <p
-                className="whitespace-nowrap font-medium text-[#03254C]"
+                className="whitespace-nowrap font-medium"
                 style={{
                   fontSize: design.vision.textSize,
+                  color: primary,
                 }}
               >
                 {COMPANY.visionLine.left}
 
                 <span
-                  className="text-[#F26522]"
                   style={{
                     marginLeft: design.vision.separatorLeft,
                     marginRight: design.vision.separatorRight,
+                    color: accent,
                   }}
                 >
                   |
@@ -616,10 +702,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               </p>
 
               <span
-                className="rounded bg-[#157327]"
+                className="rounded"
                 style={{
                   width: design.vision.lineWidth,
                   height: design.vision.lineHeight,
+                  backgroundColor: secondary,
                 }}
               />
             </div>
@@ -634,8 +721,6 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 gap: design.logos.gap,
               }}
             >
-              {/* SERVICES */}
-
               <img
                 src="/service.png"
                 alt="AarambhGrow Services Private Limited"
@@ -647,17 +732,14 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 }}
               />
 
-              {/* DIVIDER */}
-
               <span
-                className="bg-[#03254C]/20"
                 style={{
                   width: design.logos.divider.width,
                   height: design.logos.divider.height,
+                  backgroundColor: primary,
+                  opacity: 0.2,
                 }}
               />
-
-              {/* ADVISORY */}
 
               <img
                 src="/advisory.png"
@@ -671,17 +753,14 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 }}
               />
 
-              {/* DIVIDER */}
-
               <span
-                className="bg-[#03254C]/20"
                 style={{
                   width: design.logos.divider.width,
                   height: design.logos.divider.height,
+                  backgroundColor: primary,
+                  opacity: 0.2,
                 }}
               />
-
-              {/* INFINITY */}
 
               <img
                 src="/infinity.png"
@@ -706,34 +785,36 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               }}
             >
               <span
-                className="rounded bg-[#F26522]"
+                className="rounded"
                 style={{
                   width: design.motto.lineWidth,
                   height: design.motto.lineHeight,
+                  backgroundColor: accent,
                 }}
               />
 
               <p
-                className="whitespace-nowrap font-semibold text-[#03254C]"
+                className="whitespace-nowrap font-semibold"
                 style={{
                   fontSize: design.motto.textSize,
+                  color: primary,
                 }}
               >
                 {COMPANY.mottoLine}
               </p>
 
               <span
-                className="rounded bg-[#157327]"
+                className="rounded"
                 style={{
                   width: design.motto.lineWidth,
                   height: design.motto.lineHeight,
+                  backgroundColor: secondary,
                 }}
               />
             </div>
 
             {/* ===============================================
                 BOTTOM FEATURES
-                MATCHING REFERENCE DESIGN
             =============================================== */}
 
             <div
@@ -754,10 +835,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 }}
               >
                 <span
-                  className="grid shrink-0 place-items-center rounded-full bg-[#157327] text-white"
+                  className="grid shrink-0 place-items-center rounded-full text-white"
                   style={{
                     width: design.features.iconSize,
                     height: design.features.iconSize,
+                    backgroundColor: secondary,
                   }}
                 >
                   <FaHandshake
@@ -769,9 +851,10 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 </span>
 
                 <p
-                  className="text-left font-medium leading-tight text-[#03254C]"
+                  className="text-left font-medium leading-tight"
                   style={{
                     fontSize: design.features.textSize,
+                    color: primary,
                   }}
                 >
                   Growth
@@ -785,10 +868,12 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               =========================================== */}
 
               <span
-                className="shrink-0 bg-[#03254C]/20"
+                className="shrink-0"
                 style={{
                   width: design.features.dividerWidth,
                   height: design.features.dividerHeight,
+                  backgroundColor: primary,
+                  opacity: 0.2,
                 }}
               />
 
@@ -803,10 +888,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 }}
               >
                 <span
-                  className="grid shrink-0 place-items-center rounded-full bg-[#F26522] text-white"
+                  className="grid shrink-0 place-items-center rounded-full text-white"
                   style={{
                     width: design.features.iconSize,
                     height: design.features.iconSize,
+                    backgroundColor: accent,
                   }}
                 >
                   <FaBullseye
@@ -818,9 +904,10 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 </span>
 
                 <p
-                  className="text-left font-medium leading-tight text-[#03254C]"
+                  className="text-left font-medium leading-tight"
                   style={{
                     fontSize: design.features.textSize,
+                    color: primary,
                   }}
                 >
                   Sustainable
@@ -834,10 +921,12 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
               =========================================== */}
 
               <span
-                className="shrink-0 bg-[#03254C]/20"
+                className="shrink-0"
                 style={{
                   width: design.features.dividerWidth,
                   height: design.features.dividerHeight,
+                  backgroundColor: primary,
+                  opacity: 0.2,
                 }}
               />
 
@@ -852,10 +941,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 }}
               >
                 <span
-                  className="grid shrink-0 place-items-center rounded-full bg-[#03254C] text-white"
+                  className="grid shrink-0 place-items-center rounded-full text-white"
                   style={{
                     width: design.features.iconSize,
                     height: design.features.iconSize,
+                    backgroundColor: primary,
                   }}
                 >
                   <FaLightbulb
@@ -867,9 +957,10 @@ export default function CardBack({ data, innerRef, orientation = "landscape" }) 
                 </span>
 
                 <p
-                  className="text-left font-medium leading-tight text-[#03254C]"
+                  className="text-left font-medium leading-tight"
                   style={{
                     fontSize: design.features.textSize,
+                    color: primary,
                   }}
                 >
                   Greater
