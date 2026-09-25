@@ -80,7 +80,7 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
   return (
     <section
       id={id}
-      className="scroll-mt-24 rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+      className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
       style={{
         borderColor: T.border || BRAND.border,
         background: T.surface || BRAND.white,
@@ -129,7 +129,7 @@ function Choice({ selected, onClick, label, theme }) {
     <button
       type="button"
       onClick={onClick}
-      className="relative flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 py-4 text-xs font-semibold transition"
+      className="relative flex flex-col items-center justify-center gap-1.5 rounded-md border-2 py-4 text-xs font-semibold transition"
       style={
         selected
           ? {
@@ -177,7 +177,7 @@ function Field({ label, icon: Icon, value, onChange, placeholder, type = "text",
       </span>
 
       <span
-        className="flex items-center gap-3 rounded-lg border px-3.5 py-3 focus-within:border-[var(--field-focus)]"
+        className="flex items-center gap-3 rounded-md border px-3.5 py-3 focus-within:border-[var(--field-focus)]"
         style={{
           borderColor: T.border || BRAND.border,
 
@@ -246,70 +246,20 @@ export default function EmailSignatureGenerator({
 
   const [copied, setCopied] = useState(false);
   const [note, setNote] = useState("");
-
-  /*
-   * =========================================================
-   * COMPANY THEME
-   * =========================================================
-   *
-   * Theme comes directly from:
-   *
-   * company.theme
-   *
-   * This supports:
-   * AarambhGrow
-   * Advisory
-   * Services
-   * Infinity
-   * Nexera
-   * EuroAsia
-   */
   const T = theme || company?.theme || DEFAULT_THEME;
-
-  /*
-   * =========================================================
-   * COMPANY DATA
-   * =========================================================
-   *
-   * Your COMPANY_CONFIG stores company information inside:
-   *
-   * company.data.website
-   * company.data.email
-   * company.data.phone
-   * company.data.address
-   */
   const companyData = company?.data || {};
 
-  /*
-   * =========================================================
-   * FINAL DATA
-   * =========================================================
-   *
-   * Company information has priority for
-   * company-specific fields.
-   */
   const data = {
     ...DEFAULT_DATA,
     ...(externalData || localData),
-
     company: company?.fullName || company?.name || (externalData || localData)?.company || DEFAULT_DATA.company,
-
     logo: company?.logo || (externalData || localData)?.logo || DEFAULT_DATA.logo,
-
     website: companyData.website || (externalData || localData)?.website || "",
-
     address: companyData.address || (externalData || localData)?.address || "",
-
     email: (externalData || localData)?.email || companyData.email || "",
-
     phone: (externalData || localData)?.phone || companyData.phone || "",
   };
 
-  /*
-   * =========================================================
-   * UPDATE DATA
-   * =========================================================
-   */
   const updateData = (key, value) => {
     if (externalSetData) {
       externalSetData(key, value);
@@ -321,43 +271,21 @@ export default function EmailSignatureGenerator({
     }
   };
 
-  /*
-   * =========================================================
-   * SIGNATURE HTML
-   * =========================================================
-   */
   const signatureHtml = useMemo(() => {
     const name = escapeHtml(data.name || "Your Name");
-
     const designation = escapeHtml(data.designation || "Your Designation");
-
     const companyName = escapeHtml(data.company || "AarambhGrow Group of Companies");
-
     const phone = escapeHtml(data.phone || "");
-
     const email = escapeHtml(data.email || "");
-
     const website = escapeHtml(data.website || "");
-
     const address = escapeHtml(data.address || "");
-
     const logo = escapeHtml(data.logo || "/aarambh.png");
-
-    /*
-     * Dynamic theme colors
-     */
     const primary = T.primary || DEFAULT_THEME.primary;
-
     const secondary = T.secondary || DEFAULT_THEME.secondary;
-
     const accent = T.accent || DEFAULT_THEME.accent;
-
     const muted = T.muted || DEFAULT_THEME.muted;
-
     const border = T.border || DEFAULT_THEME.border;
-
     const websiteUrl = escapeHtml(normalizeWebsite(data.website || ""));
-
     const phoneUrl = escapeHtml(normalizePhone(data.phone || ""));
 
     return `
@@ -738,7 +666,7 @@ export default function EmailSignatureGenerator({
 
           {/* SELECTED COMPANY */}
           <div
-            className="mt-5 flex items-center gap-3 rounded-xl border p-4"
+            className="mt-5 flex items-center gap-3 rounded-md border p-4"
             style={{
               borderColor: T.border || BRAND.border,
 
@@ -746,7 +674,7 @@ export default function EmailSignatureGenerator({
             }}
           >
             <div
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md"
               style={{
                 background: T.surface || BRAND.white,
               }}
@@ -863,7 +791,7 @@ export default function EmailSignatureGenerator({
             </span>
 
             <span
-              className="flex items-start gap-3 rounded-lg border px-3.5 py-3 focus-within:border-[var(--field-focus)]"
+              className="flex items-start gap-3 rounded-md border px-3.5 py-3 focus-within:border-[var(--field-focus)]"
               style={{
                 borderColor: T.border || BRAND.border,
 
@@ -889,7 +817,7 @@ export default function EmailSignatureGenerator({
 
           {/* Signature information box */}
           <div
-            className="mt-4 rounded-xl border p-4"
+            className="mt-4 rounded-md border p-4"
             style={{
               borderColor: T.primaryLight || BRAND.border,
 
@@ -898,7 +826,7 @@ export default function EmailSignatureGenerator({
           >
             <div className="flex items-center gap-3">
               <div
-                className="grid h-9 w-9 place-items-center rounded-lg"
+                className="grid h-9 w-9 place-items-center rounded-md"
                 style={{
                   background: T.accentLight || BRAND.white,
 
@@ -936,7 +864,7 @@ export default function EmailSignatureGenerator({
           <button
             type="button"
             onClick={generatePreview}
-            className="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110"
+            className="flex w-full items-center justify-center gap-2 rounded-md py-4 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110"
             style={{
               background: T.gradient || T.primary,
             }}
@@ -951,7 +879,7 @@ export default function EmailSignatureGenerator({
           <button
             type="button"
             onClick={copied ? undefined : copySignature}
-            className="flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5"
+            className="flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5"
             style={{
               background: copied ? T.secondary : T.primary,
             }}
@@ -972,7 +900,7 @@ export default function EmailSignatureGenerator({
           <button
             type="button"
             onClick={reset}
-            className="grid min-w-12 place-items-center rounded-xl border"
+            className="grid min-w-12 place-items-center rounded-md border"
             style={{
               borderColor: T.border || BRAND.border,
 
@@ -989,7 +917,7 @@ export default function EmailSignatureGenerator({
 
         {/* TIP */}
         <div
-          className="rounded-xl border p-4 text-xs leading-relaxed"
+          className="rounded-md border p-4 text-xs leading-relaxed"
           style={{
             borderColor: T.accentLight || BRAND.border,
 
@@ -1011,7 +939,7 @@ export default function EmailSignatureGenerator({
         {/* NOTE */}
         {note && (
           <div
-            className="rounded-xl border p-3 text-center text-xs font-bold"
+            className="rounded-md border p-3 text-center text-xs font-bold"
             style={{
               borderColor: T.secondary,
 
@@ -1030,7 +958,7 @@ export default function EmailSignatureGenerator({
           ===================================================== */}
       <section
         id="s-out"
-        className="scroll-mt-24 min-w-0 rounded-2xl border p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+        className="scroll-mt-24 min-w-0 rounded-md border p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
         style={{
           borderColor: T.border || BRAND.border,
 
@@ -1092,7 +1020,7 @@ export default function EmailSignatureGenerator({
 
         {/* DESKTOP PREVIEW */}
         <div
-          className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-2xl border p-4 sm:p-8"
+          className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-md border p-4 sm:p-8"
           style={{
             borderColor: T.border || BRAND.border,
 
@@ -1101,7 +1029,7 @@ export default function EmailSignatureGenerator({
         >
           <div className="w-full max-w-[850px]">
             <div
-              className="overflow-x-auto rounded-xl border p-6 shadow-sm sm:p-10"
+              className="overflow-x-auto rounded-md border p-6 shadow-sm sm:p-10"
               style={{
                 borderColor: T.border || BRAND.border,
 
@@ -1119,7 +1047,7 @@ export default function EmailSignatureGenerator({
 
         {/* MOBILE PREVIEW */}
         <div
-          className="mt-5 rounded-xl border p-5 sm:hidden"
+          className="mt-5 rounded-md border p-5 sm:hidden"
           style={{
             borderColor: T.border || BRAND.border,
 
@@ -1223,7 +1151,7 @@ export default function EmailSignatureGenerator({
         {/* SUCCESS MESSAGE */}
         {copied && (
           <div
-            className="mt-5 flex items-start gap-3 rounded-xl border p-4"
+            className="mt-5 flex items-start gap-3 rounded-md border p-4"
             style={{
               borderColor: T.secondaryLight || BRAND.border,
 

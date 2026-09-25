@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  FaEnvelope,
-  FaGlobe,
-  FaLocationDot,
-  FaPhone,
-} from "react-icons/fa6";
+import { FaEnvelope, FaGlobe, FaLocationDot, FaPhone } from "react-icons/fa6";
 
 const DEFAULT_THEME = {
   primary: "#00275E",
@@ -16,12 +11,62 @@ const DEFAULT_THEME = {
   muted: "#64748B",
 };
 
+const COMPANY_BACKGROUNDS = {
+  aarambhgrow: {
+    landscape: "/bg-2.png",
+    portrait: "/p-bg1.png",
+  },
+  advisory: {
+    landscape: "/bg-2.png",
+    portrait: "/p-bg1.png",
+  },
+  services: {
+    landscape: "/bg-2.png",
+    portrait: "/p-bg1.png",
+  },
+  infinity: {
+    landscape: "/i-bg.png",
+    portrait: "/i-bg.png",
+  },
+  nexera: {
+    landscape: "/n-bg.png",
+    portrait: "/n-bg.png",
+  },
+  euroasia: {
+    landscape: "/e-bg.png",
+    portrait: "/e-bg.png",
+  },
+};
+
+function getCompanyKey(company) {
+  const value = String(company?.id || company?.name || company?.fullName || "")
+    .toLowerCase()
+    .trim();
+  if (value.includes("nexera")) {
+    return "nexera";
+  }
+  if (value.includes("euroasia") || value.includes("euro asia")) {
+    return "euroasia";
+  }
+  if (value.includes("infinity")) {
+    return "infinity";
+  }
+  if (value.includes("advisory")) {
+    return "advisory";
+  }
+  if (value.includes("services")) {
+    return "services";
+  }
+  if (value.includes("aarambhgrow") || value.includes("aarambhgrow group")) {
+    return "aarambhgrow";
+  }
+  return "aarambhgrow";
+}
+
 const CARD_DESIGN = {
   landscape: {
     width: 1050,
     height: 600,
-
-    background: "/bg-2.png",
 
     logo: {
       left: "2%",
@@ -88,8 +133,6 @@ const CARD_DESIGN = {
   portrait: {
     width: 500,
     height: 1000,
-
-    background: "/p-bg1.png",
 
     logo: {
       left: "4%",
@@ -162,92 +205,33 @@ function prettyUrl(url) {
 
 function withProtocol(url) {
   const value = String(url || "").trim();
-
-  if (!value) return "";
-
+  if (!value) {
+    return "";
+  }
   if (/^https?:\/\//i.test(value)) {
     return value;
   }
-
   return `https://${value}`;
 }
 
-export default function CardFront({
-  data,
-  innerRef,
-  orientation = "landscape",
-  company,
-  theme,
-}) {
-  /*
-   * Theme comes directly from COMPANY_CONFIG.
-   *
-   * Example:
-   *
-   * AarambhGrow:
-   * primary   #00275E
-   * secondary #159B24
-   * accent    #FA7800
-   *
-   * Infinity:
-   * primary   #111111
-   * secondary #222222
-   * accent    #FA5A00
-   *
-   * Nexera:
-   * primary   #001E44
-   * secondary #B59145
-   * accent    #B59145
-   *
-   * EuroAsia:
-   * primary   #002152
-   * secondary #A9AEB7
-   * accent    #002152
-   */
+export default function CardFront({ data, innerRef, orientation = "landscape", company, theme }) {
+  const T = theme || company?.theme || DEFAULT_THEME;
+  const primary = T.primary || DEFAULT_THEME.primary;
+  const secondary = T.secondary || DEFAULT_THEME.secondary;
+  const accent = T.accent || DEFAULT_THEME.accent;
+  const background = T.background || DEFAULT_THEME.background;
+  const muted = T.muted || DEFAULT_THEME.muted;
+  const isPortrait = orientation === "portrait";
+  const design = isPortrait ? CARD_DESIGN.portrait : CARD_DESIGN.landscape;
+  const companyKey = getCompanyKey(company);
+  const companyBackground = COMPANY_BACKGROUNDS[companyKey] || COMPANY_BACKGROUNDS.aarambhgrow;
+  const backgroundImage = isPortrait ? companyBackground.portrait : companyBackground.landscape;
 
-  const T =
-    theme ||
-    company?.theme ||
-    DEFAULT_THEME;
-
-  const primary =
-    T.primary ||
-    DEFAULT_THEME.primary;
-
-  const secondary =
-    T.secondary ||
-    DEFAULT_THEME.secondary;
-
-  const accent =
-    T.accent ||
-    DEFAULT_THEME.accent;
-
-  const background =
-    T.background ||
-    DEFAULT_THEME.background;
-
-  const muted =
-    T.muted ||
-    DEFAULT_THEME.muted;
-
-  const isPortrait =
-    orientation === "portrait";
-
-  const design = isPortrait
-    ? CARD_DESIGN.portrait
-    : CARD_DESIGN.landscape;
-
-  /*
-   * Contact rows use company theme colors.
-   */
   const rows = [
     data?.phone && {
       Icon: FaPhone,
       text: data.phone,
-      href: `tel:${data.phone.replace(
-        /[^+\d]/g,
-        "",
-      )}`,
+      href: `tel:${data.phone.replace(/[^+\d]/g, "")}`,
       bg: secondary,
       label: "Call",
     },
@@ -281,6 +265,7 @@ export default function CardFront({
     <div
       ref={innerRef}
       data-card-orientation={orientation}
+      data-card-front-export
       className="backface-hidden absolute inset-0 overflow-hidden rounded-md"
       style={{
         width: "100%",
@@ -289,32 +274,11 @@ export default function CardFront({
         backgroundColor: background,
       }}
     >
-      {/* ===================================================
-          BACKGROUND
-      =================================================== */}
-
-      <img
-        src={design.background}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-fill"
-        draggable="false"
-      />
-
+      <img src={backgroundImage} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-fill" draggable="false" />
       <div className="absolute inset-0">
-        {/* =================================================
-            COMPANY LOGO
-        ================================================= */}
-
         <img
-          src={
-            company?.logo ||
-            "/aarambh.png"
-          }
-          alt={
-            company?.fullName ||
-            "Company Logo"
-          }
+          src={company?.cardLogo || company?.logo || "/aarambh2.png"}
+          alt={company?.fullName || "Company Logo"}
           className="absolute h-auto object-contain"
           style={{
             left: design.logo.left,
@@ -324,10 +288,6 @@ export default function CardFront({
           draggable="false"
         />
 
-        {/* =================================================
-            COMPANY / PERSON DETAILS
-        ================================================= */}
-
         <div
           className="absolute"
           style={{
@@ -336,218 +296,141 @@ export default function CardFront({
             width: design.person.width,
           }}
         >
-          {/* NAME */}
-
           <h3
             className="font-extrabold leading-tight"
             style={{
               position: "relative",
-              left:
-                design.name.left ||
-                "0%",
-              top:
-                design.name.top ||
-                "0%",
-              textAlign:
-                design.name.align ||
-                design.person.align ||
-                "left",
-              fontSize:
-                design.name.size,
+              left: design.name.left || "0%",
+              top: design.name.top || "0%",
+              textAlign: design.name.align || design.person.align || "left",
+              fontSize: design.name.size,
               letterSpacing: "-0.01em",
               whiteSpace: "nowrap",
               overflow: "visible",
               color: primary,
             }}
           >
-            {data?.name ||
-              "Your Name"}
+            {data?.name || "Your Name"}
           </h3>
-
-          {/* DESIGNATION */}
 
           <p
             className="font-semibold leading-tight"
             style={{
               position: "relative",
-              left:
-                design.title.left ||
-                "0%",
-              top:
-                design.title.top ||
-                "0%",
-              textAlign:
-                design.title.align ||
-                design.person.align ||
-                "left",
-              fontSize:
-                design.title.size,
-              marginTop:
-                design.title.marginTop ||
-                "1%",
+              left: design.title.left || "0%",
+              top: design.title.top || "0%",
+              textAlign: design.title.align || design.person.align || "left",
+              fontSize: design.title.size,
+              marginTop: design.title.marginTop || "1%",
               whiteSpace: "nowrap",
               overflow: "visible",
               color: muted,
             }}
           >
-            {data?.title ||
-              "Job Title"}
+            {data?.title || "Job Title"}
           </p>
-
-          {/* SLOGAN */}
 
           <p
             className="font-medium leading-tight"
             style={{
               position: "relative",
-              left:
-                design.slogan.left ||
-                "0%",
-              top:
-                design.slogan.top ||
-                "0%",
-              textAlign:
-                design.slogan.align ||
-                design.person.align ||
-                "left",
-              fontSize:
-                design.slogan.size,
-              marginTop:
-                design.slogan.marginTop,
+              left: design.slogan.left || "0%",
+              top: design.slogan.top || "0%",
+              textAlign: design.slogan.align || design.person.align || "left",
+              fontSize: design.slogan.size,
+              marginTop: design.slogan.marginTop,
               whiteSpace: "nowrap",
               overflow: "visible",
               color: muted,
             }}
           >
-            {data?.slogan ||
-              "Your Growth | Our Commitment"}
+            {data?.slogan || "Your Growth | Our Commitment"}
           </p>
         </div>
-
-        {/* =================================================
-            DIVIDER
-        ================================================= */}
 
         <div
           className="absolute"
           style={{
-            left:
-              design.divider.left,
-            top:
-              design.divider.top,
-            width:
-              design.divider.width,
-            height:
-              design.divider.height,
+            left: design.divider.left,
+            top: design.divider.top,
+            width: design.divider.width,
+            height: design.divider.height,
             backgroundColor: primary,
             opacity: 0.25,
           }}
         />
 
-        {/* =================================================
-            CONTACT DETAILS
-        ================================================= */}
-
         <div
           className="absolute"
           style={{
-            left:
-              design.contacts.left,
-            top:
-              design.contacts.top,
-            width:
-              design.contacts.width,
+            left: design.contacts.left,
+            top: design.contacts.top,
+            width: design.contacts.width,
           }}
         >
           <div
             className="flex flex-col"
             style={{
-              gap:
-                design.contacts.gap,
+              gap: design.contacts.gap,
             }}
           >
-            {rows.map(
-              ({
-                Icon,
-                text,
-                href,
-                bg,
-                label,
-              }) => {
-                const content = (
-                  <>
-                    {/* ICON */}
-
-                    <span
-                      className="grid shrink-0 place-items-center rounded-full text-white"
-                      style={{
-                        width:
-                          design.icon.size,
-                        height:
-                          design.icon.size,
-                        minWidth:
-                          design.icon.size,
-                        minHeight:
-                          design.icon.size,
-                        backgroundColor:
-                          bg,
-                      }}
-                    >
-                      <Icon
-                        style={{
-                          width:
-                            design.icon
-                              .iconSize,
-                          height:
-                            design.icon
-                              .iconSize,
-                        }}
-                      />
-                    </span>
-
-                    {/* CONTACT TEXT */}
-
-                    <span
-                      className="min-w-0 break-words font-medium leading-tight"
-                      style={{
-                        fontSize:
-                          design.contactText
-                            .size,
-                        color: primary,
-                      }}
-                    >
-                      {text}
-                    </span>
-                  </>
-                );
-
-                return href ? (
-                  <a
-                    key={label}
-                    href={href}
-                    aria-label={`${label}: ${text}`}
-                    className="flex min-w-0 items-center"
+            {rows.map(({ Icon, text, href, bg, label }) => {
+              const content = (
+                <>
+                  <span
+                    className="grid shrink-0 place-items-center rounded-full text-white"
                     style={{
-                      gap:
-                        design.contactGap,
+                      width: design.icon.size,
+                      height: design.icon.size,
+                      minWidth: design.icon.size,
+                      minHeight: design.icon.size,
+                      backgroundColor: bg,
                     }}
                   >
-                    {content}
-                  </a>
-                ) : (
-                  <div
-                    key={label}
-                    className="flex min-w-0 items-center"
+                    <Icon
+                      style={{
+                        width: design.icon.iconSize,
+                        height: design.icon.iconSize,
+                      }}
+                    />
+                  </span>
+
+                  <span
+                    className="min-w-0 break-words font-medium leading-tight"
                     style={{
-                      gap:
-                        design.contactGap,
+                      fontSize: design.contactText.size,
+                      color: primary,
                     }}
                   >
-                    {content}
-                  </div>
-                );
-              },
-            )}
+                    {text}
+                  </span>
+                </>
+              );
+
+              return href ? (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={`${label}: ${text}`}
+                  className="flex min-w-0 items-center"
+                  style={{
+                    gap: design.contactGap,
+                  }}
+                >
+                  {content}
+                </a>
+              ) : (
+                <div
+                  key={label}
+                  className="flex min-w-0 items-center"
+                  style={{
+                    gap: design.contactGap,
+                  }}
+                >
+                  {content}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

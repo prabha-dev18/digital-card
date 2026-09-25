@@ -9,8 +9,6 @@ import {
   FaEye,
   FaGear,
   FaImage,
-  FaPhone,
-  FaUpload,
   FaUser,
   FaUserTie,
   FaPeopleGroup,
@@ -34,11 +32,9 @@ const DEFAULT_THEME = {
   primary: BRAND.navy,
   secondary: BRAND.green,
   accent: BRAND.orange,
-
   primaryLight: BRAND.navySoft,
   secondaryLight: BRAND.greenSoft,
   accentLight: BRAND.orangeSoft,
-
   border: BRAND.border,
   text: "#334155",
   muted: BRAND.muted,
@@ -49,7 +45,6 @@ const DEFAULT_DATA = {
   name: "Your Name",
   designation: "Your Designation",
   company: "AarambhGrow Group of Companies",
-  phone: "+91 99987 15799",
   logo: "/aarambh.png",
 };
 
@@ -60,13 +55,129 @@ const DEPTS = [
   { id: "Management", icon: FaPeopleGroup },
 ];
 
+const COMPANY_BACKGROUNDS = {
+  "aarambhgrow group of companies": "/dp-bg1.png",
+  "aarambhgrow group": "/dp-bg1.png",
+
+  "aarambhgrow advisory private limited": "/dp-bg1.png",
+  "aarambhgrow advisory": "/dp-bg1.png",
+
+  "aarambhgrow services private limited": "/dp-bg1.png",
+  "aarambhgrow services": "/dp-bg1.png",
+
+  "aarambhgrow infinity": "/infinity-bg.png",
+  "aarambhgrow infinity private limited": "/infinity-bg.png",
+
+  "nexera consultancy": "/nexera-bg.png",
+  "nexera consultancy private limited": "/nexera-bg.png",
+
+  "euroasia aquatic private limited": "/euroasia-bg.png",
+  "euroasia aquatic": "/euroasia-bg.png",
+};
+
+const DEFAULT_DP_BACKGROUND = "/dp-bg1.png";
+function getCompanyBackground(company, companyName) {
+  if (company?.background) {
+    return company.background;
+  }
+
+  if (company?.dpBackground) {
+    return company.dpBackground;
+  }
+
+  if (company?.backgroundImage) {
+    return company.backgroundImage;
+  }
+
+  const name = String(company?.fullName || company?.name || companyName || "")
+    .trim()
+    .toLowerCase();
+
+  if (COMPANY_BACKGROUNDS[name]) {
+    return COMPANY_BACKGROUNDS[name];
+  }
+
+  if (name.includes("infinity")) {
+    return "/infinity-bg.png";
+  }
+
+  if (name.includes("nexera")) {
+    return "/nexera-bg.png";
+  }
+
+  if (name.includes("euroasia")) {
+    return "/euroasia-bg.png";
+  }
+
+  if (name.includes("advisory")) {
+    return "/dp-bg1.png";
+  }
+
+  if (name.includes("services")) {
+    return "/dp-bg1.png";
+  }
+
+  if (name.includes("aarambhgrow")) {
+    return "/dp-bg1.png";
+  }
+
+  return DEFAULT_DP_BACKGROUND;
+}
+
+function hexToRgb(hex) {
+  const h = String(hex || "")
+    .trim()
+    .replace("#", "");
+
+  if (!/^[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(h)) {
+    return null;
+  }
+  const v =
+    h.length === 3
+      ? h
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : h;
+  const n = parseInt(v, 16);
+
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function mixColor(c1, c2, t) {
+  const a = hexToRgb(c1);
+  const b = hexToRgb(c2);
+  if (!a || !b) return c1;
+  const m = (i) => Math.round(a[i] + (b[i] - a[i]) * t);
+  return `rgb(${m(0)}, ${m(1)}, ${m(2)})`;
+}
+
+function drawLeaf(ctx, x, y, s, leftColor, rightColor) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(x, y + s * 0.55);
+  ctx.quadraticCurveTo(x - s, y + s * 0.05, x - s * 0.5, y - s * 0.6);
+  ctx.quadraticCurveTo(x - s * 0.02, y - s * 0.45, x, y + s * 0.55);
+  ctx.closePath();
+  ctx.fillStyle = leftColor;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(x, y + s * 0.55);
+  ctx.quadraticCurveTo(x + s, y + s * 0.05, x + s * 0.5, y - s * 0.6);
+  ctx.quadraticCurveTo(x + s * 0.02, y - s * 0.45, x, y + s * 0.55);
+  ctx.closePath();
+  ctx.fillStyle = rightColor;
+  ctx.fill();
+  ctx.restore();
+}
+
 function Section({ id, no, title, sub, icon: Icon, children, theme }) {
   const T = theme || DEFAULT_THEME;
 
   return (
     <section
       id={id}
-      className="scroll-mt-24 rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+      className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
       style={{
         borderColor: T.border || BRAND.border,
       }}
@@ -101,7 +212,6 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
           </p>
         </div>
       </div>
-
       {children}
     </section>
   );
@@ -114,13 +224,13 @@ function Choice({ selected, onClick, icon: Icon, children, theme }) {
     <button
       type="button"
       onClick={onClick}
-      className="relative flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 py-4 text-xs font-semibold transition"
+      className="relative flex flex-col items-center justify-center gap-1.5 rounded-md border-2 py-4 text-xs font-semibold transition"
       style={
         selected
           ? {
               background: `linear-gradient(135deg,${T.primary},${T.secondary})`,
               borderColor: T.primary,
-              color: T.background === "#FFFFFF" ? "#FFFFFF" : "#FFFFFF",
+              color: "#FFFFFF",
             }
           : {
               background: "#FFFFFF",
@@ -139,9 +249,7 @@ function Choice({ selected, onClick, icon: Icon, children, theme }) {
           ✓
         </span>
       )}
-
       <Icon size={20} />
-
       {children}
     </button>
   );
@@ -162,7 +270,7 @@ function Field({ label, icon: Icon, value, onChange, placeholder, type = "text",
       </span>
 
       <span
-        className="flex items-center gap-3 rounded-lg border bg-white px-3.5 py-3"
+        className="flex items-center gap-3 rounded-md border bg-white px-3.5 py-3"
         style={{
           borderColor: T.border || BRAND.border,
         }}
@@ -193,64 +301,43 @@ export default function WhatsAppDPGenerator({
   company,
   theme,
 }) {
-  /*
-   * Selected company theme
-   *
-   * HomeShell passes:
-   * theme={T}
-   *
-   * If theme is not available, use the theme from company.
-   */
   const T = theme || company?.theme || DEFAULT_THEME;
-
   const canvasRef = useRef(null);
-
   const [localData, setLocalData] = useState({
     ...DEFAULT_DATA,
     ...initialData,
   });
-
-  const [uploadedPhoto, setUploadedPhoto] = useState(null);
   const [note, setNote] = useState("");
-
-  /*
-   * Merge external profile data with local data.
-   * Company information always comes from selected company.
-   */
   const data = {
     ...DEFAULT_DATA,
     ...(externalData || localData),
-
     company: company?.fullName || externalData?.company || localData.company || DEFAULT_DATA.company,
-
     logo: company?.logo || externalData?.logo || localData.logo || DEFAULT_DATA.logo,
   };
 
   const activeTheme = useMemo(
     () => ({
       background: T.background || "#FFFFFF",
-
       primary: T.primary || BRAND.navy,
-
       secondary: T.secondary || BRAND.green,
-
       accent: T.accent || BRAND.orange,
-
       primaryLight: T.primaryLight || BRAND.navySoft,
-
       secondaryLight: T.secondaryLight || BRAND.greenSoft,
-
       accentLight: T.accentLight || BRAND.orangeSoft,
-
       border: T.border || BRAND.border,
-
       text: T.text || "#334155",
-
       muted: T.muted || BRAND.muted,
     }),
     [T],
   );
 
+  const DP_BACKGROUND = useMemo(() => {
+    return getCompanyBackground(company, data.company);
+  }, [company?.background, company?.dpBackground, company?.backgroundImage, company?.fullName, company?.name, data.company]);
+
+  const companyWords = useMemo(() => (data.company || "").trim().split(/\s+/).filter(Boolean), [data.company]);
+  const brandWord = companyWords[0] || "";
+  const companyRest = companyWords.slice(1).join(" ");
   const updateData = (key, value) => {
     if (externalSetData) {
       externalSetData(key, value);
@@ -262,82 +349,102 @@ export default function WhatsAppDPGenerator({
     }
   };
 
-  const handlePhotoUpload = (event) => {
-    const file = event.target.files?.[0];
-
-    if (!file || !file.type.startsWith("image/")) {
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      setUploadedPhoto(reader.result);
-    };
-
-    reader.readAsDataURL(file);
-  };
-
   const drawCanvas = async () => {
     const canvas = canvasRef.current;
-
-    if (!canvas) {
-      return null;
-    }
-
+    if (!canvas) return null;
     const size = 1080;
-
     canvas.width = size;
     canvas.height = size;
-
     const ctx = canvas.getContext("2d");
-
-    if (!ctx) {
-      return null;
-    }
-
+    if (!ctx) return null;
+    const cx = size / 2;
+    const cy = size / 2;
+    const ORANGE = activeTheme.accent || BRAND.orange;
+    const GREEN = activeTheme.secondary || BRAND.green;
+    const NAVY = activeTheme.primary || BRAND.navy;
+    const CREAM = "#FBFBF7";
     ctx.clearRect(0, 0, size, size);
-
-    /*
-     * Background
-     */
-    ctx.fillStyle = activeTheme.background;
+    ctx.fillStyle = CREAM;
     ctx.fillRect(0, 0, size, size);
 
-    /*
-     * Decorative circles
-     */
-    ctx.globalAlpha = 0.08;
+    try {
+      const bgImage = new Image();
+      bgImage.crossOrigin = "anonymous";
+      await new Promise((resolve) => {
+        bgImage.onload = resolve;
+        bgImage.onerror = resolve;
+        bgImage.src = DP_BACKGROUND;
+      });
 
+      if (bgImage.complete && bgImage.naturalWidth) {
+        const bgRatio = Math.max(size / bgImage.naturalWidth, size / bgImage.naturalHeight);
+        const bgWidth = bgImage.naturalWidth * bgRatio;
+        const bgHeight = bgImage.naturalHeight * bgRatio;
+        ctx.drawImage(bgImage, (size - bgWidth) / 2, (size - bgHeight) / 2, bgWidth, bgHeight);
+      }
+    } catch {
+      ctx.fillStyle = CREAM;
+      ctx.fillRect(0, 0, size, size);
+    }
+
+    ctx.strokeStyle = "rgba(140, 155, 140, 0.10)";
+    ctx.lineCap = "round";
+    ctx.lineWidth = 120;
     ctx.beginPath();
-    ctx.arc(1000, 80, 250, 0, Math.PI * 2);
-    ctx.fillStyle = activeTheme.secondary;
-    ctx.fill();
-
+    ctx.moveTo(940, -80);
+    ctx.bezierCurveTo(720, 330, 360, 500, -90, 640);
+    ctx.stroke();
+    ctx.lineWidth = 95;
     ctx.beginPath();
-    ctx.arc(50, 1030, 220, 0, Math.PI * 2);
-    ctx.fillStyle = activeTheme.accent;
+    ctx.moveTo(1130, 250);
+    ctx.bezierCurveTo(820, 430, 540, 720, 400, 1140);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-20, 760);
+    ctx.bezierCurveTo(220, 800, 420, 940, 640, 988);
+    ctx.bezierCurveTo(830, 1020, 990, 1000, 1100, 935);
+    ctx.lineTo(1100, 1120);
+    ctx.lineTo(-20, 1120);
+    ctx.closePath();
+    ctx.fillStyle = ORANGE;
     ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-20, 830);
+    ctx.bezierCurveTo(220, 870, 420, 1010, 640, 1055);
+    ctx.bezierCurveTo(830, 1085, 990, 1065, 1100, 1005);
+    ctx.lineTo(1100, 1120);
+    ctx.lineTo(-20, 1120);
+    ctx.closePath();
+    ctx.fillStyle = NAVY;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-20, 830);
+    ctx.bezierCurveTo(220, 870, 420, 1010, 640, 1055);
+    ctx.bezierCurveTo(830, 1085, 990, 1065, 1100, 1005);
+    ctx.strokeStyle = CREAM;
+    ctx.lineWidth = 16;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(1100, 780);
+    ctx.bezierCurveTo(880, 835, 740, 960, 500, 1000);
+    ctx.bezierCurveTo(320, 1035, 140, 1030, -20, 975);
+    ctx.lineTo(-20, 1120);
+    ctx.lineTo(1100, 1120);
+    ctx.closePath();
+    ctx.fillStyle = GREEN;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(1100, 780);
+    ctx.bezierCurveTo(880, 835, 740, 960, 500, 1000);
+    ctx.bezierCurveTo(320, 1035, 140, 1030, -20, 975);
+    ctx.strokeStyle = CREAM;
+    ctx.lineWidth = 16;
+    ctx.stroke();
 
-    ctx.globalAlpha = 1;
-
-    /*
-     * Outer border
-     */
-    ctx.strokeStyle = activeTheme.secondary;
-    ctx.lineWidth = 8;
-
-    ctx.strokeRect(30, 30, size - 60, size - 60);
-
-    /*
-     * Company logo
-     */
     if (data.logo) {
       try {
         const logo = new Image();
-
         logo.crossOrigin = "anonymous";
-
         await new Promise((resolve) => {
           logo.onload = resolve;
           logo.onerror = resolve;
@@ -345,121 +452,126 @@ export default function WhatsAppDPGenerator({
         });
 
         if (logo.complete && logo.naturalWidth) {
-          const logoWidth = 400;
-
-          const ratio = logo.naturalHeight / logo.naturalWidth;
-
-          const logoHeight = logoWidth * ratio;
-
-          ctx.drawImage(logo, (size - logoWidth) / 2, 100, logoWidth, logoHeight);
+          const boxW = 290;
+          const boxH = 235;
+          const ratio = Math.min(boxW / logo.naturalWidth, boxH / logo.naturalHeight);
+          const w = logo.naturalWidth * ratio;
+          const h = logo.naturalHeight * ratio;
+          ctx.drawImage(logo, (size - w) / 2, 150 + (boxH - h) / 2, w, h);
         }
-      } catch {
-        /* ignore logo loading errors */
-      }
+      } catch {}
     }
 
-    /*
-     * Uploaded profile photo
-     */
-    if (uploadedPhoto) {
-      try {
-        const photo = new Image();
-
-        await new Promise((resolve) => {
-          photo.onload = resolve;
-          photo.onerror = resolve;
-          photo.src = uploadedPhoto;
-        });
-
-        if (photo.complete && photo.naturalWidth) {
-          const x = 390;
-          const y = 300;
-          const photoSize = 300;
-
-          ctx.save();
-
-          ctx.beginPath();
-
-          ctx.arc(x + photoSize / 2, y + photoSize / 2, photoSize / 2, 0, Math.PI * 2);
-
-          ctx.clip();
-
-          const ratio = Math.max(photoSize / photo.naturalWidth, photoSize / photo.naturalHeight);
-
-          const width = photo.naturalWidth * ratio;
-
-          const height = photo.naturalHeight * ratio;
-
-          ctx.drawImage(photo, x + (photoSize - width) / 2, y + (photoSize - height) / 2, width, height);
-
-          ctx.restore();
-
-          /*
-           * Photo border
-           */
-          ctx.beginPath();
-
-          ctx.arc(x + photoSize / 2, y + photoSize / 2, photoSize / 2 + 8, 0, Math.PI * 2);
-
-          ctx.strokeStyle = activeTheme.secondary;
-
-          ctx.lineWidth = 8;
-
-          ctx.stroke();
-        }
-      } catch {
-        /* ignore photo loading errors */
-      }
-    }
-
-    /*
-     * Name
-     */
     ctx.textAlign = "center";
 
-    ctx.fillStyle = activeTheme.primary;
+    if (brandWord) {
+      ctx.fillStyle = NAVY;
+      ctx.font = '800 56px "Plus Jakarta Sans", Arial, sans-serif';
+      ctx.fillText(brandWord, cx, 452);
+    }
 
-    ctx.font = '700 68px "Plus Jakarta Sans", Arial, sans-serif';
+    if (companyRest) {
+      ctx.font = '600 25px "Plus Jakarta Sans", Arial, sans-serif';
+      const label = companyRest.toUpperCase().split("").join(" ");
+      const labelWidth = ctx.measureText(label).width;
+      ctx.fillStyle = NAVY;
+      ctx.fillText(label, cx, 500);
+      ctx.lineCap = "round";
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = ORANGE;
+      ctx.beginPath();
+      ctx.moveTo(cx - labelWidth / 2 - 62, 491);
+      ctx.lineTo(cx - labelWidth / 2 - 26, 491);
+      ctx.stroke();
+      ctx.strokeStyle = GREEN;
+      ctx.beginPath();
+      ctx.moveTo(cx + labelWidth / 2 + 26, 491);
+      ctx.lineTo(cx + labelWidth / 2 + 62, 491);
+      ctx.stroke();
+    }
 
-    ctx.fillText(data.name || "Your Name", size / 2, 680);
+    const memberName = data.name || "Your Name";
+    let nameSize = 98;
+    ctx.font = `800 ${nameSize}px "Plus Jakarta Sans", Arial, sans-serif`;
+    while (ctx.measureText(memberName).width > 760 && nameSize > 52) {
+      nameSize -= 4;
+      ctx.font = `800 ${nameSize}px "Plus Jakarta Sans", Arial, sans-serif`;
+    }
 
-    /*
-     * Designation
-     */
-    ctx.fillStyle = activeTheme.secondary;
+    ctx.fillStyle = NAVY;
 
-    ctx.font = '600 38px "Plus Jakarta Sans", Arial, sans-serif';
+    ctx.fillText(memberName, cx, 612);
 
-    ctx.fillText(data.designation || "Your Designation", size / 2, 745);
+    /* =====================================================
+       ORANGE / GREEN DIVIDER
+       ===================================================== */
 
-    /*
-     * Company
-     */
-    ctx.fillStyle = activeTheme.primary;
+    const dy = 668;
 
-    ctx.font = '500 34px "Plus Jakarta Sans", Arial, sans-serif';
+    ctx.lineCap = "round";
 
-    ctx.fillText(data.company || "AarambhGrow Group of Companies", size / 2, 805);
+    ctx.lineWidth = 7;
 
-    /*
-     * Phone
-     */
-    ctx.fillStyle = activeTheme.accent;
+    /* Orange */
 
-    ctx.font = '600 30px "Plus Jakarta Sans", Arial, sans-serif';
+    ctx.strokeStyle = ORANGE;
 
-    ctx.fillText(data.phone || "+91 99987 15799", size / 2, 875);
+    ctx.beginPath();
+
+    ctx.moveTo(cx - 250, dy);
+
+    ctx.lineTo(cx - 52, dy);
+
+    ctx.stroke();
+
+    /* Green */
+
+    ctx.strokeStyle = GREEN;
+
+    ctx.beginPath();
+
+    ctx.moveTo(cx + 52, dy);
+
+    ctx.lineTo(cx + 250, dy);
+
+    ctx.stroke();
+
+    /* Leaf */
+
+    drawLeaf(ctx, cx, dy, 26, ORANGE, GREEN);
+
+    /* =====================================================
+       DESIGNATION
+       ===================================================== */
+
+    const memberRole = data.designation || "Your Designation";
+
+    let roleSize = 42;
+
+    ctx.font = `600 ${roleSize}px "Plus Jakarta Sans", Arial, sans-serif`;
+
+    while (ctx.measureText(memberRole).width > 640 && roleSize > 26) {
+      roleSize -= 2;
+
+      ctx.font = `600 ${roleSize}px "Plus Jakarta Sans", Arial, sans-serif`;
+    }
+
+    ctx.fillStyle = NAVY;
+
+    ctx.fillText(memberRole, cx, 736);
 
     return canvas;
   };
+
+  /* =========================================================
+     DOWNLOAD
+     ========================================================= */
 
   const downloadDP = async () => {
     try {
       const canvas = await drawCanvas();
 
-      if (!canvas) {
-        return;
-      }
+      if (!canvas) return;
 
       const fileName = (data.name || "whatsapp-dp")
         .toLowerCase()
@@ -480,13 +592,19 @@ export default function WhatsAppDPGenerator({
 
       setNote("PNG downloaded successfully");
 
-      setTimeout(() => setNote(""), 2200);
+      setTimeout(() => {
+        setNote("");
+      }, 2200);
     } catch (error) {
       console.error("WhatsApp DP download failed:", error);
 
       setNote("Could not create PNG");
     }
   };
+
+  /* =========================================================
+     RESET
+     ========================================================= */
 
   const reset = () => {
     const resetData = {
@@ -502,9 +620,12 @@ export default function WhatsAppDPGenerator({
       setLocalData(resetData);
     }
 
-    setUploadedPhoto(null);
     setNote("");
   };
+
+  /* =========================================================
+     GENERATE PREVIEW
+     ========================================================= */
 
   const generatePreview = () => {
     if (typeof onReady === "function") {
@@ -512,14 +633,18 @@ export default function WhatsAppDPGenerator({
     }
   };
 
+  /* =========================================================
+     UI
+     ========================================================= */
+
   return (
     <div className="grid min-w-0 gap-5 p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:p-5">
-      {/* ============================================================ */}
-      {/* LEFT SIDE                                                     */}
-      {/* ============================================================ */}
+      {/* =====================================================
+          LEFT SIDE
+          ===================================================== */}
 
       <div className="space-y-5">
-        {/* ===================== ORGANIZATION ===================== */}
+        {/* ORGANIZATION */}
 
         <Section
           id="s-org"
@@ -547,10 +672,13 @@ export default function WhatsAppDPGenerator({
             ))}
           </div>
 
+          {/* SELECTED COMPANY */}
+
           <div
-            className="mt-5 flex items-center gap-3 rounded-xl border p-4"
+            className="mt-5 flex items-center gap-3 rounded-md border p-4"
             style={{
               borderColor: activeTheme.border,
+
               background: activeTheme.primaryLight,
             }}
           >
@@ -582,7 +710,7 @@ export default function WhatsAppDPGenerator({
           </div>
         </Section>
 
-        {/* ===================== PERSONAL INFORMATION ===================== */}
+        {/* PERSONAL INFORMATION */}
 
         <Section id="s-info" no="2" title="Personal Information" sub="Enter your details." icon={FaUser} theme={activeTheme}>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -603,146 +731,80 @@ export default function WhatsAppDPGenerator({
               placeholder="Your Designation"
               theme={activeTheme}
             />
-
-            <Field
-              label="Phone Number"
-              icon={FaPhone}
-              type="tel"
-              value={data.phone}
-              onChange={(value) => updateData("phone", value)}
-              placeholder="+91 99987 15799"
-              theme={activeTheme}
-            />
           </div>
         </Section>
 
-        {/* ===================== PHOTO & APPEARANCE ===================== */}
+        {/* BRANDING */}
 
         <Section
-          id="s-photo"
+          id="s-theme"
           no="3"
-          title="Photo & Appearance"
-          sub="Upload your photo and choose your WhatsApp DP theme."
+          title="Branding & Theme"
+          sub="Your company theme colors and background are applied to the DP automatically."
           icon={FaImage}
           theme={activeTheme}
         >
-          <div className="grid gap-4 sm:grid-cols-2">
-            {/* Upload photo */}
+          <div
+            className="rounded-md border p-4"
+            style={{
+              borderColor: activeTheme.border,
 
-            <div>
-              <label
-                className="mb-1.5 block text-xs font-bold"
+              background: activeTheme.background,
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <span
+                className="h-10 w-10 rounded-full"
                 style={{
-                  color: activeTheme.primary,
-                }}
-              >
-                Upload Professional Photo
-              </label>
+                  backgroundImage: `url("${DP_BACKGROUND}")`,
 
-              <label
-                className="flex min-h-[150px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 text-center transition"
-                style={{
-                  borderColor: activeTheme.border,
-                  background: activeTheme.background,
-                }}
-              >
-                <FaUpload size={22} color={activeTheme.accent} />
+                  backgroundSize: "cover",
 
-                <span
-                  className="mt-3 text-sm font-bold"
+                  backgroundPosition: "center",
+
+                  border: `5px solid ${activeTheme.secondary}`,
+                }}
+              />
+
+              <div>
+                <p
+                  className="text-sm font-extrabold"
                   style={{
                     color: activeTheme.primary,
                   }}
                 >
-                  {uploadedPhoto ? "Change Photo" : "Click to upload"}
-                </span>
+                  {company?.name || "AarambhGrow"}
+                </p>
 
-                <span
-                  className="mt-1 text-xs"
+                <p
+                  className="text-xs"
                   style={{
                     color: activeTheme.muted,
                   }}
                 >
-                  PNG, JPG or WEBP
-                </span>
+                  Company-specific theme and background are automatically loaded.
+                </p>
 
-                <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-              </label>
-
-              {uploadedPhoto && (
-                <button
-                  type="button"
-                  onClick={() => setUploadedPhoto(null)}
-                  className="mt-2 text-xs font-bold"
+                <p
+                  className="mt-1 text-[10px] font-semibold"
                   style={{
-                    color: activeTheme.accent,
+                    color: activeTheme.secondary,
                   }}
                 >
-                  Remove Photo
-                </button>
-              )}
-            </div>
-
-            {/* Company theme */}
-
-            <div>
-              <label
-                className="mb-1.5 block text-xs font-bold"
-                style={{
-                  color: activeTheme.primary,
-                }}
-              >
-                Company Theme
-              </label>
-
-              <div
-                className="rounded-xl border p-4"
-                style={{
-                  borderColor: activeTheme.border,
-                  background: activeTheme.background,
-                }}
-              >
-                <div className="flex items-center gap-3">
-                  <span
-                    className="h-10 w-10 rounded-full"
-                    style={{
-                      background: activeTheme.background,
-                      border: `5px solid ${activeTheme.secondary}`,
-                    }}
-                  />
-
-                  <div>
-                    <p
-                      className="text-sm font-extrabold"
-                      style={{
-                        color: activeTheme.primary,
-                      }}
-                    >
-                      {company?.name || "AarambhGrow"}
-                    </p>
-
-                    <p
-                      className="text-xs"
-                      style={{
-                        color: activeTheme.muted,
-                      }}
-                    >
-                      Theme and colors are automatically loaded from the selected company.
-                    </p>
-                  </div>
-                </div>
+                  
+                </p>
               </div>
             </div>
           </div>
         </Section>
 
-        {/* ===================== GENERATE PREVIEW ===================== */}
+        {/* GENERATE */}
 
         {!ready && (
           <button
             type="button"
             onClick={generatePreview}
-            className="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110"
+            className="flex w-full items-center justify-center gap-2 rounded-md py-4 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110"
             style={{
               background: `linear-gradient(90deg,${activeTheme.secondary},${activeTheme.primary})`,
             }}
@@ -752,13 +814,13 @@ export default function WhatsAppDPGenerator({
           </button>
         )}
 
-        {/* ===================== ACTIONS ===================== */}
+        {/* ACTIONS */}
 
         <div className="grid grid-cols-[1fr_auto] gap-3">
           <button
             type="button"
             onClick={downloadDP}
-            className="flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5"
+            className="flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5"
             style={{
               background: activeTheme.primary,
             }}
@@ -770,9 +832,10 @@ export default function WhatsAppDPGenerator({
           <button
             type="button"
             onClick={reset}
-            className="grid min-w-12 place-items-center rounded-xl border bg-white"
+            className="grid min-w-12 place-items-center rounded-md border bg-white"
             style={{
               borderColor: activeTheme.border,
+
               color: activeTheme.primary,
             }}
             title="Reset"
@@ -782,14 +845,16 @@ export default function WhatsAppDPGenerator({
           </button>
         </div>
 
-        {/* ===================== NOTE ===================== */}
+        {/* NOTE */}
 
         {note && (
           <div
-            className="rounded-xl border p-3 text-center text-xs font-bold"
+            className="rounded-md border p-3 text-center text-xs font-bold"
             style={{
               borderColor: activeTheme.secondary,
+
               background: activeTheme.secondaryLight,
+
               color: activeTheme.secondary,
             }}
           >
@@ -798,18 +863,18 @@ export default function WhatsAppDPGenerator({
         )}
       </div>
 
-      {/* ============================================================ */}
-      {/* RIGHT SIDE - LIVE PREVIEW                                    */}
-      {/* ============================================================ */}
+      {/* =====================================================
+          RIGHT SIDE / PREVIEW
+          ===================================================== */}
 
       <section
         id="s-out"
-        className="scroll-mt-24 min-w-0 rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+        className="scroll-mt-24 min-w-0 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
         style={{
           borderColor: activeTheme.border,
         }}
       >
-        {/* ===================== PREVIEW HEADER ===================== */}
+        {/* PREVIEW HEADER */}
 
         <div className="mb-5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -817,6 +882,7 @@ export default function WhatsAppDPGenerator({
               className="grid h-12 w-12 place-items-center rounded-full shadow-md"
               style={{
                 background: activeTheme.secondaryLight,
+
                 color: activeTheme.secondary,
               }}
             >
@@ -848,6 +914,7 @@ export default function WhatsAppDPGenerator({
             className="hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold sm:inline-flex"
             style={{
               background: activeTheme.secondaryLight,
+
               color: activeTheme.secondary,
             }}
           >
@@ -861,109 +928,142 @@ export default function WhatsAppDPGenerator({
           </span>
         </div>
 
-        {/* ===================== DP PREVIEW ===================== */}
+        {/* PREVIEW AREA */}
 
         <div
-          className="flex min-h-[620px] items-center justify-center overflow-hidden rounded-2xl border p-6"
+          className="flex min-h-[620px] items-center justify-center overflow-hidden rounded-md border p-6"
           style={{
             borderColor: activeTheme.border,
+
             background: activeTheme.primaryLight,
           }}
         >
           <div className="w-full max-w-[540px]">
-            <div
-              className="mx-auto aspect-square w-full max-w-[500px] overflow-hidden rounded-full shadow-2xl"
-              style={{
-                background: activeTheme.background,
+            {/* SQUARE DP */}
 
-                border: `6px solid ${activeTheme.secondary}`,
+            <div
+              className="mx-auto aspect-square w-full max-w-[500px] overflow-hidden shadow-2xl"
+              style={{
+                backgroundImage: `url("${DP_BACKGROUND}")`,
+
+                backgroundSize: "cover",
+
+                backgroundPosition: "center",
+
+                backgroundRepeat: "no-repeat",
+
+                containerType: "inline-size",
               }}
             >
-              <div className="relative flex h-full w-full flex-col items-center justify-center p-10 text-center">
-                {/* Decorative top-right circle */}
+              <div className="relative h-full w-full overflow-hidden">
+                {/* CONTENT */}
 
                 <div
-                  className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full opacity-10"
+                  className="relative z-10 flex h-full flex-col items-center justify-center text-center"
                   style={{
-                    background: activeTheme.secondary,
+                    paddingBottom: "17cqw",
                   }}
-                />
+                >
+                  {/* LOGO */}
 
-                {/* Decorative bottom-left circle */}
+                  {data.logo && (
+                    <img
+                      src={data.logo}
+                      alt={company?.fullName || "Company logo"}
+                      className="object-contain"
+                      style={{
+                        width: "27cqw",
+                        marginBottom: "2cqw",
+                      }}
+                    />
+                  )}
 
-                <div
-                  className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full opacity-10"
-                  style={{
-                    background: activeTheme.accent,
-                  }}
-                />
+                  {/* NAME */}
 
-                {/* Company logo */}
-
-                {data.logo && (
-                  <img
-                    src={data.logo}
-                    alt={company?.fullName || "AarambhGrow"}
-                    className="relative z-10 mb-4 h-auto w-[58%] object-contain"
-                  />
-                )}
-
-                {/* Profile photo */}
-
-                {uploadedPhoto && (
-                  <img
-                    src={uploadedPhoto}
-                    alt="Profile"
-                    className="relative z-10 mb-4 h-28 w-28 rounded-full border-4 object-cover"
+                  <h3
+                    className="break-words font-extrabold leading-tight"
                     style={{
-                      borderColor: activeTheme.accent,
+                      color: activeTheme.primary,
+
+                      fontSize: "9.2cqw",
+
+                      marginTop: "4cqw",
+
+                      maxWidth: "82cqw",
                     }}
-                  />
-                )}
+                  >
+                    {data.name || "Your Name"}
+                  </h3>
 
-                {/* Name */}
+                  {/* DIVIDER */}
 
-                <h3
-                  className="relative z-10 text-3xl font-extrabold"
-                  style={{
-                    color: activeTheme.primary,
-                  }}
-                >
-                  {data.name || "Your Name"}
-                </h3>
+                  <div
+                    className="flex items-center"
+                    style={{
+                      marginTop: "3cqw",
 
-                {/* Designation */}
+                      gap: "2.5cqw",
+                    }}
+                  >
+                    {/* ORANGE */}
 
-                <p
-                  className="relative z-10 mt-2 text-lg font-semibold"
-                  style={{
-                    color: activeTheme.secondary,
-                  }}
-                >
-                  {data.designation || "Your Designation"}
-                </p>
+                    <span
+                      style={{
+                        width: "18cqw",
 
-                {/* Company */}
+                        height: "0.65cqw",
 
-                <p
-                  className="relative z-10 mt-2 text-base font-semibold"
-                  style={{
-                    color: activeTheme.primary,
-                  }}
-                >
-                  {data.company || "AarambhGrow Group of Companies"}
-                </p>
+                        borderRadius: 999,
 
-                {/* Phone */}
+                        background: activeTheme.accent,
+                      }}
+                    />
 
-                <p
-                  className="relative z-10 mt-4 text-sm font-bold"
-                  style={{
-                    color: activeTheme.accent,
-                  }}
-                >
-                  {data.phone || "+91 99987 15799"}
-                </p>
+                    {/* LEAF */}
+
+                    <svg
+                      viewBox="0 0 40 40"
+                      style={{
+                        width: "5cqw",
+
+                        height: "5cqw",
+                      }}
+                    >
+                      <path d="M20 34 C6 26 6 14 13 5 C19 12 20 22 20 34 Z" fill={activeTheme.accent} />
+
+                      <path d="M20 34 C34 26 34 14 27 5 C21 12 20 22 20 34 Z" fill={activeTheme.secondary} />
+                    </svg>
+
+                    {/* GREEN */}
+
+                    <span
+                      style={{
+                        width: "18cqw",
+
+                        height: "0.65cqw",
+
+                        borderRadius: 999,
+
+                        background: activeTheme.secondary,
+                      }}
+                    />
+                  </div>
+
+                  {/* DESIGNATION */}
+
+                  <p
+                    className="font-semibold"
+                    style={{
+                      color: activeTheme.primary,
+
+                      fontSize: "3.9cqw",
+
+                      marginTop: "3cqw",
+                    }}
+                  >
+                    {data.designation || "Your Designation"}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -978,12 +1078,13 @@ export default function WhatsAppDPGenerator({
           </div>
         </div>
 
-        {/* ===================== INFORMATION ===================== */}
+        {/* INFO */}
 
         <div
-          className="mt-5 rounded-xl border p-4"
+          className="mt-5 rounded-md border p-4"
           style={{
             borderColor: activeTheme.border,
+
             background: activeTheme.background,
           }}
         >
@@ -1012,7 +1113,7 @@ export default function WhatsAppDPGenerator({
           </div>
         </div>
 
-        {/* Hidden canvas used for PNG export */}
+        {/* HIDDEN CANVAS */}
 
         <canvas ref={canvasRef} className="hidden" />
       </section>

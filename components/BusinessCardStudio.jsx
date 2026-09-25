@@ -116,7 +116,7 @@ function CardSection({ id, no, title, sub, icon: Icon, right, children, theme })
   return (
     <section
       id={id}
-      className="scroll-mt-24 rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+      className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
       style={{
         borderColor: B.border,
       }}
@@ -180,7 +180,7 @@ function CardField({ label, optional, icon: Icon, value, onChange, placeholder, 
       </span>
 
       <span
-        className="flex items-center gap-3 rounded-lg border bg-white px-3.5 py-3"
+        className="flex items-center gap-3 rounded-md border bg-white px-3.5 py-3"
         style={{
           borderColor: B.border,
         }}
@@ -205,7 +205,7 @@ function Choice({ on, onClick, icon: I, children, theme }) {
     <button
       type="button"
       onClick={onClick}
-      className="relative flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 py-4 text-xs font-semibold transition"
+      className="relative flex flex-col items-center justify-center gap-1.5 rounded-md border-2 py-4 text-xs font-semibold transition"
       style={
         on
           ? {
@@ -395,23 +395,40 @@ export default function BusinessCardStudio({ company, profile }) {
 
     try {
       const { jsPDF } = await import("jspdf");
-      const front = await snap(frontRef.current);
-      const back = await snap(backRef.current);
-      const pdfOrientation = W > H ? "landscape" : "portrait";
+
+      const frontEl = document.querySelector("[data-card-front-export]");
+
+      const backEl = document.querySelector("[data-card-back-export]");
+
+      if (!frontEl || !backEl) {
+        throw new Error("Card export elements not found");
+      }
+
+      await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+
+      const [front, back] = await Promise.all([snap(frontEl), snap(backEl)]);
+
       const pdf = new jsPDF({
-        orientation: pdfOrientation,
+        orientation: W > H ? "landscape" : "portrait",
         unit: "px",
         format: [W, H],
       });
 
       pdf.addImage(front, "PNG", 0, 0, W, H);
-      pdf.addPage([W, H], pdfOrientation);
+
+      pdf.addPage([W, H], W > H ? "landscape" : "portrait");
+
       pdf.addImage(back, "PNG", 0, 0, W, H);
+
       pdf.save(`${fileBase}.pdf`);
-    } catch {
+
+      flash("PDF downloaded");
+    } catch (error) {
+      console.error("PDF export failed:", error);
       flash("Could not create PDF");
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   };
 
   const shareLink = () => `${window.location.origin}${window.location.pathname}?card=${enc(c)}`;
@@ -474,7 +491,7 @@ export default function BusinessCardStudio({ company, profile }) {
             <p className="text-sm opacity-90">Create Your</p>
             <p className="text-xl font-extrabold">Digital Business Card</p>
             <p className="mt-1 text-xs leading-snug text-white/65">Build your identity. Share your profile professionally.</p>
-            <div className="mt-4 flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2">
+            <div className="mt-4 flex items-center gap-2 rounded-md border border-white/15 bg-white/10 px-3 py-2">
               {company?.logo && <img src={company.logo} alt={company?.fullName || "Company"} className="h-7 w-7 rounded object-contain" />}
               <span className="min-w-0 text-[11px] font-bold leading-tight">{company?.name || "AarambhGrow Group"}</span>
             </div>
@@ -488,7 +505,7 @@ export default function BusinessCardStudio({ company, profile }) {
                   <button
                     type="button"
                     onClick={() => goto(step.id)}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-white transition hover:bg-white/10"
+                    className="flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-white transition hover:bg-white/10"
                     style={
                       on
                         ? {
@@ -520,7 +537,7 @@ export default function BusinessCardStudio({ company, profile }) {
           </ol>
         </div>
 
-        <div className="relative z-10 m-4 mb-16 rounded-xl border border-white/15 bg-white/5 p-4 text-white">
+        <div className="relative z-10 m-4 mb-16 rounded-md border border-white/15 bg-white/5 p-4 text-white">
           <p className="text-sm opacity-85">Build Your</p>
           <p className="text-lg font-extrabold leading-tight">Professional Identity</p>
           <p className="text-sm opacity-85">in Just a Few Clicks</p>
@@ -554,7 +571,7 @@ export default function BusinessCardStudio({ company, profile }) {
           >
             {/* COMPANY INFO */}
             <div
-              className="mb-5 rounded-xl border p-4"
+              className="mb-5 rounded-md border p-4"
               style={{
                 background: B.navySoft,
                 borderColor: B.border,
@@ -562,7 +579,7 @@ export default function BusinessCardStudio({ company, profile }) {
             >
               <div className="flex items-center gap-3">
                 <div
-                  className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-white shadow-sm"
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-white shadow-sm"
                   style={{
                     border: `1px solid ${B.border}`,
                   }}
@@ -677,7 +694,7 @@ export default function BusinessCardStudio({ company, profile }) {
               setSide("front");
               goto("c-out");
             }}
-            className="inline-flex w-full items-center justify-center gap-3 rounded-xl py-4 text-sm font-bold text-white shadow-lg transition hover:brightness-110"
+            className="inline-flex w-full items-center justify-center gap-3 rounded-md py-4 text-sm font-bold text-white shadow-lg transition hover:brightness-110"
             style={{
               background: B.gradient,
             }}
@@ -691,7 +708,7 @@ export default function BusinessCardStudio({ company, profile }) {
         <div className="space-y-5">
           <section
             id="c-out"
-            className="scroll-mt-24 rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
             style={{
               borderColor: B.border,
             }}
@@ -745,7 +762,7 @@ export default function BusinessCardStudio({ company, profile }) {
             </div>
             <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
               <div
-                className="inline-flex overflow-hidden rounded-lg border"
+                className="inline-flex overflow-hidden rounded-md border"
                 style={{
                   borderColor: B.border,
                 }}
@@ -777,7 +794,7 @@ export default function BusinessCardStudio({ company, profile }) {
               </div>
 
               <div
-                className="inline-flex overflow-hidden rounded-lg border"
+                className="inline-flex overflow-hidden rounded-md border"
                 style={{
                   borderColor: B.border,
                 }}
@@ -828,7 +845,6 @@ export default function BusinessCardStudio({ company, profile }) {
                   WebkitTransform: side === "back" ? "rotateY(180deg)" : "rotateY(0deg)",
                 }}
               >
-
                 <div
                   className="absolute inset-0 h-full w-full"
                   style={{
@@ -857,7 +873,7 @@ export default function BusinessCardStudio({ company, profile }) {
           </section>
 
           <section
-            className="rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            className="rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
             style={{
               borderColor: B.border,
             }}
@@ -930,7 +946,7 @@ export default function BusinessCardStudio({ company, profile }) {
           </section>
 
           <section
-            className="rounded-2xl border bg-white p-2 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            className="rounded-md border bg-white p-2 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
             style={{
               borderColor: B.border,
             }}

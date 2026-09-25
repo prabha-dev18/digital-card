@@ -44,10 +44,6 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-/* ================================================================== */
-/* DEFAULT THEME                                                      */
-/* ================================================================== */
-
 const DEFAULT_THEME = {
   primary: "#00275E",
   secondary: "#159B24",
@@ -62,10 +58,6 @@ const DEFAULT_THEME = {
   border: "#D9E2EC",
   gradient: "linear-gradient(135deg, #00275E, #159B24)",
 };
-
-/* ================================================================== */
-/* GENERAL MODES                                                      */
-/* ================================================================== */
 
 const DEPTS = [
   { id: "Sales", icon: FaChartColumn },
@@ -101,29 +93,11 @@ const STEPS = [
   },
 ];
 
-/* ================================================================== */
-/* BUSINESS CARD MODE                                                 */
-/* ================================================================== */
-
 const CARD_STEPS = [
-  {
-    id: "c-org",
-    title: "Organization",
-    sub: "Select company & department",
-    icon: FaBuilding,
-  },
-  {
-    id: "c-info",
-    title: "Personal Information",
-    sub: "Add your details",
-    icon: FaUser,
-  },
-  {
-    id: "c-out",
-    title: "Preview & Download",
-    sub: "View and get your card",
-    icon: FaEye,
-  },
+  { id: "c-org", title: "Organization", sub: "Select company & department", icon: FaBuilding },
+  { id: "c-info", title: "Personal Information", sub: "Add your details", icon: FaUser },
+  { id: "c-photo", title: "Photo & Appearance", sub: "Choose card appearance", icon: FaEye },
+  { id: "c-out", title: "Preview & Download", sub: "View and get your card", icon: FaEye },
 ];
 
 const CARD_START = {
@@ -144,12 +118,7 @@ const CARD_SIZE = {
 };
 
 const enc = (o) => encodeURIComponent(btoa(encodeURIComponent(JSON.stringify(o))));
-
 const dec = (s) => JSON.parse(decodeURIComponent(atob(decodeURIComponent(s))));
-
-/* ================================================================== */
-/* SWOOSH                                                            */
-/* ================================================================== */
 
 function Swoosh({ className = "", flip = false, theme = DEFAULT_THEME }) {
   const T = theme || DEFAULT_THEME;
@@ -162,17 +131,9 @@ function Swoosh({ className = "", flip = false, theme = DEFAULT_THEME }) {
       style={{
         transform: flip ? "scaleX(-1)" : undefined,
       }}
-    >
-      <path d="M0 140C70 120 160 70 220 0v40C170 100 90 130 0 140z" fill={T.accent} opacity=".85" />
-
-      <path d="M30 140C100 130 175 90 220 40v30c-50 45-120 65-190 70z" fill={T.secondary} opacity=".9" />
-    </svg>
+    ></svg>
   );
 }
-
-/* ================================================================== */
-/* CARD SECTION                                                       */
-/* ================================================================== */
 
 function CardSection({ id, no, title, sub, icon: Icon, right, children, theme = DEFAULT_THEME }) {
   const T = theme || DEFAULT_THEME;
@@ -180,7 +141,7 @@ function CardSection({ id, no, title, sub, icon: Icon, right, children, theme = 
   return (
     <section
       id={id}
-      className="scroll-mt-24 rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+      className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
       style={{
         borderColor: T.border,
         background: T.surface,
@@ -215,18 +176,12 @@ function CardSection({ id, no, title, sub, icon: Icon, right, children, theme = 
             {sub}
           </p>
         </div>
-
         {right}
       </div>
-
       {children}
     </section>
   );
 }
-
-/* ================================================================== */
-/* CARD FIELD                                                         */
-/* ================================================================== */
 
 function CardField({ label, optional, icon: Icon, value, onChange, placeholder, type = "text", theme = DEFAULT_THEME }) {
   const T = theme || DEFAULT_THEME;
@@ -253,13 +208,12 @@ function CardField({ label, optional, icon: Icon, value, onChange, placeholder, 
       </span>
 
       <span
-        className="flex items-center gap-3 rounded-lg border bg-white px-3.5 py-3"
+        className="flex items-center gap-3 rounded-md border bg-white px-3.5 py-3"
         style={{
           borderColor: T.border,
         }}
       >
         <Icon size={14} color={T.primary} />
-
         <input
           type={type}
           value={value}
@@ -272,10 +226,6 @@ function CardField({ label, optional, icon: Icon, value, onChange, placeholder, 
   );
 }
 
-/* ================================================================== */
-/* CHOICE                                                             */
-/* ================================================================== */
-
 function Choice({ on, onClick, icon: I, children, theme = DEFAULT_THEME }) {
   const T = theme || DEFAULT_THEME;
 
@@ -283,7 +233,7 @@ function Choice({ on, onClick, icon: I, children, theme = DEFAULT_THEME }) {
     <button
       type="button"
       onClick={onClick}
-      className="relative flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 py-4 text-xs font-semibold transition"
+      className="relative flex flex-col items-center justify-center gap-1.5 rounded-md border-2 py-4 text-xs font-semibold transition"
       style={
         on
           ? {
@@ -308,25 +258,16 @@ function Choice({ on, onClick, icon: I, children, theme = DEFAULT_THEME }) {
           <FaCheck size={9} />
         </span>
       )}
-
       <I size={20} />
-
       {children}
     </button>
   );
 }
 
-/* ================================================================== */
-/* BUSINESS CARD STUDIO                                               */
-/* ================================================================== */
-
 function BusinessCardStudio({ company, profile, theme }) {
   const T = theme || company?.theme || DEFAULT_THEME;
-
   const companyData = company?.data || {};
-
   const [c, setC] = useState(CARD_START);
-
   const setField = (k, v) =>
     setC((p) => ({
       ...p,
@@ -335,35 +276,21 @@ function BusinessCardStudio({ company, profile, theme }) {
 
   const [orientation, setOrientation] = useState("landscape");
   const [side, setSide] = useState("front");
-
   const [active, setActive] = useState("c-org");
-
   const [note, setNote] = useState("");
-
   const [busy, setBusy] = useState(false);
-
   const [W, H] = CARD_SIZE[orientation];
-
   const cardData = useMemo(
     () => ({
       ...defaultCardData,
-
       company: company?.fullName || profile?.company || defaultCardData.company,
-
       logo: company?.logo || defaultCardData.logo,
-
       website: companyData.website || c.website || defaultCardData.website,
-
       location: companyData.address || c.address || defaultCardData.location,
-
       name: c.name,
-
       title: c.designation,
-
       phone: c.phone,
-
       email: c.email,
-
       department: c.dept,
     }),
     [c, company, companyData, profile],
@@ -387,9 +314,7 @@ function BusinessCardStudio({ company, profile, theme }) {
           ...JSON.parse(saved),
         }));
       }
-    } catch {
-      /* ignore */
-    }
+    } catch {}
 
     try {
       const q = new URLSearchParams(window.location.search).get("card");
@@ -400,17 +325,13 @@ function BusinessCardStudio({ company, profile, theme }) {
           ...dec(q),
         }));
       }
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }, []);
 
   useEffect(() => {
     try {
       localStorage.setItem(CARD_KEY, JSON.stringify(c));
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }, [c]);
 
   useEffect(() => {
@@ -419,7 +340,6 @@ function BusinessCardStudio({ company, profile, theme }) {
     const io = new IntersectionObserver(
       (entries) => {
         const hit = entries.find((e) => e.isIntersecting);
-
         if (hit) {
           setActive(hit.target.id);
         }
@@ -434,8 +354,7 @@ function BusinessCardStudio({ company, profile, theme }) {
     return () => io.disconnect();
   }, []);
 
-  const done = [true, !!c.name && !!c.designation, !!(c.phone || c.email)];
-
+  const done = [true, !!c.name && !!c.designation, true, !!(c.phone || c.email)];
   const goto = (id) => {
     setActive(id);
 
@@ -447,7 +366,6 @@ function BusinessCardStudio({ company, profile, theme }) {
 
   const flash = (m) => {
     setNote(m);
-
     setTimeout(() => setNote(""), 2200);
   };
 
@@ -455,9 +373,7 @@ function BusinessCardStudio({ company, profile, theme }) {
     if (!el) {
       throw new Error("Card element not found");
     }
-
     const { toPng } = await import("html-to-image");
-
     return toPng(el, {
       pixelRatio: 2,
       cacheBust: true,
@@ -471,26 +387,20 @@ function BusinessCardStudio({ company, profile, theme }) {
   };
 
   const fileBase = (c.name || "business-card").trim().replace(/\s+/g, "-");
-
   const downloadPNG = async () => {
     setBusy(true);
 
     try {
       const el = side === "front" ? document.querySelector("[data-card-front-export]") : document.querySelector("[data-card-back-export]");
-
       const url = await snap(el);
-
       const a = document.createElement("a");
 
       a.download = `${fileBase}-${side}.png`;
-
       a.href = url;
-
       a.click();
     } catch {
       flash("Could not create PNG");
     }
-
     setBusy(false);
   };
 
@@ -504,38 +414,41 @@ function BusinessCardStudio({ company, profile, theme }) {
 
       const backEl = document.querySelector("[data-card-back-export]");
 
-      const front = await snap(frontEl);
+      if (!frontEl || !backEl) {
+        throw new Error("Card export elements not found");
+      }
 
-      const back = await snap(backEl);
+      await new Promise((resolve) => requestAnimationFrame(() => resolve()));
 
-      const o = W > H ? "landscape" : "portrait";
+      const [front, back] = await Promise.all([snap(frontEl), snap(backEl)]);
 
       const pdf = new jsPDF({
-        orientation: o,
+        orientation: W > H ? "landscape" : "portrait",
         unit: "px",
         format: [W, H],
       });
 
       pdf.addImage(front, "PNG", 0, 0, W, H);
 
-      pdf.addPage([W, H], o);
+      pdf.addPage([W, H], W > H ? "landscape" : "portrait");
 
       pdf.addImage(back, "PNG", 0, 0, W, H);
 
       pdf.save(`${fileBase}.pdf`);
-    } catch {
-      flash("Could not create PDF");
-    }
 
-    setBusy(false);
+      flash("PDF downloaded");
+    } catch (error) {
+      console.error("PDF export failed:", error);
+      flash("Could not create PDF");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const shareLink = () => `${window.location.origin}${window.location.pathname}?card=${enc(c)}`;
-
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareLink());
-
       flash("Link copied");
     } catch {
       flash("Copy blocked by browser");
@@ -549,9 +462,7 @@ function BusinessCardStudio({ company, profile, theme }) {
           title: `${c.name || "My"} — Digital Business Card`,
           url: shareLink(),
         });
-      } catch {
-        /* cancelled */
-      }
+      } catch {}
     } else {
       copyLink();
     }
@@ -582,8 +493,6 @@ function BusinessCardStudio({ company, profile, theme }) {
 
   return (
     <>
-      {/* ============================ SIDEBAR ============================ */}
-
       <aside
         className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 flex-col justify-between overflow-hidden lg:flex"
         style={{
@@ -593,22 +502,19 @@ function BusinessCardStudio({ company, profile, theme }) {
         <div className="p-4 pt-6">
           <div className="mb-5 border-b border-white/10 px-2 pb-5 text-white">
             <p className="text-sm opacity-90">Create Your</p>
-
             <p className="text-xl font-extrabold">Digital Business Card</p>
-
             <p className="mt-1 text-xs leading-snug text-white/65">Build your identity. Share your profile professionally.</p>
           </div>
 
           <ol className="space-y-2.5">
             {CARD_STEPS.map((s, i) => {
               const on = active === s.id;
-
               return (
                 <li key={s.id}>
                   <button
                     type="button"
                     onClick={() => goto(s.id)}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-white transition hover:bg-white/10"
+                    className="flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-white transition hover:bg-white/10"
                     style={
                       on
                         ? {
@@ -628,12 +534,9 @@ function BusinessCardStudio({ company, profile, theme }) {
                     >
                       {done[i] && i && !on ? <FaCheck size={12} /> : i + 1}
                     </span>
-
                     <s.icon size={20} className="shrink-0" />
-
                     <span>
                       <span className="block text-[13px] font-bold leading-tight">{s.title}</span>
-
                       <span className="block text-[11px] leading-tight text-white/65">{s.sub}</span>
                     </span>
                   </button>
@@ -642,38 +545,10 @@ function BusinessCardStudio({ company, profile, theme }) {
             })}
           </ol>
         </div>
-
-        <div className="relative z-10 m-4 mb-16 rounded-xl border border-white/15 bg-white/5 p-4 text-white">
-          <p className="text-sm opacity-85">Build Your</p>
-
-          <p className="text-lg font-extrabold leading-tight">Professional Identity</p>
-
-          <p className="text-sm opacity-85">in Just a Few Clicks</p>
-
-          <FaArrowRight className="mt-2" size={16} />
-
-          <div className="mt-3 grid grid-cols-3 gap-1 border-t border-white/15 pt-3 text-center text-[10px]">
-            {[
-              [FaIdBadge, "Professional Look"],
-              [FaShareNodes, "Easy Sharing"],
-              [FaGem, "High Quality"],
-            ].map(([I, l]) => (
-              <span key={l} className="flex flex-col items-center gap-1">
-                <I size={16} />
-                {l}
-              </span>
-            ))}
-          </div>
-        </div>
-
         <Swoosh className="-bottom-2 -left-4 h-36 w-72" theme={T} />
       </aside>
 
-      {/* ============================ MAIN ============================ */}
-
       <main className="grid min-w-0 flex-1 gap-5 p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:p-5">
-        {/* ---------- LEFT ---------- */}
-
         <div className="space-y-5">
           <CardSection
             id="c-org"
@@ -715,7 +590,7 @@ function BusinessCardStudio({ company, profile, theme }) {
             </div>
 
             <div
-              className="mt-5 rounded-xl border p-4"
+              className="mt-5 rounded-md border p-4"
               style={{
                 borderColor: T.border,
                 background: T.primaryLight,
@@ -813,10 +688,41 @@ function BusinessCardStudio({ company, profile, theme }) {
             </div>
           </CardSection>
 
+          <CardSection id="c-photo" no="3" title="Photo & Appearance" sub="Choose your card appearance" icon={FaEye} theme={T}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="mb-2 text-xs font-bold" style={{ color: T.primary }}>
+                  Card Orientation
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Choice on={orientation === "landscape"} onClick={() => setOrientation("landscape")} icon={FaIdCard} theme={T}>
+                    Landscape
+                  </Choice>
+                  <Choice on={orientation === "portrait"} onClick={() => setOrientation("portrait")} icon={FaIdBadge} theme={T}>
+                    Portrait
+                  </Choice>
+                </div>
+              </div>
+              <div>
+                <p className="mb-2 text-xs font-bold" style={{ color: T.primary }}>
+                  Card Side
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Choice on={side === "front"} onClick={() => setSide("front")} icon={FaIdCard} theme={T}>
+                    Front
+                  </Choice>
+                  <Choice on={side === "back"} onClick={() => setSide("back")} icon={FaIdBadge} theme={T}>
+                    Back
+                  </Choice>
+                </div>
+              </div>
+            </div>
+          </CardSection>
+
           <button
             type="button"
             onClick={() => goto("c-out")}
-            className="inline-flex w-full items-center justify-center gap-3 rounded-xl py-4 text-sm font-bold text-white shadow-lg transition hover:brightness-110"
+            className="inline-flex w-full items-center justify-center gap-3 rounded-md py-4 text-sm font-bold text-white shadow-lg transition hover:brightness-110"
             style={{
               background: T.gradient,
             }}
@@ -844,12 +750,10 @@ function BusinessCardStudio({ company, profile, theme }) {
           </p>
         </div>
 
-        {/* ---------- RIGHT ---------- */}
-
         <div className="space-y-5">
           <section
             id="c-out"
-            className="scroll-mt-24 rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
             style={{
               borderColor: T.border,
               background: T.surface,
@@ -919,14 +823,13 @@ function BusinessCardStudio({ company, profile, theme }) {
                 }}
               >
                 <CardFront data={cardData} orientation={orientation} company={company} theme={T} />
-
                 <CardBack data={cardData} orientation={orientation} company={company} theme={T} />
               </div>
             </div>
           </section>
 
           <section
-            className="rounded-2xl border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            className="rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
             style={{
               borderColor: T.border,
               background: T.surface,
@@ -1007,7 +910,7 @@ function BusinessCardStudio({ company, profile, theme }) {
           </section>
 
           <section
-            className="rounded-2xl border bg-white p-2 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            className="rounded-md border bg-white p-2 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
             style={{
               borderColor: T.border,
               background: T.surface,
@@ -1053,15 +956,9 @@ function BusinessCardStudio({ company, profile, theme }) {
   );
 }
 
-/* ================================================================== */
-/* MAIN                                                               */
-/* ================================================================== */
-
 export default function HomeShell() {
   const defaultCompany = COMPANY_CONFIG[DEFAULT_COMPANY_ID] || COMPANY_OPTIONS[0];
-
   const [mode, setMode] = useState("dp");
-
   const [profile, setProfile] = useState({
     company: DEFAULT_COMPANY_ID,
     dept: "Sales",
@@ -1078,9 +975,7 @@ export default function HomeShell() {
   });
 
   const selectedCompany = COMPANY_CONFIG[profile.company] || defaultCompany;
-
   const T = selectedCompany?.theme || DEFAULT_THEME;
-
   const setProfileField = (key, value) => {
     setProfile((prev) => ({
       ...prev,
@@ -1094,11 +989,8 @@ export default function HomeShell() {
     setProfile((prev) => ({
       ...prev,
       company: next.id || companyId,
-
       website: next?.data?.website || "",
-
       address: next?.data?.address || "",
-
       logo: next?.logo || "",
     }));
 
@@ -1106,16 +998,12 @@ export default function HomeShell() {
   };
 
   const [active, setActive] = useState("s-org");
-
   const [ready, setReady] = useState(false);
-
   const [cardOrientation, setCardOrientation] = useState("landscape");
 
   useEffect(() => {
     const steps = mode === "card" ? CARD_STEPS : STEPS;
-
     const els = steps.map((s) => document.getElementById(s.id)).filter(Boolean);
-
     if (!els.length) {
       return;
     }
@@ -1123,7 +1011,6 @@ export default function HomeShell() {
     const io = new IntersectionObserver(
       (entries) => {
         const hit = entries.find((e) => e.isIntersecting);
-
         if (hit) {
           setActive(hit.target.id);
         }
@@ -1134,13 +1021,11 @@ export default function HomeShell() {
     );
 
     els.forEach((el) => io.observe(el));
-
     return () => io.disconnect();
   }, [mode]);
 
   const goto = (id) => {
     setActive(id);
-
     document.getElementById(id)?.scrollIntoView({
       behavior: "smooth",
       block: "start",
@@ -1149,9 +1034,7 @@ export default function HomeShell() {
 
   const changeMode = (nextMode) => {
     setMode(nextMode);
-
     setReady(false);
-
     if (nextMode === "card") {
       setActive("c-org");
     } else {
@@ -1191,8 +1074,6 @@ export default function HomeShell() {
         color: T.text,
       }}
     >
-      {/* ============================ HEADER ============================ */}
-
       <header
         className="sticky top-0 z-40 overflow-hidden border-b bg-white shadow-sm"
         style={{
@@ -1201,13 +1082,10 @@ export default function HomeShell() {
         }}
       >
         <Swoosh className="right-0 top-0 h-full w-56 opacity-50" theme={T} />
-
         <div className="relative z-10 flex min-h-20 flex-wrap items-center justify-between gap-3 px-5 py-2">
           <div className="flex items-center gap-4">
-            <img src={selectedCompany.logo} alt={selectedCompany.fullName} className="h-14 w-auto object-contain" />
-
+            <img src={selectedCompany.headerLogo} alt={selectedCompany.fullName} className="h-14 w-auto object-contain" />
             <span className="hidden h-12 w-px bg-slate-200 sm:block" />
-
             <div className="hidden sm:block">
               <p
                 className="text-2xl font-extrabold leading-tight"
@@ -1231,7 +1109,7 @@ export default function HomeShell() {
 
           <nav className="flex flex-wrap gap-3">
             <div
-              className="flex items-center gap-2 rounded-xl border bg-white px-3 py-2 shadow-sm"
+              className="flex items-center gap-2 rounded-md border bg-white px-3 py-2 shadow-sm"
               style={{
                 borderColor: T.border,
               }}
@@ -1260,16 +1138,14 @@ export default function HomeShell() {
                 key={id}
                 type="button"
                 onClick={() => changeMode(id)}
-                className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-xs font-bold text-white shadow-md transition hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-xs font-bold text-white shadow-md transition hover:-translate-y-0.5"
                 style={{
                   background: bg,
                   opacity: mode === id ? 1 : 0.85,
-
                   boxShadow: mode === id ? `0 0 0 2px #fff, 0 0 0 4px ${T.primary}33` : undefined,
                 }}
               >
                 <I size={16} />
-
                 {label}
               </button>
             ))}
@@ -1277,16 +1153,12 @@ export default function HomeShell() {
         </div>
       </header>
 
-      {/* ============================ MODES ============================ */}
-
       {mode === "card" ? (
         <div className="flex">
           <BusinessCardStudio company={selectedCompany} profile={profile} theme={T} />
         </div>
       ) : (
         <div className="flex min-w-0">
-          {/* ============================ SIDEBAR ============================ */}
-
           <aside
             className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 flex-col justify-between overflow-hidden lg:flex"
             style={{
@@ -1294,17 +1166,14 @@ export default function HomeShell() {
             }}
           >
             <ol className="relative space-y-2 p-3 pt-6">
-              <span className="absolute bottom-10 left-[31px] top-14 w-px bg-white/25" />
-
               {STEPS.map((s, i) => {
                 const on = active === s.id;
-
                 return (
                   <li key={s.id} className="relative">
                     <button
                       type="button"
                       onClick={() => goto(s.id)}
-                      className="flex w-full items-center gap-3 rounded-lg px-2.5 py-3 text-left text-white transition hover:bg-white/10"
+                      className="flex w-full items-center gap-3 rounded-md px-2.5 py-3 text-left text-white transition hover:bg-white/10"
                       style={
                         on
                           ? {
@@ -1325,12 +1194,9 @@ export default function HomeShell() {
                       >
                         {i + 1}
                       </span>
-
                       <s.icon size={18} className="shrink-0 opacity-90" />
-
                       <span>
                         <span className="block text-[13px] font-bold leading-tight">{s.title}</span>
-
                         <span className="block text-[11px] leading-tight text-white/65">{s.sub}</span>
                       </span>
                     </button>
@@ -1341,11 +1207,8 @@ export default function HomeShell() {
 
             <div className="relative p-6 pb-10 text-white">
               <p className="text-lg opacity-85">Build Your</p>
-
               <p className="text-xl font-extrabold leading-tight">Professional Identity</p>
-
               <p className="opacity-85">in Just a Few Clicks</p>
-
               <div
                 className="mt-3 h-1 w-16 rounded"
                 style={{
@@ -1353,11 +1216,8 @@ export default function HomeShell() {
                 }}
               />
             </div>
-
             <Swoosh className="-bottom-2 -left-4 h-36 w-72" theme={T} />
           </aside>
-
-          {/* ============================ GENERATORS ============================ */}
 
           <main className="min-w-0 flex-1">
             {mode === "dp" && (
@@ -1393,8 +1253,6 @@ export default function HomeShell() {
         </div>
       )}
 
-      {/* ============================ FOOTER ============================ */}
-
       <footer
         className="grid items-center gap-3 border-t bg-white px-6 py-4 text-[11px] md:grid-cols-3"
         style={{
@@ -1403,8 +1261,7 @@ export default function HomeShell() {
           background: T.surface,
         }}
       >
-        <img src={selectedCompany.logo} alt={selectedCompany.fullName} className="h-11 w-auto object-contain" />
-
+        <img src={selectedCompany.headerLogo} alt={selectedCompany.fullName} className="h-11 w-auto object-contain" />
         <p className="text-center italic">
           Developed with <FaHeart className="inline" color={T.accent} size={10} /> by Digital Team
           <br />

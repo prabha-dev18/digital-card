@@ -242,6 +242,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
     <div
       ref={innerRef}
       data-card-orientation={orientation}
+      data-card-back-export
       className="backface-hidden absolute inset-0 overflow-hidden rounded-md shadow-card [transform:rotateY(180deg)]"
       style={{
         width: "100%",
