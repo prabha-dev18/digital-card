@@ -32,7 +32,7 @@ const DEFAULT_THEME = {
 
 const GROUP_DESIGN = {
   landscape: {
-    background: "/bg1.png",
+    background: "/p-bg2.png",
 
     qr: {
       columnWidth: "30%",
