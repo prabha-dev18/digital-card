@@ -11,59 +11,11 @@ const DEFAULT_THEME = {
   muted: "#64748B",
 };
 
-const COMPANY_BACKGROUNDS = {
-  aarambhgrow: {
-    landscape: "/bg-2.png",
-    portrait: "/p-bg1.png",
-  },
-  advisory: {
-    landscape: "/bg-2.png",
-    portrait: "/p-bg1.png",
-  },
-  services: {
-    landscape: "/bg-2.png",
-    portrait: "/p-bg1.png",
-  },
-  infinity: {
-    landscape: "/i-bg.png",
-    portrait: "/i-bg.png",
-  },
-  nexera: {
-    landscape: "/n-bg.png",
-    portrait: "/n-bg.png",
-  },
-  euroasia: {
-    landscape: "/e-bg.png",
-    portrait: "/e-bg.png",
-  },
-};
-
-function getCompanyKey(company) {
-  const value = String(company?.id || company?.name || company?.fullName || "")
-    .toLowerCase()
-    .trim();
-  if (value.includes("nexera")) {
-    return "nexera";
-  }
-  if (value.includes("euroasia") || value.includes("euro asia")) {
-    return "euroasia";
-  }
-  if (value.includes("infinity")) {
-    return "infinity";
-  }
-  if (value.includes("advisory")) {
-    return "advisory";
-  }
-  if (value.includes("services")) {
-    return "services";
-  }
-  if (value.includes("aarambhgrow") || value.includes("aarambhgrow group")) {
-    return "aarambhgrow";
-  }
-  return "aarambhgrow";
-}
-
 const CARD_DESIGN = {
+  /* =========================================================
+     LANDSCAPE
+     ========================================================= */
+
   landscape: {
     width: 1050,
     height: 600,
@@ -129,6 +81,10 @@ const CARD_DESIGN = {
 
     contactGap: "1.5cqw",
   },
+
+  /* =========================================================
+     PORTRAIT
+     ========================================================= */
 
   portrait: {
     width: 500,
@@ -197,6 +153,10 @@ const CARD_DESIGN = {
   },
 };
 
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
 function prettyUrl(url) {
   return String(url || "")
     .replace(/^https?:\/\//i, "")
@@ -205,27 +165,44 @@ function prettyUrl(url) {
 
 function withProtocol(url) {
   const value = String(url || "").trim();
+
   if (!value) {
     return "";
   }
+
   if (/^https?:\/\//i.test(value)) {
     return value;
   }
+
   return `https://${value}`;
 }
 
+/* =========================================================
+   CARD FRONT
+   ========================================================= */
+
 export default function CardFront({ data, innerRef, orientation = "landscape", company, theme }) {
   const T = theme || company?.theme || DEFAULT_THEME;
+
   const primary = T.primary || DEFAULT_THEME.primary;
   const secondary = T.secondary || DEFAULT_THEME.secondary;
   const accent = T.accent || DEFAULT_THEME.accent;
   const background = T.background || DEFAULT_THEME.background;
   const muted = T.muted || DEFAULT_THEME.muted;
+
   const isPortrait = orientation === "portrait";
+
   const design = isPortrait ? CARD_DESIGN.portrait : CARD_DESIGN.landscape;
-  const companyKey = getCompanyKey(company);
-  const companyBackground = COMPANY_BACKGROUNDS[companyKey] || COMPANY_BACKGROUNDS.aarambhgrow;
-  const backgroundImage = isPortrait ? companyBackground.portrait : companyBackground.landscape;
+
+  /* =========================================================
+     COMPANY-WISE FRONT BACKGROUND
+     ========================================================= */
+
+  const cardBackground = company?.cardBackground?.front || "/bg-2.png";
+
+  /* =========================================================
+     CONTACT ROWS
+     ========================================================= */
 
   const rows = [
     data?.phone && {
@@ -266,16 +243,41 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
       ref={innerRef}
       data-card-orientation={orientation}
       data-card-front-export
-      className="backface-hidden absolute inset-0 overflow-hidden rounded-md"
+      className="absolute inset-0 overflow-hidden rounded-md"
       style={{
         width: "100%",
         height: "100%",
         containerType: "inline-size",
+
         backgroundColor: background,
+
+        /*
+         * Company-wise Front Background
+         */
+        backgroundImage: `url("${cardBackground}")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden",
       }}
     >
-      <img src={backgroundImage} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-fill" draggable="false" />
+      {/* =====================================================
+          BACKGROUND IMAGE
+          ===================================================== */}
+
+      <img src={cardBackground} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-fill" draggable="false" />
+
+      {/* =====================================================
+          CONTENT LAYER
+          ===================================================== */}
+
       <div className="absolute inset-0">
+        {/* ===================================================
+            COMPANY LOGO
+            =================================================== */}
+
         <img
           src={company?.cardLogo || company?.logo || "/aarambh2.png"}
           alt={company?.fullName || "Company Logo"}
@@ -288,6 +290,10 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
           draggable="false"
         />
 
+        {/* ===================================================
+            PERSON INFORMATION
+            =================================================== */}
+
         <div
           className="absolute"
           style={{
@@ -296,51 +302,81 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
             width: design.person.width,
           }}
         >
+          {/* NAME */}
+
           <h3
             className="font-extrabold leading-tight"
             style={{
               position: "relative",
+
               left: design.name.left || "0%",
+
               top: design.name.top || "0%",
+
               textAlign: design.name.align || design.person.align || "left",
+
               fontSize: design.name.size,
+
               letterSpacing: "-0.01em",
+
               whiteSpace: "nowrap",
+
               overflow: "visible",
+
               color: primary,
             }}
           >
             {data?.name || "Your Name"}
           </h3>
 
+          {/* JOB TITLE */}
+
           <p
             className="font-semibold leading-tight"
             style={{
               position: "relative",
+
               left: design.title.left || "0%",
+
               top: design.title.top || "0%",
+
               textAlign: design.title.align || design.person.align || "left",
+
               fontSize: design.title.size,
+
               marginTop: design.title.marginTop || "1%",
+
               whiteSpace: "nowrap",
+
               overflow: "visible",
+
               color: muted,
             }}
           >
             {data?.title || "Job Title"}
           </p>
 
+          {/* SLOGAN */}
+
           <p
             className="font-medium leading-tight"
             style={{
               position: "relative",
+
               left: design.slogan.left || "0%",
+
               top: design.slogan.top || "0%",
+
               textAlign: design.slogan.align || design.person.align || "left",
+
               fontSize: design.slogan.size,
+
               marginTop: design.slogan.marginTop,
+
               whiteSpace: "nowrap",
+
               overflow: "visible",
+
               color: muted,
             }}
           >
@@ -348,23 +384,38 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
           </p>
         </div>
 
+        {/* ===================================================
+            DIVIDER
+            =================================================== */}
+
         <div
           className="absolute"
           style={{
             left: design.divider.left,
+
             top: design.divider.top,
+
             width: design.divider.width,
+
             height: design.divider.height,
+
             backgroundColor: primary,
+
             opacity: 0.25,
           }}
         />
+
+        {/* ===================================================
+            CONTACT INFORMATION
+            =================================================== */}
 
         <div
           className="absolute"
           style={{
             left: design.contacts.left,
+
             top: design.contacts.top,
+
             width: design.contacts.width,
           }}
         >
@@ -377,28 +428,38 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
             {rows.map(({ Icon, text, href, bg, label }) => {
               const content = (
                 <>
+                  {/* ICON */}
+
                   <span
                     className="grid shrink-0 place-items-center rounded-full text-white"
                     style={{
                       width: design.icon.size,
+
                       height: design.icon.size,
+
                       minWidth: design.icon.size,
+
                       minHeight: design.icon.size,
+
                       backgroundColor: bg,
                     }}
                   >
                     <Icon
                       style={{
                         width: design.icon.iconSize,
+
                         height: design.icon.iconSize,
                       }}
                     />
                   </span>
 
+                  {/* TEXT */}
+
                   <span
                     className="min-w-0 break-words font-medium leading-tight"
                     style={{
                       fontSize: design.contactText.size,
+
                       color: primary,
                     }}
                   >
