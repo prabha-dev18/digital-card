@@ -584,7 +584,11 @@ export default function BusinessCardStudio({ company, profile }) {
                     border: `1px solid ${B.border}`,
                   }}
                 >
-                  <img src={company?.logo || "/aarambh.png"} alt={company?.fullName || "Company Logo"} className="h-8 w-8 object-contain" />
+                  <img
+                    src={company?.logo || "/aarambh.png"}
+                    alt={company?.fullName || "Company Logo"}
+                    className="h-10 w-10 object-contain"
+                  />
                 </div>
                 <div className="min-w-0">
                   <p
@@ -708,35 +712,37 @@ export default function BusinessCardStudio({ company, profile }) {
         <div className="space-y-5">
           <section
             id="c-out"
-            className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+            className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)] max-sm:p-3"
             style={{
-              borderColor: B.border,
+              borderColor: T.border,
+              background: T.surface,
             }}
           >
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between max-sm:flex-col max-sm:items-start max-sm:gap-3">
               <div className="flex items-center gap-3">
                 <span
-                  className="grid h-12 w-12 place-items-center rounded-full bg-white shadow-md"
+                  className="grid h-12 w-12 place-items-center rounded-full bg-white shadow-md max-sm:h-10 max-sm:w-10"
                   style={{
-                    color: B.navy,
-                    border: `1px solid ${B.border}`,
+                    color: T.primary,
                   }}
                 >
                   <FaEye size={22} />
                 </span>
+
                 <div>
                   <h2
-                    className="text-lg font-extrabold"
+                    className="text-lg font-extrabold max-sm:text-base"
                     style={{
-                      color: B.navy,
+                      color: T.primary,
                     }}
                   >
                     Live Preview
                   </h2>
+
                   <p
                     className="text-xs"
                     style={{
-                      color: B.muted,
+                      color: T.muted,
                     }}
                   >
                     Your profile will appear like this
@@ -747,123 +753,56 @@ export default function BusinessCardStudio({ company, profile }) {
               <span
                 className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold"
                 style={{
-                  background: B.greenSoft,
-                  color: B.green,
+                  background: T.secondaryLight,
+                  color: T.secondary,
                 }}
               >
                 <span
                   className="h-1.5 w-1.5 rounded-full"
                   style={{
-                    background: B.green,
+                    background: T.accent,
                   }}
                 />
                 REAL-TIME
               </span>
             </div>
-            <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
-              <div
-                className="inline-flex overflow-hidden rounded-md border"
-                style={{
-                  borderColor: B.border,
-                }}
-              >
-                {[
-                  ["landscape", "Landscape"],
-                  ["portrait", "Portrait"],
-                ].map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setOrientation(value)}
-                    className="px-4 py-2 text-xs font-bold"
-                    style={
-                      orientation === value
-                        ? {
-                            background: B.navy,
-                            color: "#fff",
-                          }
-                        : {
-                            background: "#fff",
-                            color: B.text,
-                          }
-                    }
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
 
-              <div
-                className="inline-flex overflow-hidden rounded-md border"
-                style={{
-                  borderColor: B.border,
-                }}
-              >
-                {[
-                  ["front", "Front"],
-                  ["back", "Back"],
-                ].map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setSide(value)}
-                    className="px-4 py-2 text-xs font-bold"
-                    style={
-                      side === value
-                        ? {
-                            background: B.navy,
-                            color: "#fff",
-                          }
-                        : {
-                            background: "#fff",
-                            color: B.text,
-                          }
-                    }
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
+            {/* CARD */}
             <div
               className="mx-auto w-full"
               style={{
                 perspective: "1400px",
-                WebkitPerspective: "1400px",
                 maxWidth: orientation === "portrait" ? 300 : "100%",
               }}
             >
               <div
-                className="relative w-full"
+                className="relative w-full cursor-pointer"
+                onClick={() => setSide((prev) => (prev === "front" ? "back" : "front"))}
                 style={{
                   aspectRatio: `${W} / ${H}`,
                   transformStyle: "preserve-3d",
-                  WebkitTransformStyle: "preserve-3d",
-                  transition: "transform 0.7s ease",
+                  transition: "transform 0.7s ease-in-out",
                   transform: side === "back" ? "rotateY(180deg)" : "rotateY(0deg)",
-                  WebkitTransform: side === "back" ? "rotateY(180deg)" : "rotateY(0deg)",
                 }}
               >
+                {/* FRONT */}
                 <div
                   className="absolute inset-0 h-full w-full"
                   style={{
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
-                    transform: "rotateY(0deg)",
-                    WebkitTransform: "rotateY(0deg)",
                   }}
                 >
                   <CardFront data={cardData} orientation={orientation} company={company} theme={T} />
                 </div>
 
+                {/* BACK */}
                 <div
                   className="absolute inset-0 h-full w-full"
                   style={{
+                    transform: "rotateY(180deg)",
                     backfaceVisibility: "hidden",
                     WebkitBackfaceVisibility: "hidden",
-                    transform: "rotateY(180deg)",
-                    WebkitTransform: "rotateY(180deg)",
                   }}
                 >
                   <CardBack data={cardData} orientation={orientation} company={company} theme={T} />

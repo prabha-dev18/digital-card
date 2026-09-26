@@ -600,7 +600,7 @@ function BusinessCardStudio({ company, profile, theme }) {
                 <img
                   src={company?.logo || "/aarambh.png"}
                   alt={company?.fullName || "Company"}
-                  className="h-10 w-auto max-w-[170px] object-contain"
+                  className="h-12 w-auto max-w-[190px] object-contain"
                 />
 
                 <div className="min-w-0">
@@ -811,7 +811,7 @@ function BusinessCardStudio({ company, profile, theme }) {
             <div
               className="mx-auto w-full"
               style={{
-                perspective: 1400,
+                perspective: "1400px",
                 maxWidth: orientation === "portrait" ? 300 : "100%",
               }}
             >
@@ -822,8 +822,60 @@ function BusinessCardStudio({ company, profile, theme }) {
                   transformStyle: "preserve-3d",
                 }}
               >
-                <CardFront data={cardData} orientation={orientation} company={company} theme={T} />
-                <CardBack data={cardData} orientation={orientation} company={company} theme={T} />
+                <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label={side === "front" ? "Show back side of card" : "Show front side of card"}
+                  onClick={() => setSide((current) => (current === "front" ? "back" : "front"))}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setSide((current) => (current === "front" ? "back" : "front"));
+                    }
+                  }}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    transformStyle: "preserve-3d",
+                    WebkitTransformStyle: "preserve-3d",
+                    transition: "transform 0.7s ease-in-out",
+                    transform: side === "back" ? "rotateY(180deg)" : "rotateY(0deg)",
+                    WebkitTransform: side === "back" ? "rotateY(180deg)" : "rotateY(0deg)",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
+                      transform: "rotateY(0deg)",
+                      WebkitTransform: "rotateY(0deg)",
+                    }}
+                  >
+                    <CardFront data={cardData} orientation={orientation} company={company} theme={T} />
+                  </div>
+
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)",
+                      WebkitTransform: "rotateY(180deg)",
+                    }}
+                  >
+                    <CardBack data={cardData} orientation={orientation} company={company} theme={T} />
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -1154,13 +1206,13 @@ export default function HomeShell() {
       </header>
 
       {mode === "card" ? (
-        <div className="flex">
+        <div className="flex items-start">
           <BusinessCardStudio company={selectedCompany} profile={profile} theme={T} />
         </div>
       ) : (
-        <div className="flex min-w-0">
+        <div className="flex min-w-0 items-start">
           <aside
-            className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 flex-col justify-between overflow-hidden lg:flex"
+            className="sticky top-20 self-start hidden h-[calc(100vh-5rem)] w-72 shrink-0 flex-col justify-between overflow-hidden lg:flex"
             style={{
               background: `linear-gradient(180deg, ${T.primary}, ${T.primary})`,
             }}

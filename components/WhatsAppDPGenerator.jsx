@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+
 import {
   FaArrowsRotate,
   FaBuilding,
@@ -45,7 +46,7 @@ const DEFAULT_DATA = {
   name: "Your Name",
   designation: "Your Designation",
   company: "AarambhGrow Group of Companies",
-  logo: "/aarambh.png",
+  logo: "/aarambh2.png",
 };
 
 const DEPTS = [
@@ -76,6 +77,7 @@ const COMPANY_BACKGROUNDS = {
 };
 
 const DEFAULT_DP_BACKGROUND = "/dp-bg1.png";
+
 function getCompanyBackground(company, companyName) {
   if (company?.background) {
     return company.background;
@@ -96,31 +98,24 @@ function getCompanyBackground(company, companyName) {
   if (COMPANY_BACKGROUNDS[name]) {
     return COMPANY_BACKGROUNDS[name];
   }
-
   if (name.includes("infinity")) {
     return "/infinity-bg.png";
   }
-
   if (name.includes("nexera")) {
     return "/nexera-bg.png";
   }
-
   if (name.includes("euroasia")) {
     return "/euroasia-bg.png";
   }
-
   if (name.includes("advisory")) {
     return "/dp-bg1.png";
   }
-
   if (name.includes("services")) {
     return "/dp-bg1.png";
   }
-
   if (name.includes("aarambhgrow")) {
     return "/dp-bg1.png";
   }
-
   return DEFAULT_DP_BACKGROUND;
 }
 
@@ -132,6 +127,7 @@ function hexToRgb(hex) {
   if (!/^[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(h)) {
     return null;
   }
+
   const v =
     h.length === 3
       ? h
@@ -139,8 +135,8 @@ function hexToRgb(hex) {
           .map((c) => c + c)
           .join("")
       : h;
-  const n = parseInt(v, 16);
 
+  const n = parseInt(v, 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
@@ -154,6 +150,7 @@ function mixColor(c1, c2, t) {
 
 function drawLeaf(ctx, x, y, s, leftColor, rightColor) {
   ctx.save();
+
   ctx.beginPath();
   ctx.moveTo(x, y + s * 0.55);
   ctx.quadraticCurveTo(x - s, y + s * 0.05, x - s * 0.5, y - s * 0.6);
@@ -161,6 +158,7 @@ function drawLeaf(ctx, x, y, s, leftColor, rightColor) {
   ctx.closePath();
   ctx.fillStyle = leftColor;
   ctx.fill();
+
   ctx.beginPath();
   ctx.moveTo(x, y + s * 0.55);
   ctx.quadraticCurveTo(x + s, y + s * 0.05, x + s * 0.5, y - s * 0.6);
@@ -168,6 +166,7 @@ function drawLeaf(ctx, x, y, s, leftColor, rightColor) {
   ctx.closePath();
   ctx.fillStyle = rightColor;
   ctx.fill();
+
   ctx.restore();
 }
 
@@ -177,14 +176,14 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
   return (
     <section
       id={id}
-      className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+      className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)] max-sm:p-3"
       style={{
         borderColor: T.border || BRAND.border,
       }}
     >
-      <div className="mb-4 flex items-center gap-4">
+      <div className="mb-4 flex items-center gap-4 max-sm:gap-2.5">
         <span
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-white shadow-md"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-white shadow-md max-sm:h-10 max-sm:w-10"
           style={{
             background: `linear-gradient(135deg,${T.primary},${T.secondary})`,
           }}
@@ -192,9 +191,9 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
           <Icon size={20} />
         </span>
 
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <h2
-            className="text-lg font-extrabold"
+            className="text-lg font-extrabold max-sm:text-base"
             style={{
               color: T.primary,
             }}
@@ -203,7 +202,7 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
           </h2>
 
           <p
-            className="text-xs"
+            className="text-xs max-sm:text-[11px]"
             style={{
               color: T.muted || BRAND.muted,
             }}
@@ -212,6 +211,7 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
           </p>
         </div>
       </div>
+
       {children}
     </section>
   );
@@ -224,7 +224,7 @@ function Choice({ selected, onClick, icon: Icon, children, theme }) {
     <button
       type="button"
       onClick={onClick}
-      className="relative flex flex-col items-center justify-center gap-1.5 rounded-md border-2 py-4 text-xs font-semibold transition"
+      className="relative flex min-w-0 min-h-[78px] flex-col items-center justify-center gap-1.5 rounded-md border-2 py-4 text-xs font-semibold transition max-sm:min-h-[72px] max-sm:py-3 max-sm:text-[11px]"
       style={
         selected
           ? {
@@ -249,7 +249,9 @@ function Choice({ selected, onClick, icon: Icon, children, theme }) {
           ✓
         </span>
       )}
+
       <Icon size={20} />
+
       {children}
     </button>
   );
@@ -259,7 +261,7 @@ function Field({ label, icon: Icon, value, onChange, placeholder, type = "text",
   const T = theme || DEFAULT_THEME;
 
   return (
-    <label className="block">
+    <label className="block min-w-0">
       <span
         className="mb-1.5 block text-xs font-bold"
         style={{
@@ -270,19 +272,19 @@ function Field({ label, icon: Icon, value, onChange, placeholder, type = "text",
       </span>
 
       <span
-        className="flex items-center gap-3 rounded-md border bg-white px-3.5 py-3"
+        className="flex min-w-0 items-center gap-3 rounded-md border bg-white px-3.5 py-3 max-sm:px-3 max-sm:py-2.5"
         style={{
           borderColor: T.border || BRAND.border,
         }}
       >
-        <Icon size={14} color={T.primary} />
+        <Icon size={14} color={T.primary} className="shrink-0" />
 
         <input
           type={type}
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full bg-transparent text-sm outline-none"
+          className="min-w-0 w-full bg-transparent text-sm outline-none max-sm:text-[13px]"
           style={{
             color: T.text || "#334155",
           }}
@@ -307,12 +309,14 @@ export default function WhatsAppDPGenerator({
     ...DEFAULT_DATA,
     ...initialData,
   });
+
   const [note, setNote] = useState("");
   const data = {
     ...DEFAULT_DATA,
     ...(externalData || localData),
+
     company: company?.fullName || externalData?.company || localData.company || DEFAULT_DATA.company,
-    logo: company?.logo || externalData?.logo || localData.logo || DEFAULT_DATA.logo,
+    logo: company?.cardLogo || externalData?.logo || localData.logo || DEFAULT_DATA.logo,
   };
 
   const activeTheme = useMemo(
@@ -336,8 +340,10 @@ export default function WhatsAppDPGenerator({
   }, [company?.background, company?.dpBackground, company?.backgroundImage, company?.fullName, company?.name, data.company]);
 
   const companyWords = useMemo(() => (data.company || "").trim().split(/\s+/).filter(Boolean), [data.company]);
+
   const brandWord = companyWords[0] || "";
   const companyRest = companyWords.slice(1).join(" ");
+
   const updateData = (key, value) => {
     if (externalSetData) {
       externalSetData(key, value);
@@ -351,25 +357,43 @@ export default function WhatsAppDPGenerator({
 
   const drawCanvas = async () => {
     const canvas = canvasRef.current;
+
     if (!canvas) return null;
+
     const size = 1080;
+
     canvas.width = size;
     canvas.height = size;
+
     const ctx = canvas.getContext("2d");
+
     if (!ctx) return null;
+
     const cx = size / 2;
     const cy = size / 2;
+
     const ORANGE = activeTheme.accent || BRAND.orange;
     const GREEN = activeTheme.secondary || BRAND.green;
     const NAVY = activeTheme.primary || BRAND.navy;
+
     const CREAM = "#FBFBF7";
+
     ctx.clearRect(0, 0, size, size);
+
     ctx.fillStyle = CREAM;
     ctx.fillRect(0, 0, size, size);
 
+    /*
+     * =========================================================
+     * BACKGROUND
+     * =========================================================
+     */
+
     try {
       const bgImage = new Image();
+
       bgImage.crossOrigin = "anonymous";
+
       await new Promise((resolve) => {
         bgImage.onload = resolve;
         bgImage.onerror = resolve;
@@ -378,8 +402,10 @@ export default function WhatsAppDPGenerator({
 
       if (bgImage.complete && bgImage.naturalWidth) {
         const bgRatio = Math.max(size / bgImage.naturalWidth, size / bgImage.naturalHeight);
+
         const bgWidth = bgImage.naturalWidth * bgRatio;
         const bgHeight = bgImage.naturalHeight * bgRatio;
+
         ctx.drawImage(bgImage, (size - bgWidth) / 2, (size - bgHeight) / 2, bgWidth, bgHeight);
       }
     } catch {
@@ -387,64 +413,130 @@ export default function WhatsAppDPGenerator({
       ctx.fillRect(0, 0, size, size);
     }
 
+    /*
+     * =========================================================
+     * DECORATIVE SHAPES
+     * =========================================================
+     */
+
     ctx.strokeStyle = "rgba(140, 155, 140, 0.10)";
     ctx.lineCap = "round";
     ctx.lineWidth = 120;
+
     ctx.beginPath();
     ctx.moveTo(940, -80);
     ctx.bezierCurveTo(720, 330, 360, 500, -90, 640);
     ctx.stroke();
+
     ctx.lineWidth = 95;
+
     ctx.beginPath();
     ctx.moveTo(1130, 250);
     ctx.bezierCurveTo(820, 430, 540, 720, 400, 1140);
     ctx.stroke();
+
+    /*
+     * ORANGE
+     */
+
     ctx.beginPath();
+
     ctx.moveTo(-20, 760);
+
     ctx.bezierCurveTo(220, 800, 420, 940, 640, 988);
+
     ctx.bezierCurveTo(830, 1020, 990, 1000, 1100, 935);
+
     ctx.lineTo(1100, 1120);
     ctx.lineTo(-20, 1120);
+
     ctx.closePath();
+
     ctx.fillStyle = ORANGE;
     ctx.fill();
+
+    /*
+     * NAVY
+     */
+
     ctx.beginPath();
+
     ctx.moveTo(-20, 830);
+
     ctx.bezierCurveTo(220, 870, 420, 1010, 640, 1055);
+
     ctx.bezierCurveTo(830, 1085, 990, 1065, 1100, 1005);
+
     ctx.lineTo(1100, 1120);
     ctx.lineTo(-20, 1120);
+
     ctx.closePath();
+
     ctx.fillStyle = NAVY;
     ctx.fill();
+
+    /*
+     * CREAM DIVIDER
+     */
+
     ctx.beginPath();
+
     ctx.moveTo(-20, 830);
+
     ctx.bezierCurveTo(220, 870, 420, 1010, 640, 1055);
+
     ctx.bezierCurveTo(830, 1085, 990, 1065, 1100, 1005);
+
     ctx.strokeStyle = CREAM;
     ctx.lineWidth = 16;
+
     ctx.stroke();
+
+    /*
+     * GREEN
+     */
+
     ctx.beginPath();
+
     ctx.moveTo(1100, 780);
+
     ctx.bezierCurveTo(880, 835, 740, 960, 500, 1000);
+
     ctx.bezierCurveTo(320, 1035, 140, 1030, -20, 975);
+
     ctx.lineTo(-20, 1120);
     ctx.lineTo(1100, 1120);
+
     ctx.closePath();
+
     ctx.fillStyle = GREEN;
     ctx.fill();
+
     ctx.beginPath();
+
     ctx.moveTo(1100, 780);
+
     ctx.bezierCurveTo(880, 835, 740, 960, 500, 1000);
+
     ctx.bezierCurveTo(320, 1035, 140, 1030, -20, 975);
+
     ctx.strokeStyle = CREAM;
     ctx.lineWidth = 16;
+
     ctx.stroke();
+
+    /*
+     * =========================================================
+     * COMPANY-SPECIFIC LOGO
+     * =========================================================
+     */
 
     if (data.logo) {
       try {
         const logo = new Image();
+
         logo.crossOrigin = "anonymous";
+
         await new Promise((resolve) => {
           logo.onload = resolve;
           logo.onerror = resolve;
@@ -454,47 +546,83 @@ export default function WhatsAppDPGenerator({
         if (logo.complete && logo.naturalWidth) {
           const boxW = 290;
           const boxH = 235;
+
           const ratio = Math.min(boxW / logo.naturalWidth, boxH / logo.naturalHeight);
+
           const w = logo.naturalWidth * ratio;
           const h = logo.naturalHeight * ratio;
+
           ctx.drawImage(logo, (size - w) / 2, 150 + (boxH - h) / 2, w, h);
         }
       } catch {}
     }
 
+    /*
+     * =========================================================
+     * COMPANY NAME
+     * =========================================================
+     */
+
     ctx.textAlign = "center";
 
     if (brandWord) {
       ctx.fillStyle = NAVY;
+
       ctx.font = '800 56px "Plus Jakarta Sans", Arial, sans-serif';
+
       ctx.fillText(brandWord, cx, 452);
     }
 
     if (companyRest) {
       ctx.font = '600 25px "Plus Jakarta Sans", Arial, sans-serif';
+
       const label = companyRest.toUpperCase().split("").join(" ");
+
       const labelWidth = ctx.measureText(label).width;
+
       ctx.fillStyle = NAVY;
+
       ctx.fillText(label, cx, 500);
+
       ctx.lineCap = "round";
       ctx.lineWidth = 5;
+
       ctx.strokeStyle = ORANGE;
+
       ctx.beginPath();
+
       ctx.moveTo(cx - labelWidth / 2 - 62, 491);
+
       ctx.lineTo(cx - labelWidth / 2 - 26, 491);
+
       ctx.stroke();
+
       ctx.strokeStyle = GREEN;
+
       ctx.beginPath();
+
       ctx.moveTo(cx + labelWidth / 2 + 26, 491);
+
       ctx.lineTo(cx + labelWidth / 2 + 62, 491);
+
       ctx.stroke();
     }
 
+    /*
+     * =========================================================
+     * NAME
+     * =========================================================
+     */
+
     const memberName = data.name || "Your Name";
+
     let nameSize = 98;
+
     ctx.font = `800 ${nameSize}px "Plus Jakarta Sans", Arial, sans-serif`;
+
     while (ctx.measureText(memberName).width > 760 && nameSize > 52) {
       nameSize -= 4;
+
       ctx.font = `800 ${nameSize}px "Plus Jakarta Sans", Arial, sans-serif`;
     }
 
@@ -502,9 +630,11 @@ export default function WhatsAppDPGenerator({
 
     ctx.fillText(memberName, cx, 612);
 
-    /* =====================================================
-       ORANGE / GREEN DIVIDER
-       ===================================================== */
+    /*
+     * =========================================================
+     * ORANGE / GREEN DIVIDER
+     * =========================================================
+     */
 
     const dy = 668;
 
@@ -512,7 +642,9 @@ export default function WhatsAppDPGenerator({
 
     ctx.lineWidth = 7;
 
-    /* Orange */
+    /*
+     * Orange
+     */
 
     ctx.strokeStyle = ORANGE;
 
@@ -524,7 +656,9 @@ export default function WhatsAppDPGenerator({
 
     ctx.stroke();
 
-    /* Green */
+    /*
+     * Green
+     */
 
     ctx.strokeStyle = GREEN;
 
@@ -536,13 +670,17 @@ export default function WhatsAppDPGenerator({
 
     ctx.stroke();
 
-    /* Leaf */
+    /*
+     * Leaf
+     */
 
     drawLeaf(ctx, cx, dy, 26, ORANGE, GREEN);
 
-    /* =====================================================
-       DESIGNATION
-       ===================================================== */
+    /*
+     * =========================================================
+     * DESIGNATION
+     * =========================================================
+     */
 
     const memberRole = data.designation || "Your Designation";
 
@@ -563,9 +701,11 @@ export default function WhatsAppDPGenerator({
     return canvas;
   };
 
-  /* =========================================================
-     DOWNLOAD
-     ========================================================= */
+  /*
+   * =========================================================
+   * DOWNLOAD
+   * =========================================================
+   */
 
   const downloadDP = async () => {
     try {
@@ -602,14 +742,19 @@ export default function WhatsAppDPGenerator({
     }
   };
 
-  /* =========================================================
-     RESET
-     ========================================================= */
+  /*
+   * =========================================================
+   * RESET
+   * =========================================================
+   */
 
   const reset = () => {
     const resetData = {
       ...DEFAULT_DATA,
       ...initialData,
+
+      // Keep company-specific card logo after reset
+      logo: company?.cardLogo || initialData?.logo || DEFAULT_DATA.logo,
     };
 
     if (externalSetData) {
@@ -623,9 +768,11 @@ export default function WhatsAppDPGenerator({
     setNote("");
   };
 
-  /* =========================================================
-     GENERATE PREVIEW
-     ========================================================= */
+  /*
+   * =========================================================
+   * GENERATE PREVIEW
+   * =========================================================
+   */
 
   const generatePreview = () => {
     if (typeof onReady === "function") {
@@ -633,17 +780,9 @@ export default function WhatsAppDPGenerator({
     }
   };
 
-  /* =========================================================
-     UI
-     ========================================================= */
-
   return (
-    <div className="grid min-w-0 gap-5 p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:p-5">
-      {/* =====================================================
-          LEFT SIDE
-          ===================================================== */}
-
-      <div className="space-y-5">
+    <div className="grid min-w-0 gap-5 p-4 max-sm:gap-4 max-sm:p-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:p-5">
+      <div className="space-y-5 max-sm:space-y-4">
         {/* ORGANIZATION */}
 
         <Section
@@ -675,17 +814,16 @@ export default function WhatsAppDPGenerator({
           {/* SELECTED COMPANY */}
 
           <div
-            className="mt-5 flex items-center gap-3 rounded-md border p-4"
+            className="mt-5 flex items-center gap-3 rounded-md border p-4 max-sm:mt-4 max-sm:p-3"
             style={{
               borderColor: activeTheme.border,
-
               background: activeTheme.primaryLight,
             }}
           >
             <img
-              src={company?.logo || "/aarambh.png"}
+              src={company?.cardLogo || company?.logo || "/aarambh2.png"}
               alt={company?.fullName || "Company"}
-              className="h-10 w-auto max-w-[170px] object-contain"
+              className="h-10 w-auto max-w-[170px] object-contain max-sm:h-9 max-sm:max-w-[120px]"
             />
 
             <div className="min-w-0">
@@ -699,7 +837,7 @@ export default function WhatsAppDPGenerator({
               </p>
 
               <p
-                className="truncate text-sm font-extrabold"
+                className="truncate text-sm font-extrabold max-sm:text-xs"
                 style={{
                   color: activeTheme.primary,
                 }}
@@ -745,28 +883,24 @@ export default function WhatsAppDPGenerator({
           theme={activeTheme}
         >
           <div
-            className="rounded-md border p-4"
+            className="rounded-md border p-4 max-sm:p-3"
             style={{
               borderColor: activeTheme.border,
-
               background: activeTheme.background,
             }}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 max-sm:items-start">
               <span
-                className="h-10 w-10 rounded-full"
+                className="h-10 w-10 shrink-0 rounded-full"
                 style={{
                   backgroundImage: `url("${DP_BACKGROUND}")`,
-
                   backgroundSize: "cover",
-
                   backgroundPosition: "center",
-
                   border: `5px solid ${activeTheme.secondary}`,
                 }}
               />
 
-              <div>
+              <div className="min-w-0">
                 <p
                   className="text-sm font-extrabold"
                   style={{
@@ -777,7 +911,7 @@ export default function WhatsAppDPGenerator({
                 </p>
 
                 <p
-                  className="text-xs"
+                  className="text-xs max-sm:text-[11px]"
                   style={{
                     color: activeTheme.muted,
                   }}
@@ -790,9 +924,7 @@ export default function WhatsAppDPGenerator({
                   style={{
                     color: activeTheme.secondary,
                   }}
-                >
-                  
-                </p>
+                />
               </div>
             </div>
           </div>
@@ -804,7 +936,7 @@ export default function WhatsAppDPGenerator({
           <button
             type="button"
             onClick={generatePreview}
-            className="flex w-full items-center justify-center gap-2 rounded-md py-4 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110"
+            className="flex w-full items-center justify-center gap-2 rounded-md py-4 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:brightness-110 max-sm:py-3.5 max-sm:text-xs"
             style={{
               background: `linear-gradient(90deg,${activeTheme.secondary},${activeTheme.primary})`,
             }}
@@ -820,7 +952,7 @@ export default function WhatsAppDPGenerator({
           <button
             type="button"
             onClick={downloadDP}
-            className="flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5"
+            className="flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5 max-sm:px-3 max-sm:py-3 max-sm:text-xs"
             style={{
               background: activeTheme.primary,
             }}
@@ -835,7 +967,6 @@ export default function WhatsAppDPGenerator({
             className="grid min-w-12 place-items-center rounded-md border bg-white"
             style={{
               borderColor: activeTheme.border,
-
               color: activeTheme.primary,
             }}
             title="Reset"
@@ -852,9 +983,7 @@ export default function WhatsAppDPGenerator({
             className="rounded-md border p-3 text-center text-xs font-bold"
             style={{
               borderColor: activeTheme.secondary,
-
               background: activeTheme.secondaryLight,
-
               color: activeTheme.secondary,
             }}
           >
@@ -869,29 +998,28 @@ export default function WhatsAppDPGenerator({
 
       <section
         id="s-out"
-        className="scroll-mt-24 min-w-0 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+        className="scroll-mt-24 min-w-0 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)] max-sm:p-3"
         style={{
           borderColor: activeTheme.border,
         }}
       >
         {/* PREVIEW HEADER */}
 
-        <div className="mb-5 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+        <div className="mb-5 flex items-center justify-between gap-3 max-sm:mb-3 max-sm:items-start">
+          <div className="flex min-w-0 items-center gap-3">
             <div
-              className="grid h-12 w-12 place-items-center rounded-full shadow-md"
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-full shadow-md max-sm:h-10 max-sm:w-10"
               style={{
                 background: activeTheme.secondaryLight,
-
                 color: activeTheme.secondary,
               }}
             >
               <FaEye size={20} />
             </div>
 
-            <div>
+            <div className="min-w-0">
               <h2
-                className="text-lg font-extrabold"
+                className="text-lg font-extrabold max-sm:text-base"
                 style={{
                   color: activeTheme.primary,
                 }}
@@ -900,7 +1028,7 @@ export default function WhatsAppDPGenerator({
               </h2>
 
               <p
-                className="text-xs"
+                className="text-xs max-sm:text-[10px]"
                 style={{
                   color: activeTheme.muted,
                 }}
@@ -914,7 +1042,6 @@ export default function WhatsAppDPGenerator({
             className="hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold sm:inline-flex"
             style={{
               background: activeTheme.secondaryLight,
-
               color: activeTheme.secondary,
             }}
           >
@@ -931,10 +1058,9 @@ export default function WhatsAppDPGenerator({
         {/* PREVIEW AREA */}
 
         <div
-          className="flex min-h-[620px] items-center justify-center overflow-hidden rounded-md border p-6"
+          className="flex min-h-[620px] items-center justify-center overflow-hidden rounded-md border p-6 max-sm:min-h-0 max-sm:p-3"
           style={{
             borderColor: activeTheme.border,
-
             background: activeTheme.primaryLight,
           }}
         >
@@ -945,13 +1071,9 @@ export default function WhatsAppDPGenerator({
               className="mx-auto aspect-square w-full max-w-[500px] overflow-hidden shadow-2xl"
               style={{
                 backgroundImage: `url("${DP_BACKGROUND}")`,
-
                 backgroundSize: "cover",
-
                 backgroundPosition: "center",
-
                 backgroundRepeat: "no-repeat",
-
                 containerType: "inline-size",
               }}
             >
@@ -964,7 +1086,6 @@ export default function WhatsAppDPGenerator({
                     paddingBottom: "17cqw",
                   }}
                 >
-                  {/* LOGO */}
 
                   {data.logo && (
                     <img
@@ -978,43 +1099,31 @@ export default function WhatsAppDPGenerator({
                     />
                   )}
 
-                  {/* NAME */}
-
                   <h3
                     className="break-words font-extrabold leading-tight"
                     style={{
                       color: activeTheme.primary,
-
                       fontSize: "9.2cqw",
-
                       marginTop: "4cqw",
-
                       maxWidth: "82cqw",
                     }}
                   >
                     {data.name || "Your Name"}
                   </h3>
 
-                  {/* DIVIDER */}
-
                   <div
                     className="flex items-center"
                     style={{
                       marginTop: "3cqw",
-
                       gap: "2.5cqw",
                     }}
                   >
-                    {/* ORANGE */}
 
                     <span
                       style={{
                         width: "18cqw",
-
                         height: "0.65cqw",
-
                         borderRadius: 999,
-
                         background: activeTheme.accent,
                       }}
                     />
@@ -1025,12 +1134,10 @@ export default function WhatsAppDPGenerator({
                       viewBox="0 0 40 40"
                       style={{
                         width: "5cqw",
-
                         height: "5cqw",
                       }}
                     >
                       <path d="M20 34 C6 26 6 14 13 5 C19 12 20 22 20 34 Z" fill={activeTheme.accent} />
-
                       <path d="M20 34 C34 26 34 14 27 5 C21 12 20 22 20 34 Z" fill={activeTheme.secondary} />
                     </svg>
 
@@ -1039,25 +1146,18 @@ export default function WhatsAppDPGenerator({
                     <span
                       style={{
                         width: "18cqw",
-
                         height: "0.65cqw",
-
                         borderRadius: 999,
-
                         background: activeTheme.secondary,
                       }}
                     />
                   </div>
 
-                  {/* DESIGNATION */}
-
                   <p
                     className="font-semibold"
                     style={{
                       color: activeTheme.primary,
-
                       fontSize: "3.9cqw",
-
                       marginTop: "3cqw",
                     }}
                   >
@@ -1068,7 +1168,7 @@ export default function WhatsAppDPGenerator({
             </div>
 
             <p
-              className="mt-4 text-center text-xs font-semibold"
+              className="mt-4 text-center text-xs font-semibold max-sm:mt-3 max-sm:text-[10px]"
               style={{
                 color: activeTheme.muted,
               }}
@@ -1078,13 +1178,10 @@ export default function WhatsAppDPGenerator({
           </div>
         </div>
 
-        {/* INFO */}
-
         <div
-          className="mt-5 rounded-md border p-4"
+          className="mt-5 rounded-md border p-4 max-sm:mt-3 max-sm:p-3"
           style={{
             borderColor: activeTheme.border,
-
             background: activeTheme.background,
           }}
         >
@@ -1102,7 +1199,7 @@ export default function WhatsAppDPGenerator({
               </p>
 
               <p
-                className="text-xs"
+                className="text-xs max-sm:text-[10px]"
                 style={{
                   color: activeTheme.muted,
                 }}
@@ -1112,9 +1209,6 @@ export default function WhatsAppDPGenerator({
             </div>
           </div>
         </div>
-
-        {/* HIDDEN CANVAS */}
-
         <canvas ref={canvasRef} className="hidden" />
       </section>
     </div>
