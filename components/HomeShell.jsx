@@ -3,7 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
-import { COMPANY_CONFIG, COMPANY_OPTIONS, DEFAULT_COMPANY_ID } from "../lib/companyConfig";
+import {
+  COMPANY_CONFIG,
+  COMPANY_OPTIONS,
+  DEFAULT_COMPANY_ID,
+} from "../lib/companyConfig";
 
 import {
   FaWhatsapp,
@@ -12,7 +16,6 @@ import {
   FaBuilding,
   FaUser,
   FaEye,
-  FaLocationDot,
   FaChartColumn,
   FaUserTie,
   FaGear,
@@ -29,6 +32,7 @@ import {
   FaLink,
   FaIdBadge,
   FaCheck,
+  FaLocationDot,
 } from "react-icons/fa6";
 
 import CardFront from "./CardFront";
@@ -180,9 +184,15 @@ const CARD_SIZE = {
    SHARE ENCODING
 ========================================================= */
 
-const enc = (object) => encodeURIComponent(btoa(encodeURIComponent(JSON.stringify(object))));
+const enc = (object) =>
+  encodeURIComponent(
+    btoa(encodeURIComponent(JSON.stringify(object))),
+  );
 
-const dec = (value) => JSON.parse(decodeURIComponent(atob(decodeURIComponent(value))));
+const dec = (value) =>
+  JSON.parse(
+    decodeURIComponent(atob(decodeURIComponent(value))),
+  );
 
 /* =========================================================
    DECORATIVE SWOOSH
@@ -205,7 +215,16 @@ function Swoosh({ className = "", flip = false }) {
    CARD SECTION
 ========================================================= */
 
-function CardSection({ id, no, title, sub, icon: Icon, right, children, theme = DEFAULT_THEME }) {
+function CardSection({
+  id,
+  no,
+  title,
+  sub,
+  icon: Icon,
+  right,
+  children,
+  theme = DEFAULT_THEME,
+}) {
   const T = theme || DEFAULT_THEME;
 
   return (
@@ -259,7 +278,16 @@ function CardSection({ id, no, title, sub, icon: Icon, right, children, theme = 
    CARD FIELD
 ========================================================= */
 
-function CardField({ label, optional, icon: Icon, value, onChange, placeholder, type = "text", theme = DEFAULT_THEME }) {
+function CardField({
+  label,
+  optional,
+  icon: Icon,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  theme = DEFAULT_THEME,
+}) {
   const T = theme || DEFAULT_THEME;
 
   return (
@@ -307,7 +335,13 @@ function CardField({ label, optional, icon: Icon, value, onChange, placeholder, 
    CHOICE
 ========================================================= */
 
-function Choice({ on, onClick, icon: Icon, children, theme = DEFAULT_THEME }) {
+function Choice({
+  on,
+  onClick,
+  icon: Icon,
+  children,
+  theme = DEFAULT_THEME,
+}) {
   const T = theme || DEFAULT_THEME;
 
   return (
@@ -357,15 +391,10 @@ function BusinessCardStudio({ company, profile, theme }) {
   const companyData = company?.data || {};
 
   const [c, setC] = useState(CARD_START);
-
   const [orientation, setOrientation] = useState("landscape");
-
   const [side, setSide] = useState("front");
-
   const [active, setActive] = useState("c-org");
-
   const [note, setNote] = useState("");
-
   const [busy, setBusy] = useState(false);
 
   const [W, H] = CARD_SIZE[orientation];
@@ -389,22 +418,27 @@ function BusinessCardStudio({ company, profile, theme }) {
     () => ({
       ...defaultCardData,
 
-      company: company?.fullName || profile?.company || defaultCardData.company,
+      company:
+        company?.fullName ||
+        profile?.company ||
+        defaultCardData.company,
 
       logo: company?.logo || defaultCardData.logo,
 
-      website: companyData.website || c.website || defaultCardData.website,
+      website:
+        companyData.website ||
+        c.website ||
+        defaultCardData.website,
 
-      location: companyData.address || c.address || defaultCardData.location,
+      location:
+        companyData.address ||
+        c.address ||
+        defaultCardData.location,
 
       name: c.name,
-
       title: c.designation,
-
       phone: c.phone,
-
       email: c.email,
-
       department: c.dept,
     }),
     [c, company, companyData, profile],
@@ -417,12 +451,14 @@ function BusinessCardStudio({ company, profile, theme }) {
   useEffect(() => {
     setC((previous) => ({
       ...previous,
-
       website: companyData.website || "",
-
       address: companyData.address || "",
     }));
-  }, [company?.id, companyData.website, companyData.address]);
+  }, [
+    company?.id,
+    companyData.website,
+    companyData.address,
+  ]);
 
   /* =====================================================
      LOAD SAVED CARD
@@ -441,7 +477,9 @@ function BusinessCardStudio({ company, profile, theme }) {
     } catch {}
 
     try {
-      const query = new URLSearchParams(window.location.search).get("card");
+      const query = new URLSearchParams(
+        window.location.search,
+      ).get("card");
 
       if (query) {
         setC((previous) => ({
@@ -458,7 +496,10 @@ function BusinessCardStudio({ company, profile, theme }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem(CARD_KEY, JSON.stringify(c));
+      localStorage.setItem(
+        CARD_KEY,
+        JSON.stringify(c),
+      );
     } catch {}
   }, [c]);
 
@@ -467,7 +508,9 @@ function BusinessCardStudio({ company, profile, theme }) {
   ===================================================== */
 
   useEffect(() => {
-    const elements = CARD_STEPS.map((step) => document.getElementById(step.id)).filter(Boolean);
+    const elements = CARD_STEPS.map((step) =>
+      document.getElementById(step.id),
+    ).filter(Boolean);
 
     if (!elements.length) {
       return;
@@ -475,7 +518,9 @@ function BusinessCardStudio({ company, profile, theme }) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries.find((entry) => entry.isIntersecting);
+        const visible = entries.find(
+          (entry) => entry.isIntersecting,
+        );
 
         if (visible) {
           setActive(visible.target.id);
@@ -486,7 +531,9 @@ function BusinessCardStudio({ company, profile, theme }) {
       },
     );
 
-    elements.forEach((element) => observer.observe(element));
+    elements.forEach((element) =>
+      observer.observe(element),
+    );
 
     return () => observer.disconnect();
   }, []);
@@ -495,7 +542,12 @@ function BusinessCardStudio({ company, profile, theme }) {
      STEP STATUS
   ===================================================== */
 
-  const done = [true, Boolean(c.name && c.designation), true, Boolean(c.phone || c.email)];
+  const done = [
+    true,
+    Boolean(c.name && c.designation),
+    true,
+    Boolean(c.phone || c.email),
+  ];
 
   /* =====================================================
      SCROLL
@@ -549,39 +601,194 @@ function BusinessCardStudio({ company, profile, theme }) {
      FILE NAME
   ===================================================== */
 
-  const fileBase = (c.name || "business-card").trim().replace(/\s+/g, "-");
+  const fileBase = (c.name || "business-card")
+    .trim()
+    .replace(/\s+/g, "-");
+
+  /* =====================================================
+     LOAD IMAGE HELPER
+  ===================================================== */
+
+  const loadImage = (src) =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+
+      image.onload = () => resolve(image);
+      image.onerror = () =>
+        reject(
+          new Error("Could not load generated card image"),
+        );
+
+      image.src = src;
+    });
 
   /* =====================================================
      DOWNLOAD PNG
+
+     ONE PNG CONTAINS:
+     FRONT
+     +
+     BACK
   ===================================================== */
 
   const downloadPNG = async () => {
     setBusy(true);
 
     try {
-      const selector = side === "front" ? "[data-card-preview-front]" : "[data-card-preview-back]";
+      const frontElement = document.querySelector(
+        "[data-card-export-front]",
+      );
 
-      const element = document.querySelector(selector);
+      const backElement = document.querySelector(
+        "[data-card-export-back]",
+      );
 
-      if (!element) {
-        throw new Error("Preview card not found");
+      if (!frontElement || !backElement) {
+        throw new Error("Export cards not found");
       }
 
-      const url = await snap(element);
+      await new Promise((resolve) =>
+        requestAnimationFrame(resolve),
+      );
 
-      const anchor = document.createElement("a");
+      const [frontImage, backImage] =
+        await Promise.all([
+          snap(frontElement),
+          snap(backElement),
+        ]);
 
-      anchor.download = `${fileBase}-${side}.png`;
+      const [frontImg, backImg] =
+        await Promise.all([
+          loadImage(frontImage),
+          loadImage(backImage),
+        ]);
 
-      anchor.href = url;
+      /*
+        Keep the actual generated image resolution.
+      */
+      const frontWidth =
+        frontImg.naturalWidth || frontImg.width;
+
+      const frontHeight =
+        frontImg.naturalHeight || frontImg.height;
+
+      const backWidth =
+        backImg.naturalWidth || backImg.width;
+
+      const backHeight =
+        backImg.naturalHeight || backImg.height;
+
+      const canvasWidth = Math.max(
+        frontWidth,
+        backWidth,
+      );
+
+      const gap = Math.round(
+        40 * 2,
+      );
+
+      const canvasHeight =
+        frontHeight +
+        gap +
+        backHeight;
+
+      const canvas =
+        document.createElement("canvas");
+
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+
+      const context =
+        canvas.getContext("2d");
+
+      if (!context) {
+        throw new Error(
+          "Could not create canvas",
+        );
+      }
+
+      /*
+        White background.
+      */
+      context.fillStyle = "#FFFFFF";
+
+      context.fillRect(
+        0,
+        0,
+        canvasWidth,
+        canvasHeight,
+      );
+
+      /*
+        Center FRONT.
+      */
+      const frontX =
+        Math.round(
+          (canvasWidth - frontWidth) / 2,
+        );
+
+      context.drawImage(
+        frontImg,
+        frontX,
+        0,
+        frontWidth,
+        frontHeight,
+      );
+
+      /*
+        Center BACK.
+      */
+      const backX =
+        Math.round(
+          (canvasWidth - backWidth) / 2,
+        );
+
+      context.drawImage(
+        backImg,
+        backX,
+        frontHeight + gap,
+        backWidth,
+        backHeight,
+      );
+
+      /*
+        Convert BOTH cards into ONE PNG.
+      */
+      const combinedPNG =
+        canvas.toDataURL(
+          "image/png",
+          1,
+        );
+
+      /*
+        Download one file only.
+      */
+      const anchor =
+        document.createElement("a");
+
+      anchor.href = combinedPNG;
+
+      anchor.download =
+        `${fileBase}-front-back.png`;
+
+      document.body.appendChild(anchor);
 
       anchor.click();
 
-      flash("PNG downloaded");
-    } catch (error) {
-      console.error("PNG export failed:", error);
+      anchor.remove();
 
-      flash("Could not create PNG");
+      flash(
+        "Front & back combined PNG downloaded",
+      );
+    } catch (error) {
+      console.error(
+        "Combined PNG export failed:",
+        error,
+      );
+
+      flash(
+        "Could not create combined PNG",
+      );
     } finally {
       setBusy(false);
     }
@@ -589,52 +796,100 @@ function BusinessCardStudio({ company, profile, theme }) {
 
   /* =====================================================
      DOWNLOAD PDF
-     
-     IMPORTANT:
-     We capture the separate hidden
-     export elements so PDF always
-     contains both front and back.
+
+     ONE PDF CONTAINS:
+     PAGE 1 = FRONT
+     PAGE 2 = BACK
   ===================================================== */
 
   const downloadPDF = async () => {
     setBusy(true);
 
     try {
-      const { jsPDF } = await import("jspdf");
+      const { jsPDF } =
+        await import("jspdf");
 
-      const frontElement = document.querySelector("[data-card-export-front]");
+      const frontElement =
+        document.querySelector(
+          "[data-card-export-front]",
+        );
 
-      const backElement = document.querySelector("[data-card-export-back]");
+      const backElement =
+        document.querySelector(
+          "[data-card-export-back]",
+        );
 
-      if (!frontElement || !backElement) {
-        throw new Error("Export cards not found");
+      if (
+        !frontElement ||
+        !backElement
+      ) {
+        throw new Error(
+          "Export cards not found",
+        );
       }
 
-      await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+      await new Promise((resolve) =>
+        requestAnimationFrame(resolve),
+      );
 
-      const [frontImage, backImage] = await Promise.all([snap(frontElement), snap(backElement)]);
+      const [frontImage, backImage] =
+        await Promise.all([
+          snap(frontElement),
+          snap(backElement),
+        ]);
 
       const pdf = new jsPDF({
-        orientation: W > H ? "landscape" : "portrait",
+        orientation:
+          W > H
+            ? "landscape"
+            : "portrait",
 
         unit: "px",
 
         format: [W, H],
       });
 
-      pdf.addImage(frontImage, "PNG", 0, 0, W, H);
+      pdf.addImage(
+        frontImage,
+        "PNG",
+        0,
+        0,
+        W,
+        H,
+      );
 
-      pdf.addPage([W, H], W > H ? "landscape" : "portrait");
+      pdf.addPage(
+        [W, H],
+        W > H
+          ? "landscape"
+          : "portrait",
+      );
 
-      pdf.addImage(backImage, "PNG", 0, 0, W, H);
+      pdf.addImage(
+        backImage,
+        "PNG",
+        0,
+        0,
+        W,
+        H,
+      );
 
-      pdf.save(`${fileBase}.pdf`);
+      pdf.save(
+        `${fileBase}-front-back.pdf`,
+      );
 
-      flash("PDF downloaded");
+      flash(
+        "Front & back PDF downloaded",
+      );
     } catch (error) {
-      console.error("PDF export failed:", error);
+      console.error(
+        "PDF export failed:",
+        error,
+      );
 
-      flash("Could not create PDF");
+      flash(
+        "Could not create PDF",
+      );
     } finally {
       setBusy(false);
     }
@@ -644,11 +899,14 @@ function BusinessCardStudio({ company, profile, theme }) {
      SHARE LINK
   ===================================================== */
 
-  const shareLink = () => `${window.location.origin}${window.location.pathname}?card=${enc(c)}`;
+  const shareLink = () =>
+    `${window.location.origin}${window.location.pathname}?card=${enc(c)}`;
 
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(shareLink());
+      await navigator.clipboard.writeText(
+        shareLink(),
+      );
 
       flash("Link copied");
     } catch {
@@ -664,8 +922,9 @@ function BusinessCardStudio({ company, profile, theme }) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${c.name || "My"} — Digital Business Card`,
-
+          title: `${
+            c.name || "My"
+          } — Digital Business Card`,
           url: shareLink(),
         });
       } catch {}
@@ -706,7 +965,11 @@ function BusinessCardStudio({ company, profile, theme }) {
   ===================================================== */
 
   const toggleSide = () => {
-    setSide((current) => (current === "front" ? "back" : "front"));
+    setSide((current) =>
+      current === "front"
+        ? "back"
+        : "front",
+    );
   };
 
   return (
@@ -723,54 +986,88 @@ function BusinessCardStudio({ company, profile, theme }) {
       >
         <div className="p-4 pt-6">
           <div className="mb-5 border-b border-white/10 px-2 pb-5 text-white">
-            <p className="text-sm opacity-90">Create Your</p>
+            <p className="text-sm opacity-90">
+              Create Your
+            </p>
 
-            <p className="text-xl font-extrabold">Digital Business Card</p>
+            <p className="text-xl font-extrabold">
+              Digital Business Card
+            </p>
 
-            <p className="mt-1 text-xs leading-snug text-white/65">Build your identity. Share your profile professionally.</p>
+            <p className="mt-1 text-xs leading-snug text-white/65">
+              Build your identity. Share your profile
+              professionally.
+            </p>
           </div>
 
           <ol className="space-y-2.5">
-            {CARD_STEPS.map((step, index) => {
-              const on = active === step.id;
+            {CARD_STEPS.map(
+              (step, index) => {
+                const on =
+                  active === step.id;
 
-              return (
-                <li key={step.id}>
-                  <button
-                    type="button"
-                    onClick={() => goto(step.id)}
-                    className="flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-white transition hover:bg-white/10"
-                    style={
-                      on
-                        ? {
-                            background: `${T.secondary}55`,
-                            border: `1px solid ${T.secondary}`,
-                          }
-                        : {
-                            border: "1px solid transparent",
-                          }
-                    }
-                  >
-                    <span
-                      className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold"
-                      style={{
-                        background: on ? T.accent : done[index] && index ? T.secondary : "rgba(255,255,255,.22)",
-                      }}
+                return (
+                  <li key={step.id}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        goto(step.id)
+                      }
+                      className="flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-white transition hover:bg-white/10"
+                      style={
+                        on
+                          ? {
+                              background: `${T.secondary}55`,
+                              border: `1px solid ${T.secondary}`,
+                            }
+                          : {
+                              border:
+                                "1px solid transparent",
+                            }
+                      }
                     >
-                      {done[index] && index && !on ? <FaCheck size={12} /> : index + 1}
-                    </span>
+                      <span
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold"
+                        style={{
+                          background:
+                            on
+                              ? T.accent
+                              : done[index] &&
+                                  index
+                                ? T.secondary
+                                : "rgba(255,255,255,.22)",
+                        }}
+                      >
+                        {done[index] &&
+                        index &&
+                        !on ? (
+                          <FaCheck
+                            size={12}
+                          />
+                        ) : (
+                          index + 1
+                        )}
+                      </span>
 
-                    <step.icon size={20} className="shrink-0" />
+                      <step.icon
+                        size={20}
+                        className="shrink-0"
+                      />
 
-                    <span>
-                      <span className="block text-[13px] font-bold leading-tight">{step.title}</span>
+                      <span>
+                        <span className="block text-[13px] font-bold leading-tight">
+                          {step.title}
+                        </span>
 
-                      <span className="block text-[11px] leading-tight text-white/65">{step.sub}</span>
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
+                        <span className="block text-[11px] leading-tight text-white/65">
+                          {step.sub}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              },
+            )}
           </ol>
         </div>
 
@@ -796,15 +1093,23 @@ function BusinessCardStudio({ company, profile, theme }) {
             theme={T}
             right={
               <div className="hidden gap-1.5 sm:flex">
-                {done.map((complete, index) => (
-                  <span
-                    key={index}
-                    className="h-1 w-8 rounded"
-                    style={{
-                      background: complete ? T.secondary : T.border,
-                    }}
-                  />
-                ))}
+                {done.map(
+                  (
+                    complete,
+                    index,
+                  ) => (
+                    <span
+                      key={index}
+                      className="h-1 w-8 rounded"
+                      style={{
+                        background:
+                          complete
+                            ? T.secondary
+                            : T.border,
+                      }}
+                    />
+                  ),
+                )}
               </div>
             }
           >
@@ -819,25 +1124,47 @@ function BusinessCardStudio({ company, profile, theme }) {
             </p>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {DEPTS.map(({ id, icon }) => (
-                <Choice key={id} on={c.dept === id} onClick={() => setField("dept", id)} icon={icon} theme={T}>
-                  {id}
-                </Choice>
-              ))}
+              {DEPTS.map(
+                ({ id, icon }) => (
+                  <Choice
+                    key={id}
+                    on={
+                      c.dept === id
+                    }
+                    onClick={() =>
+                      setField(
+                        "dept",
+                        id,
+                      )
+                    }
+                    icon={icon}
+                    theme={T}
+                  >
+                    {id}
+                  </Choice>
+                ),
+              )}
             </div>
 
             <div
               className="mt-5 rounded-md border p-4"
               style={{
-                borderColor: T.border,
-
-                background: T.primaryLight,
+                borderColor:
+                  T.border,
+                background:
+                  T.primaryLight,
               }}
             >
               <div className="flex items-center gap-3">
                 <img
-                  src={company?.logo || "/aarambh.png"}
-                  alt={company?.fullName || "Company"}
+                  src={
+                    company?.logo ||
+                    "/aarambh.png"
+                  }
+                  alt={
+                    company?.fullName ||
+                    "Company"
+                  }
                   className="h-12 w-auto max-w-[190px] object-contain"
                 />
 
@@ -857,7 +1184,8 @@ function BusinessCardStudio({ company, profile, theme }) {
                       color: T.primary,
                     }}
                   >
-                    {company?.fullName || "AarambhGrow Group of Companies"}
+                    {company?.fullName ||
+                      "AarambhGrow Group of Companies"}
                   </p>
                 </div>
               </div>
@@ -868,13 +1196,25 @@ function BusinessCardStudio({ company, profile, theme }) {
               SECTION 2
           ================================================= */}
 
-          <CardSection id="c-info" no="2" title="Personal Information" sub="Enter your details" icon={FaUser} theme={T}>
+          <CardSection
+            id="c-info"
+            no="2"
+            title="Personal Information"
+            sub="Enter your details"
+            icon={FaUser}
+            theme={T}
+          >
             <div className="grid gap-4 sm:grid-cols-2">
               <CardField
                 label="Full Name"
                 icon={FaUser}
                 value={c.name}
-                onChange={(value) => setField("name", value)}
+                onChange={(value) =>
+                  setField(
+                    "name",
+                    value,
+                  )
+                }
                 placeholder="Your Name"
                 theme={T}
               />
@@ -883,7 +1223,12 @@ function BusinessCardStudio({ company, profile, theme }) {
                 label="Designation"
                 icon={FaBriefcase}
                 value={c.designation}
-                onChange={(value) => setField("designation", value)}
+                onChange={(value) =>
+                  setField(
+                    "designation",
+                    value,
+                  )
+                }
                 placeholder="Your Designation"
                 theme={T}
               />
@@ -893,7 +1238,12 @@ function BusinessCardStudio({ company, profile, theme }) {
                 icon={FaPhone}
                 type="tel"
                 value={c.phone}
-                onChange={(value) => setField("phone", value)}
+                onChange={(value) =>
+                  setField(
+                    "phone",
+                    value,
+                  )
+                }
                 placeholder="+91 98765 43210"
                 theme={T}
               />
@@ -903,7 +1253,12 @@ function BusinessCardStudio({ company, profile, theme }) {
                 icon={FaEnvelope}
                 type="email"
                 value={c.email}
-                onChange={(value) => setField("email", value)}
+                onChange={(value) =>
+                  setField(
+                    "email",
+                    value,
+                  )
+                }
                 placeholder="you@domain.com"
                 theme={T}
               />
@@ -913,7 +1268,12 @@ function BusinessCardStudio({ company, profile, theme }) {
                 optional
                 icon={FaGlobe}
                 value={c.website}
-                onChange={(value) => setField("website", value)}
+                onChange={(value) =>
+                  setField(
+                    "website",
+                    value,
+                  )
+                }
                 placeholder="www.yourwebsite.com"
                 theme={T}
               />
@@ -923,7 +1283,12 @@ function BusinessCardStudio({ company, profile, theme }) {
                 optional
                 icon={FaLocationDot}
                 value={c.address}
-                onChange={(value) => setField("address", value)}
+                onChange={(value) =>
+                  setField(
+                    "address",
+                    value,
+                  )
+                }
                 placeholder="Your Address"
                 theme={T}
               />
@@ -934,7 +1299,14 @@ function BusinessCardStudio({ company, profile, theme }) {
               SECTION 3
           ================================================= */}
 
-          <CardSection id="c-photo" no="3" title="Photo & Appearance" sub="Choose your card appearance" icon={FaEye} theme={T}>
+          <CardSection
+            id="c-photo"
+            no="3"
+            title="Photo & Appearance"
+            sub="Choose your card appearance"
+            icon={FaEye}
+            theme={T}
+          >
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <p
@@ -947,11 +1319,35 @@ function BusinessCardStudio({ company, profile, theme }) {
                 </p>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Choice on={orientation === "landscape"} onClick={() => setOrientation("landscape")} icon={FaIdCard} theme={T}>
+                  <Choice
+                    on={
+                      orientation ===
+                      "landscape"
+                    }
+                    onClick={() =>
+                      setOrientation(
+                        "landscape",
+                      )
+                    }
+                    icon={FaIdCard}
+                    theme={T}
+                  >
                     Landscape
                   </Choice>
 
-                  <Choice on={orientation === "portrait"} onClick={() => setOrientation("portrait")} icon={FaIdBadge} theme={T}>
+                  <Choice
+                    on={
+                      orientation ===
+                      "portrait"
+                    }
+                    onClick={() =>
+                      setOrientation(
+                        "portrait",
+                      )
+                    }
+                    icon={FaIdBadge}
+                    theme={T}
+                  >
                     Portrait
                   </Choice>
                 </div>
@@ -968,11 +1364,29 @@ function BusinessCardStudio({ company, profile, theme }) {
                 </p>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Choice on={side === "front"} onClick={() => setSide("front")} icon={FaIdCard} theme={T}>
+                  <Choice
+                    on={
+                      side === "front"
+                    }
+                    onClick={() =>
+                      setSide("front")
+                    }
+                    icon={FaIdCard}
+                    theme={T}
+                  >
                     Front
                   </Choice>
 
-                  <Choice on={side === "back"} onClick={() => setSide("back")} icon={FaIdBadge} theme={T}>
+                  <Choice
+                    on={
+                      side === "back"
+                    }
+                    onClick={() =>
+                      setSide("back")
+                    }
+                    icon={FaIdBadge}
+                    theme={T}
+                  >
                     Back
                   </Choice>
                 </div>
@@ -986,13 +1400,17 @@ function BusinessCardStudio({ company, profile, theme }) {
 
           <button
             type="button"
-            onClick={() => goto("c-out")}
+            onClick={() =>
+              goto("c-out")
+            }
             className="inline-flex w-full items-center justify-center gap-3 rounded-md py-4 text-sm font-bold text-white shadow-lg transition hover:brightness-110"
             style={{
               background: T.gradient,
             }}
           >
-            <FaWandMagicSparkles size={15} />
+            <FaWandMagicSparkles
+              size={15}
+            />
             Generate Preview
             <FaArrowRight size={14} />
           </button>
@@ -1004,12 +1422,19 @@ function BusinessCardStudio({ company, profile, theme }) {
             }}
           >
             <span className="inline-flex items-center gap-1.5">
-              <FaCheck color={T.accent} size={10} />
-              High-resolution PNG &amp; PDF
+              <FaCheck
+                color={T.accent}
+                size={10}
+              />
+              High-resolution PNG &amp;
+              PDF
             </span>
 
             <span className="inline-flex items-center gap-1.5">
-              <FaCheck color={T.secondary} size={10} />
+              <FaCheck
+                color={T.secondary}
+                size={10}
+              />
               Company Certified
             </span>
           </p>
@@ -1067,38 +1492,45 @@ function BusinessCardStudio({ company, profile, theme }) {
               <span
                 className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold"
                 style={{
-                  background: T.secondaryLight,
-                  color: T.secondary,
+                  background:
+                    T.secondaryLight,
+                  color:
+                    T.secondary,
                 }}
               >
                 <span
                   className="h-1.5 w-1.5 rounded-full"
                   style={{
-                    background: T.accent,
+                    background:
+                      T.accent,
                   }}
                 />
                 REAL-TIME
               </span>
             </div>
 
-            {/* =============================================
-                SIDE INDICATOR
-            ============================================= */}
+            {/* SIDE INDICATOR */}
 
             <div className="mb-3 flex items-center justify-center gap-2">
               <button
                 type="button"
-                onClick={() => setSide("front")}
+                onClick={() =>
+                  setSide("front")
+                }
                 className="rounded-full px-4 py-1.5 text-[11px] font-bold transition"
                 style={
                   side === "front"
                     ? {
-                        background: T.primary,
-                        color: "#fff",
+                        background:
+                          T.primary,
+                        color:
+                          "#fff",
                       }
                     : {
-                        background: T.primaryLight,
-                        color: T.primary,
+                        background:
+                          T.primaryLight,
+                        color:
+                          T.primary,
                       }
                 }
               >
@@ -1107,17 +1539,23 @@ function BusinessCardStudio({ company, profile, theme }) {
 
               <button
                 type="button"
-                onClick={() => setSide("back")}
+                onClick={() =>
+                  setSide("back")
+                }
                 className="rounded-full px-4 py-1.5 text-[11px] font-bold transition"
                 style={
                   side === "back"
                     ? {
-                        background: T.primary,
-                        color: "#fff",
+                        background:
+                          T.primary,
+                        color:
+                          "#fff",
                       }
                     : {
-                        background: T.primaryLight,
-                        color: T.primary,
+                        background:
+                          T.primaryLight,
+                        color:
+                          T.primary,
                       }
                 }
               >
@@ -1125,71 +1563,87 @@ function BusinessCardStudio({ company, profile, theme }) {
               </button>
             </div>
 
-            {/* =============================================
-                CARD PREVIEW
-
-                NO 3D FLIP HERE.
-
-                Only one card component is mounted.
-                This prevents the blank-card issue.
-            ============================================= */}
+            {/* CARD PREVIEW */}
 
             <div
               className="mx-auto w-full"
               style={{
-                maxWidth: orientation === "portrait" ? 300 : "100%",
+                maxWidth:
+                  orientation ===
+                  "portrait"
+                    ? 300
+                    : "100%",
               }}
             >
               <div
                 style={{
-                  position: "relative",
-
+                  position:
+                    "relative",
                   width: "100%",
-
                   aspectRatio: `${W} / ${H}`,
-
-                  overflow: "hidden",
-
-                  borderRadius: "8px",
-
-                  cursor: "pointer",
-
-                  background: "#fff",
+                  overflow:
+                    "hidden",
+                  borderRadius:
+                    "8px",
+                  cursor:
+                    "pointer",
+                  background:
+                    "#fff",
                 }}
-                onClick={toggleSide}
+                onClick={
+                  toggleSide
+                }
                 title="Click card to switch side"
               >
-                {/* =========================================
-                    FRONT
-                ========================================= */}
-
-                {side === "front" && (
+                {side ===
+                  "front" && (
                   <div
                     key="preview-front"
                     data-card-preview-front
                     className="absolute inset-0 h-full w-full"
                     style={{
-                      animation: "cardSideIn .28s ease-out",
+                      animation:
+                        "cardSideIn .28s ease-out",
                     }}
                   >
-                    <CardFront data={cardData} orientation={orientation} company={company} theme={T} />
+                    <CardFront
+                      data={
+                        cardData
+                      }
+                      orientation={
+                        orientation
+                      }
+                      company={
+                        company
+                      }
+                      theme={T}
+                    />
                   </div>
                 )}
 
-                {/* =========================================
-                    BACK
-                ========================================= */}
-
-                {side === "back" && (
+                {side ===
+                  "back" && (
                   <div
                     key="preview-back"
                     data-card-preview-back
                     className="absolute inset-0 h-full w-full"
                     style={{
-                      animation: "cardSideIn .28s ease-out",
+                      animation:
+                        "cardSideIn .28s ease-out",
                     }}
                   >
-                    <CardBack data={cardData} orientation={orientation} company={company} theme={T} />
+                    <CardBack
+                      data={
+                        cardData
+                      }
+                      orientation={
+                        orientation
+                      }
+                      company={
+                        company
+                      }
+                      theme={T}
+                    />
                   </div>
                 )}
               </div>
@@ -1201,7 +1655,8 @@ function BusinessCardStudio({ company, profile, theme }) {
                 color: T.muted,
               }}
             >
-              Click the card or use Front / Back to switch sides
+              Click the card or use Front /
+              Back to switch sides
             </p>
           </section>
 
@@ -1220,11 +1675,14 @@ function BusinessCardStudio({ company, profile, theme }) {
               className="flex items-center gap-2 border-b pb-3 text-sm font-extrabold"
               style={{
                 color: T.primary,
-                borderColor: T.border,
+                borderColor:
+                  T.border,
               }}
             >
               <FaBuilding />
-              {company?.name || "Company"} Portal
+              {company?.name ||
+                "Company"}{" "}
+              Portal
             </div>
 
             <div className="mt-3 flex items-center justify-between gap-3">
@@ -1232,37 +1690,46 @@ function BusinessCardStudio({ company, profile, theme }) {
                 <p
                   className="text-sm font-extrabold"
                   style={{
-                    color: T.primary,
+                    color:
+                      T.primary,
                   }}
                 >
-                  {company?.fullName || "AarambhGrow Group of Companies"}
+                  {company?.fullName ||
+                    "AarambhGrow Group of Companies"}
                 </p>
 
                 <p
                   className="text-xs"
                   style={{
-                    color: T.muted,
+                    color:
+                      T.muted,
                   }}
                 >
-                  Full-Stack Support &amp; Business Solutions
+                  Full-Stack Support &amp;
+                  Business Solutions
                 </p>
 
                 <div className="mt-3 flex gap-2">
                   <span
                     className="rounded-full px-4 py-1 text-[11px] font-semibold"
                     style={{
-                      background: T.primaryLight,
-                      color: T.primary,
+                      background:
+                        T.primaryLight,
+                      color:
+                        T.primary,
                     }}
                   >
-                    {company?.name || "Company"}
+                    {company?.name ||
+                      "Company"}
                   </span>
 
                   <span
                     className="rounded-full px-4 py-1 text-[11px] font-semibold"
                     style={{
-                      background: T.secondaryLight,
-                      color: T.secondary,
+                      background:
+                        T.secondaryLight,
+                      color:
+                        T.secondary,
                     }}
                   >
                     {c.dept}
@@ -1276,7 +1743,17 @@ function BusinessCardStudio({ company, profile, theme }) {
                   border: `1px solid ${T.border}`,
                 }}
               >
-                <img src={company?.logo || "/aarambh.png"} alt={company?.fullName || "Company"} className="h-full w-full object-contain" />
+                <img
+                  src={
+                    company?.logo ||
+                    "/aarambh.png"
+                  }
+                  alt={
+                    company?.fullName ||
+                    "Company"
+                  }
+                  className="h-full w-full object-contain"
+                />
               </div>
             </div>
 
@@ -1286,7 +1763,8 @@ function BusinessCardStudio({ company, profile, theme }) {
                 color: T.muted,
               }}
             >
-              Your profile appears across all company platforms
+              Your profile appears across all
+              company platforms
             </p>
           </section>
 
@@ -1307,32 +1785,41 @@ function BusinessCardStudio({ company, profile, theme }) {
                 borderColor: T.border,
               }}
             >
-              {actions.map(({ label, icon: Icon, fn }) => (
-                <button
-                  key={label}
-                  type="button"
-                  onClick={fn}
-                  disabled={busy}
-                  className="flex items-center justify-center gap-2 px-2 py-3 text-xs font-semibold transition hover:bg-slate-50 disabled:opacity-50"
-                  style={{
-                    color: T.primary,
-                  }}
-                >
-                  <Icon size={16} />
-
-                  {label}
-                </button>
-              ))}
+              {actions.map(
+                ({
+                  label,
+                  icon: Icon,
+                  fn,
+                }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={fn}
+                    disabled={busy}
+                    className="flex items-center justify-center gap-2 px-2 py-3 text-xs font-semibold transition hover:bg-slate-50 disabled:opacity-50"
+                    style={{
+                      color:
+                        T.primary,
+                    }}
+                  >
+                    <Icon size={16} />
+                    {label}
+                  </button>
+                ),
+              )}
             </div>
 
             {(note || busy) && (
               <p
                 className="px-3 pb-2 text-center text-[11px] font-semibold"
                 style={{
-                  color: T.secondary,
+                  color:
+                    T.secondary,
                 }}
               >
-                {busy ? "Preparing file…" : note}
+                {busy
+                  ? "Preparing file…"
+                  : note}
               </p>
             )}
           </section>
@@ -1341,10 +1828,6 @@ function BusinessCardStudio({ company, profile, theme }) {
 
       {/* =====================================================
           HIDDEN EXPORT STAGE
-
-          Both cards are rendered here only for PDF export.
-
-          They are NOT used for the visible preview.
       ===================================================== */}
 
       <div
@@ -1354,57 +1837,83 @@ function BusinessCardStudio({ company, profile, theme }) {
           left: "-12000px",
           top: 0,
           width: W,
-          minHeight: H * 2 + 40,
-          overflow: "visible",
+          minHeight:
+            H * 2 + 40,
+          overflow:
+            "visible",
           zIndex: -1000,
         }}
       >
-        {/* FRONT EXPORT */}
+        {/* FRONT */}
 
         <div
           data-card-export-front
           style={{
-            position: "relative",
+            position:
+              "relative",
             width: W,
             height: H,
-            overflow: "hidden",
-            background: "#fff",
+            overflow:
+              "hidden",
+            background:
+              "#fff",
           }}
         >
-          <CardFront data={cardData} orientation={orientation} company={company} theme={T} />
+          <CardFront
+            data={cardData}
+            orientation={
+              orientation
+            }
+            company={
+              company
+            }
+            theme={T}
+          />
         </div>
 
-        {/* BACK EXPORT */}
+        {/* BACK */}
 
         <div
           data-card-export-back
           style={{
-            position: "relative",
+            position:
+              "relative",
             width: W,
             height: H,
             marginTop: 20,
-            overflow: "hidden",
-            background: "#fff",
+            overflow:
+              "hidden",
+            background:
+              "#fff",
           }}
         >
-          <CardBack data={cardData} orientation={orientation} company={company} theme={T} />
+          <CardBack
+            data={cardData}
+            orientation={
+              orientation
+            }
+            company={
+              company
+            }
+            theme={T}
+          />
         </div>
       </div>
 
-      {/* =====================================================
-          ANIMATION
-      ===================================================== */}
+      {/* ANIMATION */}
 
       <style jsx>{`
         @keyframes cardSideIn {
           0% {
             opacity: 0;
-            transform: scale(0.985) translateY(4px);
+            transform: scale(0.985)
+              translateY(4px);
           }
 
           100% {
             opacity: 1;
-            transform: scale(1) translateY(0);
+            transform: scale(1)
+              translateY(0);
           }
         }
       `}</style>
@@ -1417,108 +1926,167 @@ function BusinessCardStudio({ company, profile, theme }) {
 ========================================================= */
 
 export default function HomeShell() {
-  const defaultCompany = COMPANY_CONFIG[DEFAULT_COMPANY_ID] || COMPANY_OPTIONS[0];
+  const defaultCompany =
+    COMPANY_CONFIG[
+      DEFAULT_COMPANY_ID
+    ] || COMPANY_OPTIONS[0];
 
-  const [mode, setMode] = useState("dp");
+  const [mode, setMode] =
+    useState("dp");
 
-  const [profile, setProfile] = useState({
-    company: DEFAULT_COMPANY_ID,
+  const [profile, setProfile] =
+    useState({
+      company:
+        DEFAULT_COMPANY_ID,
 
-    dept: "Sales",
+      dept: "Sales",
 
-    name: "",
+      name: "",
 
-    designation: "",
+      designation: "",
 
-    photo: "",
+      photo: "",
 
-    gender: "Male",
+      gender: "Male",
 
-    theme: "Navy",
+      theme: "Navy",
 
-    phone: "",
+      phone: "",
 
-    email: "",
+      email: "",
 
-    website: defaultCompany?.data?.website || "",
+      website:
+        defaultCompany?.data
+          ?.website || "",
 
-    address: defaultCompany?.data?.address || "",
+      address:
+        defaultCompany?.data
+          ?.address || "",
 
-    logo: defaultCompany?.logo || "",
-  });
+      logo:
+        defaultCompany?.logo ||
+        "",
+    });
 
-  const selectedCompany = COMPANY_CONFIG[profile.company] || defaultCompany;
+  const selectedCompany =
+    COMPANY_CONFIG[
+      profile.company
+    ] || defaultCompany;
 
-  const T = selectedCompany?.theme || DEFAULT_THEME;
+  const T =
+    selectedCompany?.theme ||
+    DEFAULT_THEME;
 
   /* =====================================================
      PROFILE UPDATE
   ===================================================== */
 
-  const setProfileField = (key, value) => {
-    setProfile((previous) => ({
-      ...previous,
-      [key]: value,
-    }));
+  const setProfileField = (
+    key,
+    value,
+  ) => {
+    setProfile(
+      (previous) => ({
+        ...previous,
+        [key]: value,
+      }),
+    );
   };
 
   /* =====================================================
      COMPANY CHANGE
   ===================================================== */
 
-  const changeCompany = (companyId) => {
-    const next = COMPANY_CONFIG[companyId] || defaultCompany;
+  const changeCompany = (
+    companyId,
+  ) => {
+    const next =
+      COMPANY_CONFIG[
+        companyId
+      ] || defaultCompany;
 
-    setProfile((previous) => ({
-      ...previous,
+    setProfile(
+      (previous) => ({
+        ...previous,
 
-      company: next.id || companyId,
+        company:
+          next.id ||
+          companyId,
 
-      website: next?.data?.website || "",
+        website:
+          next?.data
+            ?.website || "",
 
-      address: next?.data?.address || "",
+        address:
+          next?.data
+            ?.address || "",
 
-      logo: next?.logo || "",
-    }));
+        logo:
+          next?.logo || "",
+      }),
+    );
 
     setReady(false);
   };
 
-  const [active, setActive] = useState("s-org");
+  const [active, setActive] =
+    useState("s-org");
 
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] =
+    useState(false);
 
-  const [cardOrientation, setCardOrientation] = useState("landscape");
+  const [cardOrientation, setCardOrientation] =
+    useState("landscape");
 
   /* =====================================================
      ACTIVE STEP OBSERVER
   ===================================================== */
 
   useEffect(() => {
-    const steps = mode === "card" ? CARD_STEPS : STEPS;
+    const steps =
+      mode === "card"
+        ? CARD_STEPS
+        : STEPS;
 
-    const elements = steps.map((step) => document.getElementById(step.id)).filter(Boolean);
+    const elements = steps
+      .map((step) =>
+        document.getElementById(
+          step.id,
+        ),
+      )
+      .filter(Boolean);
 
     if (!elements.length) {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((entry) => entry.isIntersecting);
+    const observer =
+      new IntersectionObserver(
+        (entries) => {
+          const visible =
+            entries.find(
+              (entry) =>
+                entry.isIntersecting,
+            );
 
-        if (visible) {
-          setActive(visible.target.id);
-        }
-      },
-      {
-        rootMargin: "-20% 0px -60% 0px",
-      },
+          if (visible) {
+            setActive(
+              visible.target.id,
+            );
+          }
+        },
+        {
+          rootMargin:
+            "-20% 0px -60% 0px",
+        },
+      );
+
+    elements.forEach((element) =>
+      observer.observe(element),
     );
 
-    elements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
+    return () =>
+      observer.disconnect();
   }, [mode]);
 
   /* =====================================================
@@ -1528,17 +2096,21 @@ export default function HomeShell() {
   const goto = (id) => {
     setActive(id);
 
-    document.getElementById(id)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
   };
 
   /* =====================================================
      MODE CHANGE
   ===================================================== */
 
-  const changeMode = (nextMode) => {
+  const changeMode = (
+    nextMode,
+  ) => {
     setMode(nextMode);
 
     setReady(false);
@@ -1584,8 +2156,8 @@ export default function HomeShell() {
     <div
       className={`min-h-screen ${plusJakartaSans.className}`}
       style={{
-        background: T.background,
-
+        background:
+          T.background,
         color: T.text,
       }}
     >
@@ -1596,9 +2168,10 @@ export default function HomeShell() {
       <header
         className="sticky top-0 z-40 overflow-hidden border-b bg-white shadow-sm"
         style={{
-          borderColor: T.border,
-
-          background: T.surface,
+          borderColor:
+            T.border,
+          background:
+            T.surface,
         }}
       >
         <Swoosh className="right-0 top-0 h-full w-56 opacity-50" />
@@ -1607,7 +2180,15 @@ export default function HomeShell() {
           {/* LOGO */}
 
           <div className="flex items-center gap-4">
-            <img src={selectedCompany.headerLogo} alt={selectedCompany.fullName} className="h-14 w-auto object-contain" />
+            <img
+              src={
+                selectedCompany.headerLogo
+              }
+              alt={
+                selectedCompany.fullName
+              }
+              className="h-14 w-auto object-contain"
+            />
 
             <span className="hidden h-12 w-px bg-slate-200 sm:block" />
 
@@ -1615,19 +2196,23 @@ export default function HomeShell() {
               <p
                 className="text-2xl font-extrabold leading-tight"
                 style={{
-                  color: T.primary,
+                  color:
+                    T.primary,
                 }}
               >
-                Digital Profile Studio
+                Digital Profile
+                Studio
               </p>
 
               <p
                 className="text-sm"
                 style={{
-                  color: T.muted,
+                  color:
+                    T.muted,
                 }}
               >
-                Your Professional Identity, Instantly
+                Your Professional
+                Identity, Instantly
               </p>
             </div>
           </div>
@@ -1640,49 +2225,96 @@ export default function HomeShell() {
             <div
               className="flex items-center gap-2 rounded-md border bg-white px-3 py-2 shadow-sm"
               style={{
-                borderColor: T.border,
+                borderColor:
+                  T.border,
               }}
             >
-              <FaBuilding size={14} color={T.primary} />
+              <FaBuilding
+                size={14}
+                color={
+                  T.primary
+                }
+              />
 
               <select
-                value={profile.company}
-                onChange={(event) => changeCompany(event.target.value)}
+                value={
+                  profile.company
+                }
+                onChange={(
+                  event,
+                ) =>
+                  changeCompany(
+                    event.target
+                      .value,
+                  )
+                }
                 className="max-w-[190px] bg-transparent text-xs font-bold outline-none"
                 style={{
-                  color: T.primary,
+                  color:
+                    T.primary,
                 }}
                 aria-label="Select company"
               >
-                {COMPANY_OPTIONS.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name}
-                  </option>
-                ))}
+                {COMPANY_OPTIONS.map(
+                  (item) => (
+                    <option
+                      key={
+                        item.id
+                      }
+                      value={
+                        item.id
+                      }
+                    >
+                      {
+                        item.name
+                      }
+                    </option>
+                  ),
+                )}
               </select>
             </div>
 
             {/* MODES */}
 
-            {MODES.map(({ id, label, icon: Icon, bg }) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => changeMode(id)}
-                className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-xs font-bold text-white shadow-md transition hover:-translate-y-0.5"
-                style={{
-                  background: bg,
+            {MODES.map(
+              ({
+                id,
+                label,
+                icon: Icon,
+                bg,
+              }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() =>
+                    changeMode(
+                      id,
+                    )
+                  }
+                  className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-xs font-bold text-white shadow-md transition hover:-translate-y-0.5"
+                  style={{
+                    background:
+                      bg,
 
-                  opacity: mode === id ? 1 : 0.85,
+                    opacity:
+                      mode === id
+                        ? 1
+                        : 0.85,
 
-                  boxShadow: mode === id ? `0 0 0 2px #fff, 0 0 0 4px ${T.primary}33` : undefined,
-                }}
-              >
-                <Icon size={16} />
+                    boxShadow:
+                      mode === id
+                        ? `0 0 0 2px #fff, 0 0 0 4px ${T.primary}33`
+                        : undefined,
+                  }}
+                >
+                  <Icon size={16} />
 
-                {label}
-              </button>
-            ))}
+                  {
+                    label
+                  }
+                </button>
+              ),
+            )}
           </nav>
         </div>
       </header>
@@ -1691,15 +2323,20 @@ export default function HomeShell() {
           BUSINESS CARD MODE
       =================================================== */}
 
-      {mode === "card" ? (
+      {mode ===
+      "card" ? (
         <div className="flex items-start">
-          <BusinessCardStudio company={selectedCompany} profile={profile} theme={T} />
+          <BusinessCardStudio
+            company={
+              selectedCompany
+            }
+            profile={
+              profile
+            }
+            theme={T}
+          />
         </div>
       ) : (
-        /* =================================================
-           DP / EMAIL SIGNATURE
-        ================================================= */
-
         <div className="flex min-w-0 items-start">
           {/* LEFT SIDEBAR */}
 
@@ -1710,57 +2347,98 @@ export default function HomeShell() {
             }}
           >
             <ol className="relative space-y-2 p-3 pt-6">
-              {STEPS.map((step, index) => {
-                const on = active === step.id;
+              {STEPS.map(
+                (
+                  step,
+                  index,
+                ) => {
+                  const on =
+                    active ===
+                    step.id;
 
-                return (
-                  <li key={step.id} className="relative">
-                    <button
-                      type="button"
-                      onClick={() => goto(step.id)}
-                      className="flex w-full items-center gap-3 rounded-md px-2.5 py-3 text-left text-white transition hover:bg-white/10"
-                      style={
-                        on
-                          ? {
-                              background: `${T.secondary}55`,
-
-                              borderLeft: `4px solid ${T.accent}`,
-                            }
-                          : {
-                              borderLeft: "4px solid transparent",
-                            }
+                  return (
+                    <li
+                      key={
+                        step.id
                       }
+                      className="relative"
                     >
-                      <span
-                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold"
-                        style={{
-                          background: on ? T.accent : "rgba(255,255,255,.25)",
-
-                          color: "#fff",
-                        }}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          goto(
+                            step.id,
+                          )
+                        }
+                        className="flex w-full items-center gap-3 rounded-md px-2.5 py-3 text-left text-white transition hover:bg-white/10"
+                        style={
+                          on
+                            ? {
+                                background: `${T.secondary}55`,
+                                borderLeft: `4px solid ${T.accent}`,
+                              }
+                            : {
+                                borderLeft:
+                                  "4px solid transparent",
+                              }
+                        }
                       >
-                        {index + 1}
-                      </span>
+                        <span
+                          className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold"
+                          style={{
+                            background:
+                              on
+                                ? T.accent
+                                : "rgba(255,255,255,.25)",
+                            color:
+                              "#fff",
+                          }}
+                        >
+                          {
+                            index +
+                              1
+                          }
+                        </span>
 
-                      <step.icon size={18} className="shrink-0 opacity-90" />
+                        <step.icon
+                          size={18}
+                          className="shrink-0 opacity-90"
+                        />
 
-                      <span>
-                        <span className="block text-[13px] font-bold leading-tight">{step.title}</span>
+                        <span>
+                          <span className="block text-[13px] font-bold leading-tight">
+                            {
+                              step.title
+                            }
+                          </span>
 
-                        <span className="block text-[11px] leading-tight text-white/65">{step.sub}</span>
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
+                          <span className="block text-[11px] leading-tight text-white/65">
+                            {
+                              step.sub
+                            }
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  );
+                },
+              )}
             </ol>
 
             <div className="relative p-6 pb-10 text-white">
-              <p className="text-lg opacity-85">Build Your</p>
+              <p className="text-lg opacity-85">
+                Build Your
+              </p>
 
-              <p className="text-xl font-extrabold leading-tight">Professional Identity</p>
+              <p className="text-xl font-extrabold leading-tight">
+                Professional
+                Identity
+              </p>
 
-              <p className="opacity-85">in Just a Few Clicks</p>
+              <p className="opacity-85">
+                in Just a Few
+                Clicks
+              </p>
 
               <div
                 className="mt-3 h-1 w-16 rounded"
@@ -1776,34 +2454,64 @@ export default function HomeShell() {
           {/* GENERATOR */}
 
           <main className="min-w-0 flex-1">
-            {mode === "dp" && (
+            {mode ===
+              "dp" && (
               <WhatsAppDPGenerator
-                data={profile}
-                setData={setProfileField}
+                data={
+                  profile
+                }
+                setData={
+                  setProfileField
+                }
                 onReady={() => {
-                  setReady(true);
+                  setReady(
+                    true,
+                  );
 
-                  goto("s-out");
+                  goto(
+                    "s-out",
+                  );
                 }}
-                ready={ready}
-                brand={selectedCompany.theme}
-                company={selectedCompany}
+                ready={
+                  ready
+                }
+                brand={
+                  selectedCompany.theme
+                }
+                company={
+                  selectedCompany
+                }
                 theme={T}
               />
             )}
 
-            {mode === "sig" && (
+            {mode ===
+              "sig" && (
               <EmailSignatureGenerator
-                data={profile}
-                setData={setProfileField}
+                data={
+                  profile
+                }
+                setData={
+                  setProfileField
+                }
                 onReady={() => {
-                  setReady(true);
+                  setReady(
+                    true,
+                  );
 
-                  goto("s-out");
+                  goto(
+                    "s-out",
+                  );
                 }}
-                ready={ready}
-                brand={selectedCompany.theme}
-                company={selectedCompany}
+                ready={
+                  ready
+                }
+                brand={
+                  selectedCompany.theme
+                }
+                company={
+                  selectedCompany
+                }
                 theme={T}
               />
             )}
@@ -1818,31 +2526,59 @@ export default function HomeShell() {
       <footer
         className="grid items-center gap-3 border-t bg-white px-6 py-4 text-[11px] md:grid-cols-3"
         style={{
-          borderColor: T.border,
-
+          borderColor:
+            T.border,
           color: T.muted,
-
-          background: T.surface,
+          background:
+            T.surface,
         }}
       >
-        <img src={selectedCompany.headerLogo} alt={selectedCompany.fullName} className="h-11 w-auto object-contain" />
+        <img
+          src={
+            selectedCompany.headerLogo
+          }
+          alt={
+            selectedCompany.fullName
+          }
+          className="h-11 w-auto object-contain"
+        />
 
         <p className="text-center italic">
-          Developed with <FaHeart className="inline" color={T.accent} size={10} /> by Digital Team
+          Developed with{" "}
+          <FaHeart
+            className="inline"
+            color={
+              T.accent
+            }
+            size={10}
+          />{" "}
+          by Digital Team
           <br />
-          at {selectedCompany.fullName}
+          at{" "}
+          {
+            selectedCompany.fullName
+          }
         </p>
 
         <p className="text-right">
-          © {new Date().getFullYear()} {selectedCompany.fullName}
+          ©{" "}
+          {new Date().getFullYear()}{" "}
+          {
+            selectedCompany.fullName
+          }
           . All rights reserved.
           <br />
+
           <span
             style={{
-              color: T.secondary,
+              color:
+                T.secondary,
             }}
           >
-            Digital Business Card Studio v1.0 • For internal company use only
+            Digital Business Card
+            Studio v1.0 • For
+            internal company use
+            only
           </span>
         </p>
       </footer>

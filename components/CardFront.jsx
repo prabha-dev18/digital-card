@@ -1,29 +1,41 @@
 "use client";
 
-import { FaEnvelope, FaGlobe, FaLocationDot, FaPhone } from "react-icons/fa6";
+import {
+  FaEnvelope,
+  FaGlobe,
+  FaLocationDot,
+  FaPhone,
+} from "react-icons/fa6";
+
+/* =========================================================
+   DEFAULT THEME
+========================================================= */
 
 const DEFAULT_THEME = {
   primary: "#00275E",
   secondary: "#159B24",
   accent: "#FA7800",
+
   background: "#FAFAFA",
   text: "#00275E",
   muted: "#64748B",
 };
 
-const CARD_DESIGN = {
-  /* =========================================================
-     LANDSCAPE
-     ========================================================= */
+/* =========================================================
+   MAIN CARD DESIGN
+   DO NOT CHANGE
+   THIS IS THE ORIGINAL AARAMBHGROW GROUP STRUCTURE
+========================================================= */
 
+const GROUP_CARD_DESIGN = {
   landscape: {
     width: 1050,
     height: 600,
 
     logo: {
-      left: "2%",
-      top: "5%",
-      width: "54%",
+      left: "-2%",
+      top: "-10%",
+      width: "60%",
     },
 
     person: {
@@ -35,7 +47,7 @@ const CARD_DESIGN = {
 
     name: {
       size: "4.9cqw",
-      left: "0%",
+      left: "1%",
       top: "0%",
       align: "left",
     },
@@ -84,7 +96,7 @@ const CARD_DESIGN = {
 
   /* =========================================================
      PORTRAIT
-     ========================================================= */
+  ========================================================= */
 
   portrait: {
     width: 500,
@@ -154,8 +166,49 @@ const CARD_DESIGN = {
 };
 
 /* =========================================================
+   OTHER COMPANY LOGO FITTING
+   Slightly increased size, perfectly centered vertically
+========================================================= */
+
+const OTHER_COMPANY_LOGO_FIT = {
+  landscape: {
+    left: "5%",
+    top: "3%",
+    width: "44%",
+    height: "26%",
+    objectFit: "contain",
+    objectPosition: "left center",
+  },
+
+  portrait: {
+    left: "8%",
+    top: "5%",
+    width: "84%",
+    height: "18%",
+    objectFit: "contain",
+    objectPosition: "center center",
+  },
+};
+
+/* =========================================================
+   COMPANY TYPE
+========================================================= */
+
+function isGroupCompany(company) {
+  if (!company) {
+    return true;
+  }
+
+  return (
+    company.id === "aarambhgrow" ||
+    company.id === "aarambhgrow-group" ||
+    company.backCard?.type === "group"
+  );
+}
+
+/* =========================================================
    HELPERS
-   ========================================================= */
+========================================================= */
 
 function prettyUrl(url) {
   return String(url || "")
@@ -178,33 +231,20 @@ function withProtocol(url) {
 }
 
 /* =========================================================
-   CARD FRONT
-   ========================================================= */
+   CONTACT ROWS
+========================================================= */
 
-export default function CardFront({ data, innerRef, orientation = "landscape", company, theme }) {
-  const T = theme || company?.theme || DEFAULT_THEME;
+function getContactRows(data, theme) {
+  const secondary =
+    theme.secondary || DEFAULT_THEME.secondary;
 
-  const primary = T.primary || DEFAULT_THEME.primary;
-  const secondary = T.secondary || DEFAULT_THEME.secondary;
-  const accent = T.accent || DEFAULT_THEME.accent;
-  const background = T.background || DEFAULT_THEME.background;
-  const muted = T.muted || DEFAULT_THEME.muted;
+  const accent =
+    theme.accent || DEFAULT_THEME.accent;
 
-  const isPortrait = orientation === "portrait";
+  const primary =
+    theme.primary || DEFAULT_THEME.primary;
 
-  const design = isPortrait ? CARD_DESIGN.portrait : CARD_DESIGN.landscape;
-
-  /* =========================================================
-     COMPANY-WISE FRONT BACKGROUND
-     ========================================================= */
-
-  const cardBackground = company?.cardBackground?.front || "/bg-2.png";
-
-  /* =========================================================
-     CONTACT ROWS
-     ========================================================= */
-
-  const rows = [
+  return [
     data?.phone && {
       Icon: FaPhone,
       text: data.phone,
@@ -237,6 +277,147 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
       label: "Location",
     },
   ].filter(Boolean);
+}
+
+/* =========================================================
+   CONTACT ROW
+========================================================= */
+
+function ContactRow({
+  row,
+  design,
+  primary,
+}) {
+  const {
+    Icon,
+    text,
+    href,
+    bg,
+    label,
+  } = row;
+
+  const content = (
+    <>
+      <span
+        className="grid shrink-0 place-items-center rounded-full text-white"
+        style={{
+          width: design.icon.size,
+          height: design.icon.size,
+          minWidth: design.icon.size,
+          minHeight: design.icon.size,
+          backgroundColor: bg,
+        }}
+      >
+        <Icon
+          style={{
+            width: design.icon.iconSize,
+            height: design.icon.iconSize,
+          }}
+        />
+      </span>
+
+      <span
+        className="min-w-0 break-words font-medium leading-tight"
+        style={{
+          fontSize: design.contactText.size,
+          color: primary,
+        }}
+      >
+        {text}
+      </span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        aria-label={`${label}: ${text}`}
+        className="flex min-w-0 items-center"
+        style={{
+          gap: design.contactGap,
+        }}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <div
+      className="flex min-w-0 items-center"
+      style={{
+        gap: design.contactGap,
+      }}
+    >
+      {content}
+    </div>
+  );
+}
+
+/* =========================================================
+   MAIN CARD FRONT
+========================================================= */
+
+export default function CardFront({
+  data,
+  innerRef,
+  orientation = "landscape",
+  company,
+  theme,
+}) {
+  const T =
+    theme ||
+    company?.theme ||
+    DEFAULT_THEME;
+
+  const primary =
+    T.primary ||
+    DEFAULT_THEME.primary;
+
+  const secondary =
+    T.secondary ||
+    DEFAULT_THEME.secondary;
+
+  const accent =
+    T.accent ||
+    DEFAULT_THEME.accent;
+
+  const background =
+    T.background ||
+    DEFAULT_THEME.background;
+
+  const muted =
+    T.muted ||
+    DEFAULT_THEME.muted;
+
+  const isPortrait =
+    orientation === "portrait";
+
+  const design = isPortrait
+    ? GROUP_CARD_DESIGN.portrait
+    : GROUP_CARD_DESIGN.landscape;
+
+  const isGroup = isGroupCompany(company);
+
+  const cardBackground =
+    company?.cardBackground?.front ||
+    "/bg-2.png";
+
+  const cardLogo =
+    company?.cardLogo ||
+    company?.logo ||
+    "/aarambh2.png";
+
+  const otherLogoDesign = isPortrait
+    ? OTHER_COMPANY_LOGO_FIT.portrait
+    : OTHER_COMPANY_LOGO_FIT.landscape;
+
+  const rows = getContactRows(data, {
+    primary,
+    secondary,
+    accent,
+  });
 
   return (
     <div
@@ -251,9 +432,6 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
 
         backgroundColor: background,
 
-        /*
-         * Company-wise Front Background
-         */
         backgroundImage: `url("${cardBackground}")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -263,37 +441,67 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
         WebkitBackfaceVisibility: "hidden",
       }}
     >
-      {/* =====================================================
-          BACKGROUND IMAGE
-          ===================================================== */}
+      {/* Background Image Layer */}
+      <img
+        src={cardBackground}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-fill"
+        draggable="false"
+      />
 
-      <img src={cardBackground} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-fill" draggable="false" />
-
-      {/* =====================================================
-          CONTENT LAYER
-          ===================================================== */}
-
+      {/* Content Layer */}
       <div className="absolute inset-0">
-        {/* ===================================================
-            COMPANY LOGO
-            =================================================== */}
 
-        <img
-          src={company?.cardLogo || company?.logo || "/aarambh2.png"}
-          alt={company?.fullName || "Company Logo"}
-          className="absolute h-auto object-contain"
-          style={{
-            left: design.logo.left,
-            top: design.logo.top,
-            width: design.logo.width,
-          }}
-          draggable="false"
-        />
+        {/* LOGO AREA */}
+        {isGroup ? (
+          /* Main AarambhGrow Group Logo - Original Unchanged Structure */
+          <img
+            src={cardLogo}
+            alt={
+              company?.fullName ||
+              company?.name ||
+              "Company Logo"
+            }
+            className="absolute h-auto object-contain"
+            style={{
+              left: design.logo.left,
+              top: design.logo.top,
+              width: design.logo.width,
+            }}
+            draggable="false"
+          />
+        ) : (
+          /* Other Company Logos - Centered & Slightly Increased Size */
+          <div
+            className="absolute flex items-center justify-start overflow-hidden"
+            style={{
+              left: otherLogoDesign.left,
+              top: otherLogoDesign.top,
+              width: otherLogoDesign.width,
+              height: otherLogoDesign.height,
+            }}
+          >
+            <img
+              src={cardLogo}
+              alt={
+                company?.fullName ||
+                company?.name ||
+                "Company Logo"
+              }
+              className="max-h-full max-w-full object-contain"
+              style={{
+                objectFit:
+                  otherLogoDesign.objectFit,
+                objectPosition:
+                  otherLogoDesign.objectPosition,
+              }}
+              draggable="false"
+            />
+          </div>
+        )}
 
-        {/* ===================================================
-            PERSON INFORMATION
-            =================================================== */}
-
+        {/* Person Information */}
         <div
           className="absolute"
           style={{
@@ -302,120 +510,91 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
             width: design.person.width,
           }}
         >
-          {/* NAME */}
-
           <h3
             className="font-extrabold leading-tight"
             style={{
               position: "relative",
-
               left: design.name.left || "0%",
-
               top: design.name.top || "0%",
-
-              textAlign: design.name.align || design.person.align || "left",
-
+              textAlign:
+                design.name.align ||
+                design.person.align ||
+                "left",
               fontSize: design.name.size,
-
               letterSpacing: "-0.01em",
-
               whiteSpace: "nowrap",
-
               overflow: "visible",
-
               color: primary,
+              margin: 0,
             }}
           >
             {data?.name || "Your Name"}
           </h3>
 
-          {/* JOB TITLE */}
-
           <p
             className="font-semibold leading-tight"
             style={{
               position: "relative",
-
               left: design.title.left || "0%",
-
               top: design.title.top || "0%",
-
-              textAlign: design.title.align || design.person.align || "left",
-
+              textAlign:
+                design.title.align ||
+                design.person.align ||
+                "left",
               fontSize: design.title.size,
-
-              marginTop: design.title.marginTop || "1%",
-
+              marginTop:
+                design.title.marginTop || "1%",
+              marginBottom: 0,
               whiteSpace: "nowrap",
-
               overflow: "visible",
-
               color: muted,
             }}
           >
             {data?.title || "Job Title"}
           </p>
 
-          {/* SLOGAN */}
-
           <p
             className="font-medium leading-tight"
             style={{
               position: "relative",
-
               left: design.slogan.left || "0%",
-
               top: design.slogan.top || "0%",
-
-              textAlign: design.slogan.align || design.person.align || "left",
-
+              textAlign:
+                design.slogan.align ||
+                design.person.align ||
+                "left",
               fontSize: design.slogan.size,
-
               marginTop: design.slogan.marginTop,
-
+              marginBottom: 0,
               whiteSpace: "nowrap",
-
               overflow: "visible",
-
               color: muted,
             }}
           >
-            {data?.slogan || "Your Growth | Our Commitment"}
+            {data?.slogan ||
+              "Your Growth | Our Commitment"}
           </p>
         </div>
 
-        {/* ===================================================
-            DIVIDER
-            =================================================== */}
-
+        {/* Divider */}
         <div
           className="absolute"
           style={{
             left: design.divider.left,
-
             top: design.divider.top,
-
             width: design.divider.width,
-
             height: design.divider.height,
-
             backgroundColor: primary,
-
             opacity: 0.25,
           }}
         />
 
-        {/* ===================================================
-            CONTACT INFORMATION
-            =================================================== */}
-
+        {/* Contact Information */}
         <div
           className="absolute"
           style={{
             left: design.contacts.left,
-
             top: design.contacts.top,
-
             width: design.contacts.width,
           }}
         >
@@ -425,73 +604,14 @@ export default function CardFront({ data, innerRef, orientation = "landscape", c
               gap: design.contacts.gap,
             }}
           >
-            {rows.map(({ Icon, text, href, bg, label }) => {
-              const content = (
-                <>
-                  {/* ICON */}
-
-                  <span
-                    className="grid shrink-0 place-items-center rounded-full text-white"
-                    style={{
-                      width: design.icon.size,
-
-                      height: design.icon.size,
-
-                      minWidth: design.icon.size,
-
-                      minHeight: design.icon.size,
-
-                      backgroundColor: bg,
-                    }}
-                  >
-                    <Icon
-                      style={{
-                        width: design.icon.iconSize,
-
-                        height: design.icon.iconSize,
-                      }}
-                    />
-                  </span>
-
-                  {/* TEXT */}
-
-                  <span
-                    className="min-w-0 break-words font-medium leading-tight"
-                    style={{
-                      fontSize: design.contactText.size,
-
-                      color: primary,
-                    }}
-                  >
-                    {text}
-                  </span>
-                </>
-              );
-
-              return href ? (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={`${label}: ${text}`}
-                  className="flex min-w-0 items-center"
-                  style={{
-                    gap: design.contactGap,
-                  }}
-                >
-                  {content}
-                </a>
-              ) : (
-                <div
-                  key={label}
-                  className="flex min-w-0 items-center"
-                  style={{
-                    gap: design.contactGap,
-                  }}
-                >
-                  {content}
-                </div>
-              );
-            })}
+            {rows.map((row) => (
+              <ContactRow
+                key={row.label}
+                row={row}
+                design={design}
+                primary={primary}
+              />
+            ))}
           </div>
         </div>
       </div>

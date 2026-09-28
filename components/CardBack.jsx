@@ -4,8 +4,12 @@ import { useMemo } from "react";
 import { FaHandshake, FaBullseye, FaLightbulb } from "react-icons/fa6";
 import { QRCodeSVG } from "qrcode.react";
 
-import { BRAND, COMPANY } from "../lib/cardConfig";
+import { COMPANY } from "../lib/cardConfig";
 import { downloadVCard, generateVCard } from "../lib/generateVCard";
+
+/* =========================================================
+   DEFAULT THEME
+========================================================= */
 
 const DEFAULT_THEME = {
   primary: "#00275E",
@@ -26,8 +30,8 @@ const DEFAULT_THEME = {
 };
 
 /* =========================================================
-   AARAMBH GROW GROUP DESIGN
-   DO NOT CHANGE THIS STRUCTURE
+   GROUP DESIGN
+   DO NOT CHANGE STRUCTURE
 ========================================================= */
 
 const GROUP_DESIGN = {
@@ -192,66 +196,137 @@ const GROUP_DESIGN = {
 };
 
 /* =========================================================
-   COMPANY CARD DESIGN
-   Used for Advisory / Services / Infinity / Nexera / EuroAsia
+   COMPANY DESIGN
+   LANDSCAPE = LEFT QR + RIGHT CONTENT
+   PORTRAIT = TOP QR + BOTTOM CONTENT
 ========================================================= */
 
 const COMPANY_DESIGN = {
   landscape: {
     background: "#FFFFFF",
-    padding: "5cqw",
 
-    logoWidth: "15cqw",
-    logoHeight: "9cqw",
+    qr: {
+      columnWidth: "28%",
+      paddingLeft: "4cqw",
+      paddingRight: "2cqw",
+      gap: "1.4cqw",
+      buttonPadding: "0.7cqw",
+      innerPadding: "0.8cqw",
+      size: "14cqw",
+      maxWidth: "105px",
+      maxHeight: "105px",
+      textSize: "1.8cqw",
+    },
 
-    headingSize: "3.2cqw",
-    subtitleSize: "1.55cqw",
+    divider: {
+      marginTop: "9%",
+      marginBottom: "9%",
+      width: "0.12cqw",
+    },
 
-    dividerWidth: "18cqw",
-    dividerHeight: "0.3cqw",
+    main: {
+      paddingTop: "4%",
+      paddingBottom: "4%",
+      paddingLeft: "3%",
+      paddingRight: "7%",
+      gap: "1.1cqw",
+    },
 
-    servicesTitleSize: "1.65cqw",
-    serviceSize: "1.35cqw",
+    heading: {
+      size: "3.2cqw",
+    },
 
-    serviceGap: "1.2cqw",
-    columnGap: "4cqw",
+    subtitle: {
+      size: "1.55cqw",
+    },
 
-    taglineSize: "1.5cqw",
-    websiteSize: "1.2cqw",
-    emailSize: "1.2cqw",
+    dividerLine: {
+      width: "18cqw",
+      height: "0.3cqw",
+    },
 
-    qrSize: "8cqw",
+    servicesTitle: {
+      size: "1.65cqw",
+    },
+
+    services: {
+      size: "1.35cqw",
+      gap: "0.9cqw",
+      columnGap: "3cqw",
+    },
+
+    tagline: {
+      size: "1.5cqw",
+    },
+
+    contact: {
+      website: "1.2cqw",
+      email: "1.2cqw",
+    },
   },
 
   portrait: {
     background: "#FFFFFF",
-    padding: "7cqw",
 
-    logoWidth: "35cqw",
-    logoHeight: "20cqw",
+    qr: {
+      paddingTop: "6cqw",
+      buttonPadding: "0.8cqw",
+      innerPadding: "1cqw",
+      size: "20cqw",
+      maxWidth: "150px",
+      maxHeight: "150px",
+      textSize: "2.5cqw",
+      textMarginTop: "1.3cqw",
+    },
 
-    headingSize: "4.5cqw",
-    subtitleSize: "2.2cqw",
+    divider: {
+      marginTop: "4cqw",
+      width: "76%",
+      height: "0.12cqw",
+    },
 
-    dividerWidth: "28cqw",
-    dividerHeight: "0.5cqw",
+    main: {
+      width: "86%",
+      paddingBottom: "6cqw",
+      gap: "2cqw",
+    },
 
-    servicesTitleSize: "2.6cqw",
-    serviceSize: "2.15cqw",
+    heading: {
+      size: "4.5cqw",
+    },
 
-    serviceGap: "2cqw",
-    columnGap: "6cqw",
+    subtitle: {
+      size: "2.2cqw",
+    },
 
-    taglineSize: "2.3cqw",
-    websiteSize: "1.9cqw",
-    emailSize: "1.9cqw",
+    dividerLine: {
+      width: "28cqw",
+      height: "0.5cqw",
+    },
 
-    qrSize: "18cqw",
+    servicesTitle: {
+      size: "2.6cqw",
+    },
+
+    services: {
+      size: "2.15cqw",
+      gap: "1.6cqw",
+      columnGap: "6cqw",
+    },
+
+    tagline: {
+      size: "2.3cqw",
+    },
+
+    contact: {
+      website: "1.9cqw",
+      email: "1.9cqw",
+    },
   },
 };
 
 /* =========================================================
-   SMALL HELPER
+   HELPERS
 ========================================================= */
 
 function getCompanyBackType(company) {
@@ -265,10 +340,147 @@ function getCompanyBackType(company) {
 }
 
 /* =========================================================
-   COMPANY BACK CARD
+   GET COMPANY WEBSITE
 ========================================================= */
 
-function CompanyBackCard({ data, company, orientation, theme, vcardValue, handleSaveContact }) {
+function getCompanyWebsite(company, data) {
+  const website =
+    company?.data?.website ||
+    data?.website ||
+    company?.backCard?.website ||
+    COMPANY?.website ||
+    "https://aarambhgrow.group";
+
+  return website;
+}
+
+/* =========================================================
+   NORMALIZE WEBSITE
+========================================================= */
+
+function normalizeWebsite(website) {
+  if (!website) {
+    return "https://aarambhgrow.group";
+  }
+
+  if (website.startsWith("http://") || website.startsWith("https://")) {
+    return website;
+  }
+
+  return `https://${website}`;
+}
+
+/* =========================================================
+   WEBSITE LINK
+========================================================= */
+
+function WebsiteLink({ company, data, primary, fontSize }) {
+  const website = getCompanyWebsite(company, data);
+
+  const websiteUrl = normalizeWebsite(website);
+
+  return (
+    <a
+      href={websiteUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-no-flip
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+      className="font-semibold underline-offset-2 transition-opacity hover:opacity-70"
+      style={{
+        color: primary,
+        fontSize,
+        cursor: "pointer",
+      }}
+    >
+      {website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+    </a>
+  );
+}
+
+/* =========================================================
+   QR CODE
+   SCAN = COMPANY WEBSITE
+   CLICK QR = SAVE CONTACT
+========================================================= */
+
+function CompanyQRCode({
+  company,
+  data,
+  primary,
+  gradient,
+  design,
+  handleSaveContact,
+}) {
+  const website = getCompanyWebsite(company, data);
+
+  const websiteUrl = normalizeWebsite(website);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={handleSaveContact}
+        aria-label="Save contact"
+        data-no-flip
+        className="rounded-md shadow-soft transition-transform duration-300 hover:scale-[1.03]"
+        style={{
+          padding: design.qr.buttonPadding,
+          background: gradient,
+        }}
+      >
+        <span
+          className="block rounded-[9px] bg-white"
+          style={{
+            padding: design.qr.innerPadding,
+          }}
+        >
+          <QRCodeSVG
+            value={websiteUrl}
+            level="H"
+            fgColor={primary}
+            bgColor="#FFFFFF"
+            style={{
+              width: design.qr.size,
+              height: design.qr.size,
+              maxWidth: design.qr.maxWidth,
+              maxHeight: design.qr.maxHeight,
+            }}
+          />
+        </span>
+      </button>
+
+      <p
+        className="text-center font-semibold leading-snug"
+        style={{
+          marginTop: design.qr.textMarginTop || undefined,
+          fontSize: design.qr.textSize,
+          color: primary,
+        }}
+      >
+        Scan QR Code
+        <br />
+        Open Website
+      </p>
+    </>
+  );
+}
+
+/* =========================================================
+   COMPANY BACK CARD
+   OTHER COMPANIES
+========================================================= */
+
+function CompanyBackCard({
+  data,
+  company,
+  orientation,
+  theme,
+  vcardValue,
+  handleSaveContact,
+}) {
   const T = theme || company?.theme || DEFAULT_THEME;
 
   const primary = T.primary || DEFAULT_THEME.primary;
@@ -278,28 +490,125 @@ function CompanyBackCard({ data, company, orientation, theme, vcardValue, handle
 
   const isPortrait = orientation === "portrait";
 
-  const design = isPortrait ? COMPANY_DESIGN.portrait : COMPANY_DESIGN.landscape;
+  const design = isPortrait
+    ? COMPANY_DESIGN.portrait
+    : COMPANY_DESIGN.landscape;
 
   const backCard = company?.backCard || {};
 
-  const services = Array.isArray(backCard.services) ? backCard.services : [];
+  const services = Array.isArray(backCard.services)
+    ? backCard.services
+    : [];
 
-  const logo = company?.cardLogo || company?.logo || "/aarambh.png";
-
-  /*
-   * COMPANY-WISE BACKGROUND
-   *
-   * Uses:
-   * company.cardBackground.back
-   *
-   * Example:
-   * advisory -> /advisory-back-bg.png
-   * services -> /services-back-bg.png
-   * infinity -> /infinity-back-bg.png
-   * nexera -> /nexera-back-bg.png
-   * euroasia -> /euroasia-back-bg.png
-   */
   const cardBackground = company?.cardBackground?.back || null;
+
+  /* =======================================================
+     PORTRAIT
+     QR TOP + CONTENT BELOW
+  ======================================================= */
+
+  if (isPortrait) {
+    return (
+      <div
+        className="relative h-full w-full overflow-hidden"
+        style={{
+          backgroundColor: design.background,
+          color: primary,
+        }}
+      >
+        {/* BACKGROUND IMAGE - KEPT */}
+        {cardBackground && (
+          <img
+            src={cardBackground}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-fill"
+            draggable="false"
+          />
+        )}
+
+        {/* BACKGROUND OVERLAY - KEPT */}
+        {cardBackground && (
+          <div
+            className="absolute inset-0"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+            }}
+          />
+        )}
+
+        {/* NO LEFT / RIGHT EDGE LINE */}
+
+        <div className="relative z-10 flex h-full w-full flex-col items-center">
+          {/* =================================================
+              QR
+          ================================================= */}
+
+          <div
+            data-no-flip
+            className="flex w-full flex-col items-center justify-center"
+            style={{
+              paddingTop: design.qr.paddingTop,
+            }}
+          >
+            <CompanyQRCode
+              company={company}
+              data={data}
+              primary={primary}
+              gradient={gradient}
+              design={design}
+              handleSaveContact={handleSaveContact}
+            />
+          </div>
+
+          {/* =================================================
+              DIVIDER
+          ================================================= */}
+
+          <div
+            style={{
+              marginTop: design.divider.marginTop,
+              width: design.divider.width,
+              height: design.divider.height,
+              backgroundColor: primary,
+              opacity: 0.2,
+            }}
+          />
+
+          {/* =================================================
+              CONTENT
+          ================================================= */}
+
+          <div
+            className="flex min-w-0 flex-1 flex-col items-center justify-center text-center"
+            style={{
+              width: design.main.width,
+              paddingBottom: design.main.paddingBottom,
+              gap: design.main.gap,
+            }}
+          >
+            <CompanyContent
+              data={data}
+              company={company}
+              backCard={backCard}
+              services={services}
+              primary={primary}
+              secondary={secondary}
+              accent={accent}
+              gradient={gradient}
+              design={design}
+              isPortrait
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* =======================================================
+     LANDSCAPE
+     LEFT QR + RIGHT CONTENT
+  ======================================================= */
 
   return (
     <div
@@ -309,19 +618,18 @@ function CompanyBackCard({ data, company, orientation, theme, vcardValue, handle
         color: primary,
       }}
     >
-      {/* =================================================
-          COMPANY BACKGROUND IMAGE
-      ================================================= */}
-
+      {/* BACKGROUND IMAGE - KEPT */}
       {cardBackground && (
-        <img src={cardBackground} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-fill" draggable="false" />
+        <img
+          src={cardBackground}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-fill"
+          draggable="false"
+        />
       )}
 
-      {/* =================================================
-          LIGHT OVERLAY
-          Keeps text readable on background images
-      ================================================= */}
-
+      {/* BACKGROUND OVERLAY - KEPT */}
       {cardBackground && (
         <div
           className="absolute inset-0"
@@ -331,229 +639,256 @@ function CompanyBackCard({ data, company, orientation, theme, vcardValue, handle
         />
       )}
 
-      {/* ================================================
-          DECORATIVE TOP BAR
-      ================================================= */}
+      {/* NO LEFT / RIGHT EDGE LINE */}
 
-      <div
-        className="absolute left-0 top-0 h-full w-[1.2%]"
-        style={{
-          background: gradient,
-        }}
-      />
-
-      <div
-        className="absolute right-0 top-0 h-full w-[1.2%]"
-        style={{
-          background: gradient,
-        }}
-      />
-
-      {/* ================================================
-          MAIN
-      ================================================= */}
-
-      <div
-        className="relative z-10 flex h-full w-full flex-col items-center text-center"
-        style={{
-          padding: design.padding,
-        }}
-      >
-        {/* LOGO */}
+      <div className="relative z-10 flex h-full w-full">
+        {/* =================================================
+            LEFT QR COLUMN
+        ================================================= */}
 
         <div
-          className="flex shrink-0 items-center justify-center"
+          data-no-flip
+          className="flex shrink-0 flex-col items-center justify-center"
           style={{
-            width: design.logoWidth,
-            height: design.logoHeight,
+            width: design.qr.columnWidth,
+            paddingLeft: design.qr.paddingLeft,
+            paddingRight: design.qr.paddingRight,
+            gap: design.qr.gap,
           }}
         >
-          <img src={logo} alt={backCard.title || company?.name || "Company"} className="h-full w-full object-contain" draggable="false" />
+          <CompanyQRCode
+            company={company}
+            data={data}
+            primary={primary}
+            gradient={gradient}
+            design={design}
+            handleSaveContact={handleSaveContact}
+          />
         </div>
 
-        {/* COMPANY NAME */}
-
-        <h2
-          className="mt-[1.5cqw] font-extrabold leading-tight"
-          style={{
-            color: primary,
-            fontSize: design.headingSize,
-          }}
-        >
-          {backCard.title || company?.name}
-        </h2>
-
-        {/* SUBTITLE */}
-
-        {backCard.subtitle && (
-          <p
-            className="mt-[0.7cqw] font-medium leading-tight"
-            style={{
-              color: primary,
-              opacity: 0.72,
-              fontSize: design.subtitleSize,
-            }}
-          >
-            {backCard.subtitle}
-          </p>
-        )}
-
-        {/* DECORATIVE LINE */}
+        {/* =================================================
+            VERTICAL DIVIDER
+        ================================================= */}
 
         <div
-          className="mt-[1.5cqw] rounded-full"
+          className="shrink-0"
           style={{
-            width: design.dividerWidth,
-            height: design.dividerHeight,
-            background: gradient,
+            marginTop: design.divider.marginTop,
+            marginBottom: design.divider.marginBottom,
+            width: design.divider.width,
+            backgroundColor: primary,
+            opacity: 0.2,
           }}
         />
 
-        {/* SERVICES TITLE */}
-
-        <p
-          className="mt-[1.5cqw] font-extrabold uppercase tracking-[0.12em]"
-          style={{
-            color: primary,
-            fontSize: design.servicesTitleSize,
-          }}
-        >
-          {backCard.servicesTitle || "Our Services"}
-        </p>
-
-        {/* SERVICES */}
+        {/* =================================================
+            RIGHT CONTENT
+        ================================================= */}
 
         <div
-          className="mt-[1.2cqw] grid w-full"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center text-center"
           style={{
-            gridTemplateColumns: "1fr 1fr",
-            columnGap: design.columnGap,
-            rowGap: design.serviceGap,
+            paddingTop: design.main.paddingTop,
+            paddingBottom: design.main.paddingBottom,
+            paddingLeft: design.main.paddingLeft,
+            paddingRight: design.main.paddingRight,
+            gap: design.main.gap,
           }}
         >
-          {services.map((service, index) => (
-            <div
-              key={`${service}-${index}`}
-              className="flex min-w-0 items-center text-left"
-              style={{
-                gap: isPortrait ? "1.3cqw" : "0.7cqw",
-              }}
-            >
-              <span
-                className="shrink-0 rounded-full"
-                style={{
-                  width: isPortrait ? "1.6cqw" : "0.9cqw",
-                  height: isPortrait ? "1.6cqw" : "0.9cqw",
-                  backgroundColor: index % 2 === 0 ? accent : secondary,
-                }}
-              />
-
-              <span
-                className="font-semibold leading-tight"
-                style={{
-                  color: primary,
-                  fontSize: design.serviceSize,
-                }}
-              >
-                {service}
-              </span>
-            </div>
-          ))}
+          <CompanyContent
+            data={data}
+            company={company}
+            backCard={backCard}
+            services={services}
+            primary={primary}
+            secondary={secondary}
+            accent={accent}
+            gradient={gradient}
+            design={design}
+            isPortrait={false}
+          />
         </div>
-
-        {/* TAGLINE */}
-
-        {backCard.tagline && (
-          <p
-            className="mt-[1.8cqw] font-bold leading-tight"
-            style={{
-              color: primary,
-              fontSize: design.taglineSize,
-            }}
-          >
-            {backCard.tagline}
-          </p>
-        )}
-
-        {/* CONTACT DETAILS */}
-
-        <div
-          className="mt-[1.2cqw] flex flex-wrap items-center justify-center"
-          style={{
-            gap: isPortrait ? "2cqw" : "1.5cqw",
-          }}
-        >
-          {backCard.website && (
-            <span
-              className="font-semibold"
-              style={{
-                color: primary,
-                fontSize: design.websiteSize,
-              }}
-            >
-              {backCard.website}
-            </span>
-          )}
-
-          {backCard.email && (
-            <span
-              className="font-semibold"
-              style={{
-                color: primary,
-                opacity: 0.8,
-                fontSize: design.emailSize,
-              }}
-            >
-              {backCard.email}
-            </span>
-          )}
-        </div>
-
-        {/* QR */}
-
-        <button
-          type="button"
-          data-no-flip
-          onClick={handleSaveContact}
-          aria-label="Save contact"
-          className="mt-[1.5cqw] rounded-md transition-transform duration-300 hover:scale-[1.03]"
-          style={{
-            padding: isPortrait ? "0.8cqw" : "0.5cqw",
-            background: gradient,
-          }}
-        >
-          <span
-            className="block rounded-md bg-white"
-            style={{
-              padding: isPortrait ? "0.9cqw" : "0.6cqw",
-            }}
-          >
-            <QRCodeSVG
-              value={vcardValue}
-              level="L"
-              fgColor={primary}
-              bgColor="#FFFFFF"
-              style={{
-                width: design.qrSize,
-                height: design.qrSize,
-                maxWidth: isPortrait ? "180px" : "90px",
-                maxHeight: isPortrait ? "180px" : "90px",
-              }}
-            />
-          </span>
-        </button>
-
-        <p
-          className="mt-[0.6cqw] font-semibold"
-          style={{
-            color: primary,
-            fontSize: isPortrait ? "1.9cqw" : "1.1cqw",
-          }}
-        >
-          Scan QR Code • Save Contact
-        </p>
       </div>
     </div>
+  );
+}
+
+/* =========================================================
+   COMPANY CONTENT
+   OTHER COMPANIES
+   NO LOGO
+========================================================= */
+
+function CompanyContent({
+  data,
+  company,
+  backCard,
+  services,
+  primary,
+  secondary,
+  accent,
+  gradient,
+  design,
+  isPortrait,
+}) {
+  return (
+    <>
+      {/* =================================================
+          COMPANY NAME
+      ================================================= */}
+
+      <h2
+        className="font-extrabold leading-tight"
+        style={{
+          color: primary,
+          fontSize: design.heading.size,
+          margin: 0,
+        }}
+      >
+        {company?.name || backCard.title || "Company"}
+      </h2>
+
+      {/* =================================================
+          SUBTITLE
+      ================================================= */}
+
+      {backCard.subtitle && (
+        <p
+          className="font-medium leading-tight"
+          style={{
+            color: primary,
+            opacity: 0.72,
+            fontSize: design.subtitle.size,
+            margin: 0,
+          }}
+        >
+          {backCard.subtitle}
+        </p>
+      )}
+
+      {/* =================================================
+          DECORATIVE LINE
+      ================================================= */}
+
+      <div
+        className="rounded-full"
+        style={{
+          width: design.dividerLine.width,
+          height: design.dividerLine.height,
+          background: gradient,
+        }}
+      />
+
+      {/* =================================================
+          SERVICES TITLE
+      ================================================= */}
+
+      <p
+        className="font-extrabold uppercase tracking-[0.12em]"
+        style={{
+          color: primary,
+          fontSize: design.servicesTitle.size,
+          margin: 0,
+        }}
+      >
+        {backCard.servicesTitle || "Our Services"}
+      </p>
+
+      {/* =================================================
+          SERVICES
+      ================================================= */}
+
+      <div
+        className="grid w-full"
+        style={{
+          gridTemplateColumns: "1fr 1fr",
+          columnGap: design.services.columnGap,
+          rowGap: design.services.gap,
+        }}
+      >
+        {services.map((service, index) => (
+          <div
+            key={`${service}-${index}`}
+            className="flex min-w-0 items-center text-left"
+            style={{
+              gap: isPortrait ? "1.3cqw" : "0.7cqw",
+            }}
+          >
+            <span
+              className="shrink-0 rounded-full"
+              style={{
+                width: isPortrait ? "1.6cqw" : "0.9cqw",
+                height: isPortrait ? "1.6cqw" : "0.9cqw",
+                backgroundColor:
+                  index % 2 === 0 ? accent : secondary,
+              }}
+            />
+
+            <span
+              className="font-semibold leading-tight"
+              style={{
+                color: primary,
+                fontSize: design.services.size,
+              }}
+            >
+              {service}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* =================================================
+          TAGLINE
+      ================================================= */}
+
+      {backCard.tagline && (
+        <p
+          className="font-bold leading-tight"
+          style={{
+            color: primary,
+            fontSize: design.tagline.size,
+            margin: 0,
+          }}
+        >
+          {backCard.tagline}
+        </p>
+      )}
+
+      {/* =================================================
+          WEBSITE + EMAIL
+      ================================================= */}
+
+      <div
+        className="flex flex-wrap items-center justify-center"
+        style={{
+          gap: isPortrait ? "2cqw" : "1.5cqw",
+        }}
+      >
+        {(backCard.website ||
+          company?.data?.website ||
+          data?.website) && (
+          <WebsiteLink
+            company={company}
+            data={data}
+            primary={primary}
+            fontSize={design.contact.website}
+          />
+        )}
+
+        {backCard.email && (
+          <span
+            className="font-semibold"
+            style={{
+              color: primary,
+              opacity: 0.8,
+              fontSize: design.contact.email,
+            }}
+          >
+            {backCard.email}
+          </span>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -561,34 +896,64 @@ function CompanyBackCard({ data, company, orientation, theme, vcardValue, handle
    MAIN CARD BACK
 ========================================================= */
 
-export default function CardBack({ data, innerRef, orientation = "landscape", company, theme }) {
+export default function CardBack({
+  data,
+  innerRef,
+  orientation = "landscape",
+  company,
+  theme,
+}) {
   const T = theme || company?.theme || DEFAULT_THEME;
 
   const primary = T.primary || DEFAULT_THEME.primary;
-
   const secondary = T.secondary || DEFAULT_THEME.secondary;
-
   const accent = T.accent || DEFAULT_THEME.accent;
-
   const gradient = T.gradient || DEFAULT_THEME.gradient;
 
   const isPortrait = orientation === "portrait";
 
-  const design = isPortrait ? GROUP_DESIGN.portrait : GROUP_DESIGN.landscape;
+  const design = isPortrait
+    ? GROUP_DESIGN.portrait
+    : GROUP_DESIGN.landscape;
+
+  /* =======================================================
+     VCARD
+     Used only when user clicks QR
+  ======================================================= */
 
   const vcardValue = useMemo(() => generateVCard(data), [data]);
 
+  /* =======================================================
+     SAVE CONTACT
+  ======================================================= */
+
   const handleSaveContact = (event) => {
     event.stopPropagation();
-    downloadVCard(data);
+
+    try {
+      downloadVCard(data);
+    } catch (error) {
+      console.error("Unable to download vCard:", error);
+    }
   };
+
+  /* =======================================================
+     COMPANY TYPE
+  ======================================================= */
 
   const backType = getCompanyBackType(company);
 
+  /* =======================================================
+     COMPANY WEBSITE
+  ======================================================= */
+
+  const groupWebsite = normalizeWebsite(
+    getCompanyWebsite(company, data)
+  );
+
   /*
-   * IMPORTANT:
    * CardBack itself MUST NOT rotate.
-   * HomeShell controls the card side.
+   * HomeShell controls card side.
    */
 
   return (
@@ -601,7 +966,6 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
         width: "100%",
         height: "100%",
         containerType: "inline-size",
-
         backfaceVisibility: "hidden",
         WebkitBackfaceVisibility: "hidden",
       }}
@@ -622,20 +986,26 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
       ) : (
         <>
           {/* =================================================
-              AARAMBH GROW GROUP BACKGROUND
-
-              KEEP THIS ORIGINAL STRUCTURE
+              GROUP BACKGROUND
           ================================================= */}
 
-          <img src={design.background} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-fill" draggable="false" />
+          <img
+            src={design.background}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-fill"
+            draggable="false"
+          />
 
           {/* =================================================
-              PORTRAIT GROUP CARD
+              GROUP PORTRAIT
           ================================================= */}
 
           {isPortrait ? (
             <div className="relative z-10 flex h-full w-full flex-col items-center">
-              {/* QR */}
+              {/* =================================================
+                  QR
+              ================================================= */}
 
               <div
                 data-no-flip
@@ -644,52 +1014,19 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                   paddingTop: design.qr.paddingTop,
                 }}
               >
-                <button
-                  type="button"
-                  onClick={handleSaveContact}
-                  aria-label="Save contact"
-                  className="rounded-md shadow-soft transition-transform duration-300 hover:scale-[1.03]"
-                  style={{
-                    padding: design.qr.buttonPadding,
-                    background: gradient,
-                  }}
-                >
-                  <span
-                    className="block rounded-[9px] bg-white"
-                    style={{
-                      padding: design.qr.innerPadding,
-                    }}
-                  >
-                    <QRCodeSVG
-                      value={vcardValue}
-                      level="L"
-                      fgColor={primary}
-                      bgColor="#FFFFFF"
-                      style={{
-                        width: design.qr.size,
-                        height: design.qr.size,
-                        maxWidth: design.qr.maxWidth,
-                        maxHeight: design.qr.maxHeight,
-                      }}
-                    />
-                  </span>
-                </button>
-
-                <p
-                  className="text-center font-semibold leading-snug"
-                  style={{
-                    marginTop: design.qr.textMarginTop,
-                    fontSize: design.qr.textSize,
-                    color: primary,
-                  }}
-                >
-                  Scan QR Code
-                  <br />
-                  Save Contact
-                </p>
+                <CompanyQRCode
+                  company={company}
+                  data={data}
+                  primary={primary}
+                  gradient={gradient}
+                  design={design}
+                  handleSaveContact={handleSaveContact}
+                />
               </div>
 
-              {/* DIVIDER */}
+              {/* =================================================
+                  DIVIDER
+              ================================================= */}
 
               <div
                 style={{
@@ -701,7 +1038,9 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                 }}
               />
 
-              {/* MAIN */}
+              {/* =================================================
+                  MAIN
+              ================================================= */}
 
               <div
                 className="flex min-w-0 flex-1 flex-col items-center justify-center text-center"
@@ -711,12 +1050,15 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                   gap: design.main.gap,
                 }}
               >
-                {/* HEADING */}
+                {/* =================================================
+                    GROUP HEADING
+                ================================================= */}
 
                 <p
                   className="font-extrabold leading-tight"
                   style={{
                     fontSize: design.heading.size,
+                    margin: 0,
                   }}
                 >
                   <span
@@ -724,7 +1066,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                       color: primary,
                     }}
                   >
-                    {company?.name || COMPANY.brandName || "AarambhGrow"}
+                    {company?.backCard?.title || "AarambhGrow"}
                   </span>{" "}
                   <span
                     className="font-semibold"
@@ -733,11 +1075,14 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                       opacity: 0.7,
                     }}
                   >
-                    {company?.fullName || COMPANY.backHeadingTail || ""}
+                    {company?.backCard?.subtitle ||
+                      "Group of Companies"}
                   </span>
                 </p>
 
-                {/* VISION */}
+                {/* =================================================
+                    VISION
+                ================================================= */}
 
                 <div
                   className="flex items-center justify-center"
@@ -759,9 +1104,10 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                     style={{
                       fontSize: design.vision.textSize,
                       color: primary,
+                      margin: 0,
                     }}
                   >
-                    {COMPANY.visionLine.left}
+                    {COMPANY?.visionLine?.left || "One Vision"}
 
                     <span
                       style={{
@@ -773,7 +1119,8 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                       |
                     </span>
 
-                    {COMPANY.visionLine.right}
+                    {COMPANY?.visionLine?.right ||
+                      "Multiple Opportunities"}
                   </p>
 
                   <span
@@ -786,7 +1133,9 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                   />
                 </div>
 
-                {/* COMPANY LOGOS */}
+                {/* =================================================
+                    COMPANY LOGOS
+                ================================================= */}
 
                 <div
                   className="flex items-center justify-center"
@@ -796,7 +1145,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                 >
                   <img
                     src="/service.png"
-                    alt="AarambhGrow Services Private Limited"
+                    alt="AarambhGrow Services"
                     className="object-contain"
                     draggable="false"
                     style={{
@@ -816,7 +1165,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
 
                   <img
                     src="/advisory.png"
-                    alt="AarambhGrow Advisory Private Limited"
+                    alt="AarambhGrow Advisory"
                     className="object-contain"
                     draggable="false"
                     style={{
@@ -847,7 +1196,9 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                   />
                 </div>
 
-                {/* MOTTO */}
+                {/* =================================================
+                    MOTTO
+                ================================================= */}
 
                 <div
                   className="flex items-center justify-center"
@@ -869,9 +1220,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                     style={{
                       fontSize: design.motto.textSize,
                       color: primary,
+                      margin: 0,
                     }}
                   >
-                    {COMPANY.mottoLine}
+                    {COMPANY?.mottoLine ||
+                      "Together for a Stronger Tomorrow"}
                   </p>
 
                   <span
@@ -887,11 +1240,13 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
             </div>
           ) : (
             /* =================================================
-               LANDSCAPE GROUP CARD
+               LANDSCAPE GROUP
             ================================================= */
 
             <div className="relative z-10 flex h-full w-full">
-              {/* QR COLUMN */}
+              {/* =================================================
+                  QR COLUMN
+              ================================================= */}
 
               <div
                 data-no-flip
@@ -903,51 +1258,19 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                   gap: design.qr.gap,
                 }}
               >
-                <button
-                  type="button"
-                  onClick={handleSaveContact}
-                  aria-label="Save contact"
-                  className="rounded-md shadow-soft transition-transform duration-300 hover:scale-[1.03]"
-                  style={{
-                    padding: design.qr.buttonPadding,
-                    background: gradient,
-                  }}
-                >
-                  <span
-                    className="block rounded-[9px] bg-white"
-                    style={{
-                      padding: design.qr.innerPadding,
-                    }}
-                  >
-                    <QRCodeSVG
-                      value={vcardValue}
-                      level="L"
-                      fgColor={primary}
-                      bgColor="#FFFFFF"
-                      style={{
-                        width: design.qr.size,
-                        height: design.qr.size,
-                        maxWidth: design.qr.maxWidth,
-                        maxHeight: design.qr.maxHeight,
-                      }}
-                    />
-                  </span>
-                </button>
-
-                <p
-                  className="text-center font-semibold leading-snug"
-                  style={{
-                    fontSize: design.qr.textSize,
-                    color: primary,
-                  }}
-                >
-                  Scan QR Code
-                  <br />
-                  Save Contact
-                </p>
+                <CompanyQRCode
+                  company={company}
+                  data={data}
+                  primary={primary}
+                  gradient={gradient}
+                  design={design}
+                  handleSaveContact={handleSaveContact}
+                />
               </div>
 
-              {/* VERTICAL DIVIDER */}
+              {/* =================================================
+                  VERTICAL DIVIDER
+              ================================================= */}
 
               <div
                 className="shrink-0"
@@ -960,7 +1283,9 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                 }}
               />
 
-              {/* RIGHT CONTENT */}
+              {/* =================================================
+                  RIGHT CONTENT
+              ================================================= */}
 
               <div
                 className="flex min-w-0 flex-1 flex-col items-center justify-center text-center"
@@ -972,12 +1297,15 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                   gap: design.main.gap,
                 }}
               >
-                {/* HEADING */}
+                {/* =================================================
+                    GROUP HEADING
+                ================================================= */}
 
                 <p
                   className="font-extrabold leading-tight"
                   style={{
                     fontSize: design.heading.size,
+                    margin: 0,
                   }}
                 >
                   <span
@@ -985,7 +1313,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                       color: primary,
                     }}
                   >
-                    {company?.name || COMPANY.brandName || "AarambhGrow"}
+                    {company?.backCard?.title || "AarambhGrow"}
                   </span>{" "}
                   <span
                     className="font-semibold"
@@ -994,11 +1322,14 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                       opacity: 0.7,
                     }}
                   >
-                    {company?.fullName || COMPANY.backHeadingTail || ""}
+                    {company?.backCard?.subtitle ||
+                      "Group of Companies"}
                   </span>
                 </p>
 
-                {/* VISION */}
+                {/* =================================================
+                    VISION
+                ================================================= */}
 
                 <div
                   className="flex items-center justify-center"
@@ -1020,9 +1351,10 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                     style={{
                       fontSize: design.vision.textSize,
                       color: primary,
+                      margin: 0,
                     }}
                   >
-                    {COMPANY.visionLine.left}
+                    {COMPANY?.visionLine?.left || "One Vision"}
 
                     <span
                       style={{
@@ -1034,7 +1366,8 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                       |
                     </span>
 
-                    {COMPANY.visionLine.right}
+                    {COMPANY?.visionLine?.right ||
+                      "Multiple Opportunities"}
                   </p>
 
                   <span
@@ -1047,7 +1380,9 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                   />
                 </div>
 
-                {/* COMPANY LOGOS */}
+                {/* =================================================
+                    COMPANY LOGOS
+                ================================================= */}
 
                 <div
                   className="flex items-center justify-center"
@@ -1057,7 +1392,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                 >
                   <img
                     src="/service.png"
-                    alt="AarambhGrow Services Private Limited"
+                    alt="AarambhGrow Services"
                     className="object-contain"
                     draggable="false"
                     style={{
@@ -1077,7 +1412,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
 
                   <img
                     src="/advisory.png"
-                    alt="AarambhGrow Advisory Private Limited"
+                    alt="AarambhGrow Advisory"
                     className="object-contain"
                     draggable="false"
                     style={{
@@ -1108,7 +1443,9 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                   />
                 </div>
 
-                {/* MOTTO */}
+                {/* =================================================
+                    MOTTO
+                ================================================= */}
 
                 <div
                   className="flex items-center justify-center"
@@ -1130,9 +1467,11 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                     style={{
                       fontSize: design.motto.textSize,
                       color: primary,
+                      margin: 0,
                     }}
                   >
-                    {COMPANY.mottoLine}
+                    {COMPANY?.mottoLine ||
+                      "Together for a Stronger Tomorrow"}
                   </p>
 
                   <span
@@ -1145,7 +1484,9 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                   />
                 </div>
 
-                {/* FEATURES */}
+                {/* =================================================
+                    FEATURES
+                ================================================= */}
 
                 <div
                   className="flex w-full items-center justify-center"
@@ -1183,6 +1524,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                       style={{
                         fontSize: design.features.textSize,
                         color: primary,
+                        margin: 0,
                       }}
                     >
                       Growth
@@ -1230,6 +1572,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                       style={{
                         fontSize: design.features.textSize,
                         color: primary,
+                        margin: 0,
                       }}
                     >
                       Sustainable
@@ -1277,6 +1620,7 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                       style={{
                         fontSize: design.features.textSize,
                         color: primary,
+                        margin: 0,
                       }}
                     >
                       Greater
@@ -1285,6 +1629,34 @@ export default function CardBack({ data, innerRef, orientation = "landscape", co
                     </p>
                   </div>
                 </div>
+
+                {/* =================================================
+                    GROUP WEBSITE
+                ================================================= */}
+
+                <a
+                  href={groupWebsite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-no-flip
+                  onClick={(event) => {
+                    event.stopPropagation();
+                  }}
+                  className="font-semibold underline-offset-2 transition-opacity hover:opacity-70"
+                  style={{
+                    color: primary,
+                    fontSize:
+                      orientation === "portrait"
+                        ? "2.2cqw"
+                        : "1.5cqw",
+                    cursor: "pointer",
+                    marginTop: "0.5cqw",
+                  }}
+                >
+                  {groupWebsite
+                    .replace(/^https?:\/\//, "")
+                    .replace(/\/$/, "")}
+                </a>
               </div>
             </div>
           )}
