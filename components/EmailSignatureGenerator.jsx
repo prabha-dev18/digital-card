@@ -241,6 +241,53 @@ function normalizePhone(value = "") {
   return value.replace(/[^\d+]/g, "");
 }
 
+/* =========================================================
+   EMAIL SIGNATURE LOGO SIZING
+   Decreased dimensions for all 6 companies to create a sleek,
+   balanced, and compact email signature layout.
+========================================================= */
+function getEmailLogoDimensions(company, logoUrl) {
+  const compId = String(company?.id || company?.name || "").toLowerCase();
+  const url = String(logoUrl || "").toLowerCase();
+
+  // Wide banner variants:
+  if (url.includes("euroasia") || compId.includes("euroasia")) {
+    return { width: 140, height: 34, tdWidth: 150 };
+  }
+  if (url.includes("aarambh2")) {
+    return { width: 135, height: 90, tdWidth: 145 };
+  }
+  if (url.includes("service2")) {
+    return { width: 130, height: 48, tdWidth: 140 };
+  }
+  if (url.includes("advisory2")) {
+    return { width: 125, height: 62, tdWidth: 135 };
+  }
+  if (url.includes("infinity2")) {
+    return { width: 130, height: 53, tdWidth: 140 };
+  }
+  if (url.includes("nexera2")) {
+    return { width: 125, height: 51, tdWidth: 135 };
+  }
+
+  // Standard company stacked/badge logos (company.logo):
+  if (compId === "infinity" || compId.includes("infinity") || url.includes("infinity")) {
+    return { width: 110, height: 73, tdWidth: 120 };
+  }
+  if (compId === "nexera" || compId.includes("nexera") || url.includes("nexera")) {
+    return { width: 98, height: 73, tdWidth: 110 };
+  }
+  if (compId === "services" || compId.includes("service") || url.includes("service")) {
+    return { width: 98, height: 74, tdWidth: 110 };
+  }
+  if (compId === "advisory" || compId.includes("advisory") || url.includes("advisory")) {
+    return { width: 96, height: 74, tdWidth: 110 };
+  }
+
+  // aarambhgrow / default:
+  return { width: 90, height: 78, tdWidth: 105 };
+}
+
 export default function EmailSignatureGenerator({
   initialData = DEFAULT_DATA,
   data: externalData,
@@ -321,6 +368,7 @@ export default function EmailSignatureGenerator({
     const disclaimer = escapeHtml(data.disclaimer || "");
 
     const logo = escapeHtml(data.logo || "/aarambh.png");
+    const logoDim = getEmailLogoDimensions(company, data.logo);
 
     const primary = T.primary || DEFAULT_THEME.primary;
 
@@ -581,8 +629,9 @@ export default function EmailSignatureGenerator({
               valign="top"
               align="right"
               style="
-                width:180px;
-                padding:0;
+                width:${logoDim.tdWidth}px;
+                min-width:${logoDim.tdWidth}px;
+                padding:0 0 0 16px;
                 vertical-align:top;
                 text-align:right;
               "
@@ -590,15 +639,18 @@ export default function EmailSignatureGenerator({
               <img
                 src="${logo}"
                 alt="${companyName}"
-                width="180"
+                width="${logoDim.width}"
+                height="${logoDim.height}"
                 style="
-                  display:block;
-                  width:180px;
-                  max-width:180px;
-                  height:auto;
+                  display:inline-block;
+                  width:${logoDim.width}px;
+                  max-width:${logoDim.width}px;
+                  height:${logoDim.height}px;
+                  max-height:${logoDim.height}px;
                   border:0;
                   outline:none;
                   text-decoration:none;
+                  vertical-align:top;
                 "
               />
             </td>

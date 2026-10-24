@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  FaEnvelope,
-  FaGlobe,
-  FaLocationDot,
-  FaPhone,
-} from "react-icons/fa6";
+import { FaEnvelope, FaGlobe, FaLocationDot, FaPhone } from "react-icons/fa6";
 
 /* =========================================================
    DEFAULT THEME
@@ -33,9 +28,9 @@ const GROUP_CARD_DESIGN = {
     height: 600,
 
     logo: {
-      left: "-2%",
-      top: "-10%",
-      width: "60%",
+      left: "-1%",
+      top: "-13%",
+      width: "72%",
     },
 
     person: {
@@ -47,14 +42,14 @@ const GROUP_CARD_DESIGN = {
 
     name: {
       size: "4.9cqw",
-      left: "1%",
+      left: "3%",
       top: "0%",
       align: "left",
     },
 
     title: {
       size: "3cqw",
-      left: "0%",
+      left: "3%",
       top: "0%",
       align: "left",
       marginTop: "1%",
@@ -62,7 +57,7 @@ const GROUP_CARD_DESIGN = {
 
     slogan: {
       size: "2.5cqw",
-      left: "0%",
+      left: "3%",
       top: "0%",
       align: "left",
       marginTop: "7%",
@@ -103,9 +98,9 @@ const GROUP_CARD_DESIGN = {
     height: 1000,
 
     logo: {
-      left: "4%",
-      top: "7%",
-      width: "95%",
+      left: "1%",
+      top: "5%",
+      width: "102%",
     },
 
     person: {
@@ -166,29 +161,149 @@ const GROUP_CARD_DESIGN = {
 };
 
 /* =========================================================
-   OTHER COMPANY LOGO FITTING
-   Slightly increased size, perfectly centered vertically
+   PER-COMPANY BUSINESS CARD FRONT LOGO FIT
+   - infinity: Reference proper size (maintained)
+   - euroasia: Minor decrease in height and width
+   - nexera: Decrease in height and width
+   - aarambhgrow: Increase in height and width
+   - services: Increase in height and width
+   - advisory: Clean & balanced with infinity
 ========================================================= */
 
-const OTHER_COMPANY_LOGO_FIT = {
-  landscape: {
-    left: "5%",
-    top: "3%",
-    width: "44%",
-    height: "26%",
-    objectFit: "contain",
-    objectPosition: "left center",
+const FRONT_CARD_LOGO_FIT = {
+  // AarambhGrow Group: Increased height & width (compensates for transparent margins in aarambh2.png)
+  aarambhgrow: {
+    landscape: {
+      left: "-1%",
+      top: "-8%",
+      width: "72%",
+      height: "60%",
+      objectFit: "contain",
+      objectPosition: "left center",
+    },
+    portrait: {
+      left: "-4%",
+      top: "0%",
+      width: "108%",
+      height: "32%",
+      objectFit: "contain",
+      objectPosition: "center center",
+    },
   },
 
-  portrait: {
-    left: "8%",
-    top: "5%",
-    width: "84%",
-    height: "18%",
-    objectFit: "contain",
-    objectPosition: "center center",
+  // AarambhGrow Services: Decreased height & width as requested
+  services: {
+    landscape: {
+      left: "4.5%",
+      top: "4.5%",
+      width: "44%",
+      height: "32%",
+      objectFit: "contain",
+      objectPosition: "left center",
+    },
+    portrait: {
+      left: "9%",
+      top: "5%",
+      width: "82%",
+      height: "20.5%",
+      objectFit: "contain",
+      objectPosition: "center center",
+    },
+  },
+
+  // AarambhGrow Infinity: Reference ("proper side") - maintained
+  infinity: {
+    landscape: {
+      left: "5%",
+      top: "4%",
+      width: "48%",
+      height: "36%",
+      objectFit: "contain",
+      objectPosition: "left center",
+    },
+    portrait: {
+      left: "6%",
+      top: "5%",
+      width: "88%",
+      height: "22%",
+      objectFit: "contain",
+      objectPosition: "center center",
+    },
+  },
+
+  // EuroAsia: Minor decrease in height and width as requested
+  euroasia: {
+    landscape: {
+      left: "5%",
+      top: "5%",
+      width: "43%",
+      height: "32%",
+      objectFit: "contain",
+      objectPosition: "left center",
+    },
+    portrait: {
+      left: "10%",
+      top: "6%",
+      width: "80%",
+      height: "19%",
+      objectFit: "contain",
+      objectPosition: "center center",
+    },
+  },
+
+  // Nexera Consultancy: Decreased height and width as requested
+  nexera: {
+    landscape: {
+      left: "5%",
+      top: "6%",
+      width: "35%",
+      height: "25%",
+      objectFit: "contain",
+      objectPosition: "left center",
+    },
+    portrait: {
+      left: "17%",
+      top: "7.5%",
+      width: "66%",
+      height: "15.5%",
+      objectFit: "contain",
+      objectPosition: "center center",
+    },
+  },
+
+  // AarambhGrow Advisory: Balanced with infinity
+  advisory: {
+    landscape: {
+      left: "5%",
+      top: "4%",
+      width: "48%",
+      height: "36%",
+      objectFit: "contain",
+      objectPosition: "left center",
+    },
+    portrait: {
+      left: "6%",
+      top: "5%",
+      width: "88%",
+      height: "22%",
+      objectFit: "contain",
+      objectPosition: "center center",
+    },
   },
 };
+
+function resolveCompanyKey(company) {
+  const key = String(company?.id || company?.name || "")
+    .trim()
+    .toLowerCase();
+
+  if (key === "infinity" || key.includes("infinity")) return "infinity";
+  if (key === "nexera" || key.includes("nexera")) return "nexera";
+  if (key === "euroasia" || key.includes("euroasia")) return "euroasia";
+  if (key === "advisory" || key.includes("advisory")) return "advisory";
+  if (key === "services" || key.includes("services")) return "services";
+  return "aarambhgrow";
+}
 
 /* =========================================================
    COMPANY TYPE
@@ -199,11 +314,7 @@ function isGroupCompany(company) {
     return true;
   }
 
-  return (
-    company.id === "aarambhgrow" ||
-    company.id === "aarambhgrow-group" ||
-    company.backCard?.type === "group"
-  );
+  return company.id === "aarambhgrow" || company.id === "aarambhgrow-group" || company.backCard?.type === "group";
 }
 
 /* =========================================================
@@ -235,14 +346,11 @@ function withProtocol(url) {
 ========================================================= */
 
 function getContactRows(data, theme) {
-  const secondary =
-    theme.secondary || DEFAULT_THEME.secondary;
+  const secondary = theme.secondary || DEFAULT_THEME.secondary;
 
-  const accent =
-    theme.accent || DEFAULT_THEME.accent;
+  const accent = theme.accent || DEFAULT_THEME.accent;
 
-  const primary =
-    theme.primary || DEFAULT_THEME.primary;
+  const primary = theme.primary || DEFAULT_THEME.primary;
 
   return [
     data?.phone && {
@@ -283,18 +391,8 @@ function getContactRows(data, theme) {
    CONTACT ROW
 ========================================================= */
 
-function ContactRow({
-  row,
-  design,
-  primary,
-}) {
-  const {
-    Icon,
-    text,
-    href,
-    bg,
-    label,
-  } = row;
+function ContactRow({ row, design, primary }) {
+  const { Icon, text, href, bg, label } = row;
 
   const content = (
     <>
@@ -359,59 +457,32 @@ function ContactRow({
    MAIN CARD FRONT
 ========================================================= */
 
-export default function CardFront({
-  data,
-  innerRef,
-  orientation = "landscape",
-  company,
-  theme,
-}) {
-  const T =
-    theme ||
-    company?.theme ||
-    DEFAULT_THEME;
+export default function CardFront({ data, innerRef, orientation = "landscape", company, theme }) {
+  const T = theme || company?.theme || DEFAULT_THEME;
 
-  const primary =
-    T.primary ||
-    DEFAULT_THEME.primary;
+  const primary = T.primary || DEFAULT_THEME.primary;
 
-  const secondary =
-    T.secondary ||
-    DEFAULT_THEME.secondary;
+  const secondary = T.secondary || DEFAULT_THEME.secondary;
 
-  const accent =
-    T.accent ||
-    DEFAULT_THEME.accent;
+  const accent = T.accent || DEFAULT_THEME.accent;
 
-  const background =
-    T.background ||
-    DEFAULT_THEME.background;
+  const background = T.background || DEFAULT_THEME.background;
 
-  const muted =
-    T.muted ||
-    DEFAULT_THEME.muted;
+  const muted = T.muted || DEFAULT_THEME.muted;
 
-  const isPortrait =
-    orientation === "portrait";
+  const isPortrait = orientation === "portrait";
 
-  const design = isPortrait
-    ? GROUP_CARD_DESIGN.portrait
-    : GROUP_CARD_DESIGN.landscape;
+  const design = isPortrait ? GROUP_CARD_DESIGN.portrait : GROUP_CARD_DESIGN.landscape;
 
   const isGroup = isGroupCompany(company);
 
-  const cardBackground =
-    company?.cardBackground?.front ||
-    "/bg-2.png";
+  const cardBackground = company?.cardBackground?.front || "/bg-2.png";
 
-  const cardLogo =
-    company?.cardLogo ||
-    company?.logo ||
-    "/aarambh2.png";
+  const cardLogo = company?.cardLogo || company?.logo || "/aarambh2.png";
 
-  const otherLogoDesign = isPortrait
-    ? OTHER_COMPANY_LOGO_FIT.portrait
-    : OTHER_COMPANY_LOGO_FIT.landscape;
+  const companyKey = resolveCompanyKey(company);
+  const companyLogoFit = FRONT_CARD_LOGO_FIT[companyKey] || FRONT_CARD_LOGO_FIT.aarambhgrow;
+  const logoDesign = isPortrait ? companyLogoFit.portrait : companyLogoFit.landscape;
 
   const rows = getContactRows(data, {
     primary,
@@ -442,64 +513,33 @@ export default function CardFront({
       }}
     >
       {/* Background Image Layer */}
-      <img
-        src={cardBackground}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-fill"
-        draggable="false"
-      />
+      <img src={cardBackground} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-fill" draggable="false" />
 
       {/* Content Layer */}
       <div className="absolute inset-0">
-
-        {/* LOGO AREA */}
-        {isGroup ? (
-          /* Main AarambhGrow Group Logo - Original Unchanged Structure */
+        {/* LOGO AREA - IDENTICAL POSITION, SIDE & SIZE FOR ALL COMPANIES */}
+        <div
+          className={`absolute flex overflow-hidden ${
+            isPortrait ? "items-center justify-center" : "items-center justify-start"
+          }`}
+          style={{
+            left: logoDesign.left,
+            top: logoDesign.top,
+            width: logoDesign.width,
+            height: logoDesign.height,
+          }}
+        >
           <img
             src={cardLogo}
-            alt={
-              company?.fullName ||
-              company?.name ||
-              "Company Logo"
-            }
-            className="absolute h-auto object-contain"
+            alt={company?.fullName || company?.name || "Company Logo"}
+            className="max-h-full max-w-full w-auto h-auto object-contain"
             style={{
-              left: design.logo.left,
-              top: design.logo.top,
-              width: design.logo.width,
+              objectFit: logoDesign.objectFit,
+              objectPosition: logoDesign.objectPosition,
             }}
             draggable="false"
           />
-        ) : (
-          /* Other Company Logos - Centered & Slightly Increased Size */
-          <div
-            className="absolute flex items-center justify-start overflow-hidden"
-            style={{
-              left: otherLogoDesign.left,
-              top: otherLogoDesign.top,
-              width: otherLogoDesign.width,
-              height: otherLogoDesign.height,
-            }}
-          >
-            <img
-              src={cardLogo}
-              alt={
-                company?.fullName ||
-                company?.name ||
-                "Company Logo"
-              }
-              className="max-h-full max-w-full object-contain"
-              style={{
-                objectFit:
-                  otherLogoDesign.objectFit,
-                objectPosition:
-                  otherLogoDesign.objectPosition,
-              }}
-              draggable="false"
-            />
-          </div>
-        )}
+        </div>
 
         {/* Person Information */}
         <div
@@ -516,10 +556,7 @@ export default function CardFront({
               position: "relative",
               left: design.name.left || "0%",
               top: design.name.top || "0%",
-              textAlign:
-                design.name.align ||
-                design.person.align ||
-                "left",
+              textAlign: design.name.align || design.person.align || "left",
               fontSize: design.name.size,
               letterSpacing: "-0.01em",
               whiteSpace: "nowrap",
@@ -537,13 +574,9 @@ export default function CardFront({
               position: "relative",
               left: design.title.left || "0%",
               top: design.title.top || "0%",
-              textAlign:
-                design.title.align ||
-                design.person.align ||
-                "left",
+              textAlign: design.title.align || design.person.align || "left",
               fontSize: design.title.size,
-              marginTop:
-                design.title.marginTop || "1%",
+              marginTop: design.title.marginTop || "1%",
               marginBottom: 0,
               whiteSpace: "nowrap",
               overflow: "visible",
@@ -559,10 +592,7 @@ export default function CardFront({
               position: "relative",
               left: design.slogan.left || "0%",
               top: design.slogan.top || "0%",
-              textAlign:
-                design.slogan.align ||
-                design.person.align ||
-                "left",
+              textAlign: design.slogan.align || design.person.align || "left",
               fontSize: design.slogan.size,
               marginTop: design.slogan.marginTop,
               marginBottom: 0,
@@ -571,8 +601,7 @@ export default function CardFront({
               color: muted,
             }}
           >
-            {data?.slogan ||
-              "Your Growth | Our Commitment"}
+            {data?.slogan || "Your Growth | Our Commitment"}
           </p>
         </div>
 
@@ -605,12 +634,7 @@ export default function CardFront({
             }}
           >
             {rows.map((row) => (
-              <ContactRow
-                key={row.label}
-                row={row}
-                design={design}
-                primary={primary}
-              />
+              <ContactRow key={row.label} row={row} design={design} primary={primary} />
             ))}
           </div>
         </div>

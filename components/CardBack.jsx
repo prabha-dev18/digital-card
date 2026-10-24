@@ -206,16 +206,16 @@ const COMPANY_DESIGN = {
     background: "#FFFFFF",
 
     qr: {
-      columnWidth: "28%",
+      columnWidth: "30%",
       paddingLeft: "4cqw",
       paddingRight: "2cqw",
-      gap: "1.4cqw",
+      gap: "1.5cqw",
       buttonPadding: "0.7cqw",
       innerPadding: "0.8cqw",
-      size: "14cqw",
-      maxWidth: "105px",
-      maxHeight: "105px",
-      textSize: "1.8cqw",
+      size: "16cqw",
+      maxWidth: "110px",
+      maxHeight: "110px",
+      textSize: "2.1cqw",
     },
 
     divider: {
@@ -229,39 +229,39 @@ const COMPANY_DESIGN = {
       paddingBottom: "4%",
       paddingLeft: "3%",
       paddingRight: "7%",
-      gap: "1.1cqw",
+      gap: "1.2cqw",
     },
 
     heading: {
-      size: "3.2cqw",
+      size: "3.4cqw",
     },
 
     subtitle: {
-      size: "1.55cqw",
+      size: "1.85cqw",
     },
 
     dividerLine: {
-      width: "18cqw",
-      height: "0.3cqw",
+      width: "22cqw",
+      height: "0.35cqw",
     },
 
     servicesTitle: {
-      size: "1.65cqw",
+      size: "1.95cqw",
     },
 
     services: {
-      size: "1.35cqw",
-      gap: "0.9cqw",
-      columnGap: "3cqw",
+      size: "1.6cqw",
+      gap: "1cqw",
+      columnGap: "3.5cqw",
     },
 
     tagline: {
-      size: "1.5cqw",
+      size: "1.85cqw",
     },
 
     contact: {
-      website: "1.2cqw",
-      email: "1.2cqw",
+      website: "1.5cqw",
+      email: "1.5cqw",
     },
   },
 
@@ -269,14 +269,14 @@ const COMPANY_DESIGN = {
     background: "#FFFFFF",
 
     qr: {
-      paddingTop: "6cqw",
+      paddingTop: "8cqw",
       buttonPadding: "0.8cqw",
       innerPadding: "1cqw",
-      size: "20cqw",
+      size: "24cqw",
       maxWidth: "150px",
       maxHeight: "150px",
-      textSize: "2.5cqw",
-      textMarginTop: "1.3cqw",
+      textSize: "3cqw",
+      textMarginTop: "1.5cqw",
     },
 
     divider: {
@@ -288,7 +288,7 @@ const COMPANY_DESIGN = {
     main: {
       width: "86%",
       paddingBottom: "6cqw",
-      gap: "2cqw",
+      gap: "2.5cqw",
     },
 
     heading: {
@@ -296,31 +296,31 @@ const COMPANY_DESIGN = {
     },
 
     subtitle: {
-      size: "2.2cqw",
+      size: "2.5cqw",
     },
 
     dividerLine: {
-      width: "28cqw",
+      width: "32cqw",
       height: "0.5cqw",
     },
 
     servicesTitle: {
-      size: "2.6cqw",
+      size: "2.8cqw",
     },
 
     services: {
-      size: "2.15cqw",
-      gap: "1.6cqw",
+      size: "2.4cqw",
+      gap: "1.8cqw",
       columnGap: "6cqw",
     },
 
     tagline: {
-      size: "2.3cqw",
+      size: "2.6cqw",
     },
 
     contact: {
-      website: "1.9cqw",
-      email: "1.9cqw",
+      website: "2.1cqw",
+      email: "2.1cqw",
     },
   },
 };

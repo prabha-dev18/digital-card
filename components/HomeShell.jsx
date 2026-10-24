@@ -1780,7 +1780,7 @@ function BusinessCardStudio({ company, profile, theme }) {
             }}
           >
             <div
-              className="grid grid-cols-2 divide-x sm:grid-cols-4"
+              className="grid grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-0 sm:divide-x"
               style={{
                 borderColor: T.border,
               }}
@@ -1796,14 +1796,15 @@ function BusinessCardStudio({ company, profile, theme }) {
                     type="button"
                     onClick={fn}
                     disabled={busy}
-                    className="flex items-center justify-center gap-2 px-2 py-3 text-xs font-semibold transition hover:bg-slate-50 disabled:opacity-50"
+                    className="flex items-center justify-center gap-1.5 rounded p-2 sm:px-2 sm:py-3 text-[11px] sm:text-xs font-semibold transition hover:bg-slate-50 disabled:opacity-50 border sm:border-0"
                     style={{
+                      borderColor: T.border,
                       color:
                         T.primary,
                     }}
                   >
-                    <Icon size={16} />
-                    {label}
+                    <Icon size={15} className="shrink-0" />
+                    <span className="truncate">{label}</span>
                   </button>
                 ),
               )}
@@ -2166,155 +2167,125 @@ export default function HomeShell() {
       =================================================== */}
 
       <header
-        className="sticky top-0 z-40 overflow-hidden border-b bg-white shadow-sm"
+        className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur-md shadow-sm"
         style={{
-          borderColor:
-            T.border,
-          background:
-            T.surface,
+          borderColor: T.border,
+          background: T.surface,
         }}
       >
-        <Swoosh className="right-0 top-0 h-full w-56 opacity-50" />
+        <Swoosh className="right-0 top-0 h-full w-56 opacity-50 pointer-events-none" />
 
-        <div className="relative z-10 flex min-h-20 flex-wrap items-center justify-between gap-3 px-5 py-2">
-          {/* LOGO */}
+        <div className="relative z-10 flex flex-col gap-2.5 px-3.5 py-2.5 sm:min-h-20 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5">
+          {/* LOGO & TITLE */}
+          <div className="flex items-center justify-between gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
+              <img
+                src={selectedCompany.headerLogo}
+                alt={selectedCompany.fullName}
+                className="h-8 sm:h-12 w-auto max-w-[130px] sm:max-w-[180px] object-contain shrink-0"
+              />
 
-          <div className="flex items-center gap-4">
-            <img
-              src={
-                selectedCompany.headerLogo
-              }
-              alt={
-                selectedCompany.fullName
-              }
-              className="h-14 w-auto object-contain"
-            />
+              <span className="hidden h-10 w-px bg-slate-200 sm:block" />
 
-            <span className="hidden h-12 w-px bg-slate-200 sm:block" />
+              <div className="min-w-0">
+                <p
+                  className="truncate text-base font-extrabold leading-tight sm:text-xl lg:text-2xl"
+                  style={{
+                    color: T.primary,
+                  }}
+                >
+                  Digital Profile Studio
+                </p>
 
-            <div className="hidden sm:block">
-              <p
-                className="text-2xl font-extrabold leading-tight"
+                <p
+                  className="hidden text-xs sm:block leading-snug"
+                  style={{
+                    color: T.muted,
+                  }}
+                >
+                  Your Professional Identity, Instantly
+                </p>
+              </div>
+            </div>
+
+            {/* MOBILE ONLY COMPANY SELECTOR */}
+            <div className="flex items-center sm:hidden shrink-0">
+              <div
+                className="flex items-center gap-1.5 rounded-md border bg-white px-2 py-1.5 shadow-sm"
                 style={{
-                  color:
-                    T.primary,
+                  borderColor: T.border,
                 }}
               >
-                Digital Profile
-                Studio
-              </p>
-
-              <p
-                className="text-sm"
-                style={{
-                  color:
-                    T.muted,
-                }}
-              >
-                Your Professional
-                Identity, Instantly
-              </p>
+                <FaBuilding size={12} color={T.primary} />
+                <select
+                  value={profile.company}
+                  onChange={(event) => changeCompany(event.target.value)}
+                  className="max-w-[120px] bg-transparent text-[11px] font-bold outline-none"
+                  style={{
+                    color: T.primary,
+                  }}
+                  aria-label="Select company"
+                >
+                  {COMPANY_OPTIONS.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
           {/* NAVIGATION */}
-
-          <nav className="flex flex-wrap gap-3">
-            {/* COMPANY */}
-
+          <nav className="flex items-center gap-2 w-full sm:w-auto">
+            {/* DESKTOP COMPANY SELECTOR */}
             <div
-              className="flex items-center gap-2 rounded-md border bg-white px-3 py-2 shadow-sm"
+              className="hidden sm:flex items-center gap-2 rounded-md border bg-white px-3 py-2 shadow-sm shrink-0"
               style={{
-                borderColor:
-                  T.border,
+                borderColor: T.border,
               }}
             >
-              <FaBuilding
-                size={14}
-                color={
-                  T.primary
-                }
-              />
+              <FaBuilding size={14} color={T.primary} />
 
               <select
-                value={
-                  profile.company
-                }
-                onChange={(
-                  event,
-                ) =>
-                  changeCompany(
-                    event.target
-                      .value,
-                  )
-                }
+                value={profile.company}
+                onChange={(event) => changeCompany(event.target.value)}
                 className="max-w-[190px] bg-transparent text-xs font-bold outline-none"
                 style={{
-                  color:
-                    T.primary,
+                  color: T.primary,
                 }}
                 aria-label="Select company"
               >
-                {COMPANY_OPTIONS.map(
-                  (item) => (
-                    <option
-                      key={
-                        item.id
-                      }
-                      value={
-                        item.id
-                      }
-                    >
-                      {
-                        item.name
-                      }
-                    </option>
-                  ),
-                )}
+                {COMPANY_OPTIONS.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
               </select>
             </div>
 
             {/* MODES */}
-
-            {MODES.map(
-              ({
-                id,
-                label,
-                icon: Icon,
-                bg,
-              }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() =>
-                    changeMode(
-                      id,
-                    )
-                  }
-                  className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-xs font-bold text-white shadow-md transition hover:-translate-y-0.5"
-                  style={{
-                    background:
-                      bg,
-
-                    opacity:
-                      mode === id
-                        ? 1
-                        : 0.85,
-
-                    boxShadow:
-                      mode === id
-                        ? `0 0 0 2px #fff, 0 0 0 4px ${T.primary}33`
-                        : undefined,
-                  }}
-                >
-                  <Icon size={16} />
-
-                  {
-                    label
-                  }
-                </button>
-              ),
-            )}
+            <div className="grid grid-cols-3 gap-1.5 w-full sm:flex sm:w-auto sm:gap-2">
+              {MODES.map(({ id, label, icon: Icon, bg }) => {
+                const isCurrent = mode === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => changeMode(id)}
+                    className="inline-flex items-center justify-center gap-1 sm:gap-2 rounded-md px-2.5 py-2 sm:px-4 sm:py-2.5 text-[11px] sm:text-xs font-bold text-white shadow-sm transition active:scale-[0.98]"
+                    style={{
+                      background: bg,
+                      opacity: isCurrent ? 1 : 0.8,
+                      boxShadow: isCurrent ? `0 0 0 2px #fff, 0 0 0 3.5px ${T.primary}` : undefined,
+                    }}
+                  >
+                    <Icon size={14} className="shrink-0" />
+                    <span className="truncate">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </nav>
         </div>
       </header>
@@ -2482,6 +2453,7 @@ export default function HomeShell() {
                   selectedCompany
                 }
                 theme={T}
+                onCompanyChange={changeCompany}
               />
             )}
 
@@ -2524,7 +2496,7 @@ export default function HomeShell() {
       =================================================== */}
 
       <footer
-        className="grid items-center gap-3 border-t bg-white px-6 py-4 text-[11px] md:grid-cols-3"
+        className="flex flex-col items-center justify-center gap-3 border-t bg-white px-4 py-4 text-center text-[11px] md:grid md:grid-cols-3 md:text-left md:px-6"
         style={{
           borderColor:
             T.border,
@@ -2540,7 +2512,7 @@ export default function HomeShell() {
           alt={
             selectedCompany.fullName
           }
-          className="h-11 w-auto object-contain"
+          className="mx-auto md:mx-0 h-9 sm:h-11 w-auto object-contain"
         />
 
         <p className="text-center italic">
@@ -2560,7 +2532,7 @@ export default function HomeShell() {
           }
         </p>
 
-        <p className="text-right">
+        <p className="text-center md:text-right">
           ©{" "}
           {new Date().getFullYear()}{" "}
           {
