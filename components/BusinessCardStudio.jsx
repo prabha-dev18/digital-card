@@ -66,7 +66,7 @@ const getTheme = (theme) => {
 const DEPTS = [
   { id: "Sales", icon: FaChartColumn },
   { id: "Admin", icon: FaUserTie },
-  { id: "Operations", icon: FaGear },
+  { id: "Operation", label: "Operation", icon: FaGear },
   { id: "Management", icon: FaPeopleGroup },
 ];
 
@@ -623,7 +623,13 @@ export default function BusinessCardStudio({ company, profile }) {
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {DEPTS.map(({ id, icon }) => (
-                <Choice key={id} on={c.dept === id} onClick={() => setField("dept", id)} icon={icon} theme={T}>
+                <Choice
+                  key={id}
+                  on={c.dept === id || (id.toLowerCase().startsWith("oper") && (c.dept || "").toLowerCase().startsWith("oper"))}
+                  onClick={() => setField("dept", id)}
+                  icon={icon}
+                  theme={T}
+                >
                   {id}
                 </Choice>
               ))}

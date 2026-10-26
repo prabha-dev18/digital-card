@@ -79,7 +79,7 @@ const DEPTS = [
     icon: "Admin",
   },
   {
-    id: "Operations",
+    id: "Operation",
     icon: "Operations",
   },
   {
@@ -967,7 +967,7 @@ export default function EmailSignatureGenerator({
               <Choice
                 key={item.id}
                 label={item.id}
-                selected={data.dept === item.id}
+                selected={data.dept === item.id || (item.id.toLowerCase().startsWith("oper") && (data.dept || "").toLowerCase().startsWith("oper"))}
                 onClick={() => updateData("dept", item.id)}
                 theme={T}
               />

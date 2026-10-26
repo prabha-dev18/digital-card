@@ -84,7 +84,7 @@ const DEPTS = [
     icon: FaUserTie,
   },
   {
-    id: "Operations",
+    id: "Operation",
     icon: FaGear,
   },
   {
@@ -1129,7 +1129,8 @@ function BusinessCardStudio({ company, profile, theme }) {
                   <Choice
                     key={id}
                     on={
-                      c.dept === id
+                      c.dept === id ||
+                      (id.toLowerCase().startsWith("oper") && (c.dept || "").toLowerCase().startsWith("oper"))
                     }
                     onClick={() =>
                       setField(

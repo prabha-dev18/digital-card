@@ -9,15 +9,19 @@ import {
   FaDownload,
   FaEye,
   FaGear,
-  FaImage,
   FaUser,
   FaUserTie,
   FaPeopleGroup,
-  FaCheck,
-  FaShareNodes,
+  FaTag,
+  FaVenus,
+  FaMars,
+  FaCamera,
+  FaTrash,
+  FaIdBadge,
 } from "react-icons/fa6";
 
-import { COMPANY_OPTIONS, COMPANY_CONFIG } from "../lib/companyConfig";
+import { COMPANY_OPTIONS } from "../lib/companyConfig";
+import { DEFAULT_MALE_AVATAR, DEFAULT_FEMALE_AVATAR } from "../lib/defaultAvatars";
 
 const BRAND = {
   orange: "#F26522",
@@ -50,168 +54,157 @@ const DEFAULT_DATA = {
   name: "Your Name",
   designation: "Your Designation",
   company: "AarambhGrow Group of Companies",
+  gender: "Male",
+  photo: "",
   logo: "/aarambh2.png",
 };
 
-const DEPTS = [
-  { id: "Sales", icon: FaChartColumn },
-  { id: "Admin", icon: FaUserTie },
-  { id: "Operations", icon: FaGear },
-  { id: "Management", icon: FaPeopleGroup },
+export const DEPARTMENT_THEMES = {
+  Sales: {
+    id: "Sales",
+    label: "Sales",
+    colorLabel: "Green",
+    colorHex: "#0B4D1E",
+    colorDot: "#15803D",
+    buttonActiveBg: "linear-gradient(135deg, #0E5E26, #052B10)",
+    buttonActiveTextColor: "#FFFFFF",
+    theme: {
+      primary: "#052B10",
+      secondary: "#0D5C1E",
+      accent: "#0B4D1E",
+      primaryLight: "#EBF5EE",
+      secondaryLight: "#D4EADB",
+      accentLight: "#E8F5EB",
+      border: "#76C795",
+      text: "#052B10",
+      muted: "#3E6649",
+    },
+    canvasBgStart: "#EBF5EE",
+    canvasBgEnd: "#D4EADB",
+    radialEdgeColor: "rgba(11, 77, 30, 0.25)",
+    previewBgGradient: "linear-gradient(145deg, #EBF5EE 0%, #D4EADB 55%, #A9D7B7 100%)",
+    borderColor: "#0B4D1E",
+    badgeRingColor: "#0B4D1E",
+    badgeTextColor: "#FFFFFF",
+    badgeBg: "#0B4D1E",
+    badgeText: "#FFFFFF",
+    badgeBorder: "#0B4D1E",
+    bgImageAlpha: 0.82,
+    description: "Fixed Dark Green badge with matching Dark Green DP background",
+  },
+  Admin: {
+    id: "Admin",
+    label: "Admin",
+    colorLabel: "Blue",
+    colorHex: "#0B306F",
+    colorDot: "#1D4ED8",
+    buttonActiveBg: "linear-gradient(135deg, #104393, #001B44)",
+    buttonActiveTextColor: "#FFFFFF",
+    theme: {
+      primary: "#001B44",
+      secondary: "#0B306F",
+      accent: "#104393",
+      primaryLight: "#EAF2FC",
+      secondaryLight: "#D2E3F9",
+      accentLight: "#E9F1FC",
+      border: "#8DBBF8",
+      text: "#001B44",
+      muted: "#3E5780",
+    },
+    canvasBgStart: "#EAF2FC",
+    canvasBgEnd: "#D2E3F9",
+    radialEdgeColor: "rgba(11, 48, 111, 0.25)",
+    previewBgGradient: "linear-gradient(145deg, #EAF2FC 0%, #D2E3F9 55%, #ABCAFA 100%)",
+    borderColor: "#0B306F",
+    badgeRingColor: "#0B306F",
+    badgeTextColor: "#FFFFFF",
+    badgeBg: "#0B306F",
+    badgeText: "#FFFFFF",
+    badgeBorder: "#0B306F",
+    bgImageAlpha: 0.82,
+    description: "Fixed Dark Blue badge with matching Dark Blue DP background",
+  },
+  Operation: {
+    id: "Operation",
+    label: "Operation",
+    colorLabel: "Orange",
+    colorHex: "#B83806",
+    colorDot: "#C2410C",
+    buttonActiveBg: "linear-gradient(135deg, #C2410C, #7C2404)",
+    buttonActiveTextColor: "#FFFFFF",
+    theme: {
+      primary: "#431407",
+      secondary: "#B83806",
+      accent: "#C2410C",
+      primaryLight: "#FDF2EB",
+      secondaryLight: "#F9DECA",
+      accentLight: "#FDF4EE",
+      border: "#E99B77",
+      text: "#431407",
+      muted: "#78422B",
+    },
+    canvasBgStart: "#FDF2EB",
+    canvasBgEnd: "#F9DECA",
+    radialEdgeColor: "rgba(184, 56, 6, 0.25)",
+    previewBgGradient: "linear-gradient(145deg, #FDF2EB 0%, #F9DECA 55%, #F0C4A4 100%)",
+    borderColor: "#B83806",
+    badgeRingColor: "#B83806",
+    badgeTextColor: "#FFFFFF",
+    badgeBg: "#B83806",
+    badgeText: "#FFFFFF",
+    badgeBorder: "#B83806",
+    bgImageAlpha: 0.82,
+    description: "Fixed Dark Orange badge with matching Dark Orange DP background",
+  },
+  Management: {
+    id: "Management",
+    label: "Management",
+    colorLabel: "White",
+    colorHex: "#FFFFFF",
+    colorDot: "#E2E8F0",
+    buttonActiveBg: "linear-gradient(135deg, #334155, #0F172A)",
+    buttonActiveTextColor: "#FFFFFF",
+    theme: {
+      primary: "#0F172A",
+      secondary: "#D97706",
+      accent: "#475569",
+      primaryLight: "#F8FAFC",
+      secondaryLight: "#F1F5F9",
+      accentLight: "#FFFFFF",
+      border: "#CBD5E1",
+      text: "#0F172A",
+      muted: "#64748B",
+    },
+    canvasBgStart: "#FFFFFF",
+    canvasBgEnd: "#F1F5F9",
+    radialEdgeColor: "rgba(15, 23, 42, 0.08)",
+    previewBgGradient: "linear-gradient(145deg, #FFFFFF 0%, #F8FAFC 55%, #F1F5F9 100%)",
+    borderColor: "#CBD5E1",
+    badgeTextColor: "#0F172A",
+    badgeBg: "#FFFFFF",
+    badgeText: "#0F172A",
+    badgeBorder: "#0F172A",
+    bgImageAlpha: 0.95,
+    description: "Fixed White badge with crisp dark lettering and White DP background",
+  },
+};
+
+export const DEPTS = [
+  { id: "Sales", label: "Sales", icon: FaChartColumn },
+  { id: "Admin", label: "Admin", icon: FaUserTie },
+  { id: "Operation", label: "Operation", icon: FaGear },
+  { id: "Management", label: "Management", icon: FaPeopleGroup },
 ];
 
-const COMPANY_BACKGROUNDS = {
-  aarambhgrow: "/dp-bg1.png",
-  "aarambhgrow group of companies": "/dp-bg1.png",
-  "aarambhgrow group": "/dp-bg1.png",
-
-  advisory: "/dp-bg1.png",
-  "aarambhgrow advisory private limited": "/dp-bg1.png",
-  "aarambhgrow advisory": "/dp-bg1.png",
-
-  services: "/dp-bg1.png",
-  "aarambhgrow services private limited": "/dp-bg1.png",
-  "aarambhgrow services": "/dp-bg1.png",
-
-  infinity: "/infinity-bg.png",
-  "aarambhgrow infinity": "/infinity-bg.png",
-  "aarambhgrow infinity private limited": "/infinity-bg.png",
-
-  nexera: "/nexera-bg.png",
-  "nexera consultancy": "/nexera-bg.png",
-  "nexera consultancy private limited": "/nexera-bg.png",
-
-  euroasia: "/euroasia-bg.png",
-  "euroasia aquatic private limited": "/euroasia-bg.png",
-  "euroasia aquatic": "/euroasia-bg.png",
-};
-
-const COMPANY_LOGOS = {
-  aarambhgrow: "/aarambh2.png",
-  "aarambhgrow group of companies": "/aarambh2.png",
-  "aarambhgrow group": "/aarambh2.png",
-
-  advisory: "/advisory2.png",
-  "aarambhgrow advisory": "/advisory2.png",
-  "aarambhgrow advisory private limited": "/advisory2.png",
-
-  services: "/service2.png",
-  "aarambhgrow services": "/service2.png",
-  "aarambhgrow services private limited": "/service2.png",
-
-  infinity: "/infinity.png",
-  "aarambhgrow infinity": "/infinity.png",
-  "aarambhgrow infinity private limited": "/infinity.png",
-
-  nexera: "/nexera2.png",
-  "nexera consultancy": "/nexera2.png",
-  "nexera consultancy private limited": "/nexera2.png",
-
-  euroasia: "/euroasia.png",
-  "euroasia aquatic": "/euroasia.png",
-  "euroasia aquatic private limited": "/euroasia.png",
-};
-
-const COMPANY_LOGO_VARIANTS = {
-  aarambhgrow: [
-    { label: "Wide Banner", src: "/aarambh2.png" },
-    { label: "Stacked Icon", src: "/aarambh.png" },
-  ],
-  advisory: [
-    { label: "Wide Banner", src: "/advisory2.png" },
-    { label: "Stacked Icon", src: "/advisory.png" },
-  ],
-  services: [
-    { label: "Wide Banner", src: "/service2.png" },
-    { label: "Stacked Icon", src: "/service.png" },
-  ],
-  infinity: [
-    { label: "Compact Logo", src: "/infinity.png" },
-    { label: "Wide Banner", src: "/infinity2.png" },
-  ],
-  nexera: [
-    { label: "Wide Banner", src: "/nexera2.png" },
-    { label: "Stacked Icon", src: "/nexera.png" },
-  ],
-  euroasia: [{ label: "Standard Logo", src: "/euroasia.png" }],
-};
-
-/* =========================================================
-   PER-COMPANY DP LOGO SIZING & POSITIONING
-   - AarambhGrow Group: Increased to match visual presence of Services/Advisory
-   - Services: Benchmark reference sizing (balanced & crisp)
-   - Advisory: Matched with Services
-   - Nexera Consultancy: Decreased to eliminate overpowering size
-   - EuroAsia Aquatic: Decreased to prevent wide stretching
-   - Infinity: Balanced proportions
-   ========================================================= */
-const DP_LOGO_LAYOUT = {
-  aarambhgrow: {
-    // Increased canvas box to offset transparent padding inside aarambh2.png
-    boxW: 760,
-    boxH: 500,
-    offsetY: 25,
-    previewStyle: {
-      maxWidth: "70cqw",
-      maxHeight: "100%",
-      transform: "scale(1.30)",
-    },
-  },
-  services: {
-    // Benchmark size
-    boxW: 510,
-    boxH: 240,
-    offsetY: 120,
-    previewStyle: {
-      maxWidth: "50cqw",
-      maxHeight: "82%",
-      transform: "none",
-    },
-  },
-  advisory: {
-    // Balanced with services
-    boxW: 490,
-    boxH: 250,
-    offsetY: 115,
-    previewStyle: {
-      maxWidth: "46cqw",
-      maxHeight: "80%",
-      transform: "none",
-    },
-  },
-  infinity: {
-    boxW: 440,
-    boxH: 270,
-    offsetY: 100,
-    previewStyle: {
-      maxWidth: "42cqw",
-      maxHeight: "85%",
-      transform: "none",
-    },
-  },
-  nexera: {
-    // Decreased size as requested
-    boxW: 410,
-    boxH: 195,
-    offsetY: 145,
-    previewStyle: {
-      maxWidth: "39cqw",
-      maxHeight: "72%",
-      transform: "none",
-    },
-  },
-  euroasia: {
-    // Decreased size as requested
-    boxW: 420,
-    boxH: 135,
-    offsetY: 175,
-    previewStyle: {
-      maxWidth: "39cqw",
-      maxHeight: "65%",
-      transform: "none",
-    },
-  },
-};
+export function resolveDeptKey(dept) {
+  const d = String(dept || "")
+    .trim()
+    .toLowerCase();
+  if (d.includes("admin")) return "Admin";
+  if (d.includes("oper")) return "Operation";
+  if (d.includes("manage")) return "Management";
+  return "Sales";
+}
 
 function resolveCompanyKey(company, rawKey) {
   const key = String(company?.id || rawKey || "")
@@ -226,132 +219,177 @@ function resolveCompanyKey(company, rawKey) {
   return "aarambhgrow";
 }
 
-const DEFAULT_DP_BACKGROUND = "/dp-bg1.png";
-
-function getCompanyBackground(company, companyName) {
-  if (company?.dpBackground) {
-    return company.dpBackground;
-  }
-  if (company?.background) {
-    return company.background;
-  }
-  if (company?.backgroundImage) {
-    return company.backgroundImage;
-  }
-
-  const name = String(company?.id || company?.fullName || company?.name || companyName || "")
+export function getCompanySideText(company, canonicalKey) {
+  const key = String(company?.id || canonicalKey || "")
     .trim()
     .toLowerCase();
 
-  if (COMPANY_BACKGROUNDS[name]) {
-    return COMPANY_BACKGROUNDS[name];
+  if (key === "infinity" || key.includes("infinity")) {
+    return { name: "AARAMBHGROW INFINITY", left: "AARAMBHGROW INFINITY", right: "AARAMBHGROW INFINITY" };
   }
-
-  if (name.includes("infinity")) {
-    return "/infinity-bg.png";
+  if (key === "nexera" || key.includes("nexera")) {
+    return { name: "NEXERA CONSULTANCY", left: "NEXERA CONSULTANCY", right: "NEXERA CONSULTANCY" };
   }
-  if (name.includes("nexera")) {
-    return "/nexera-bg.png";
+  if (key === "euroasia" || key.includes("euroasia")) {
+    return { name: "EUROASIA AQUATIC", left: "EUROASIA AQUATIC", right: "EUROASIA AQUATIC" };
   }
-  if (name.includes("euroasia")) {
-    return "/euroasia-bg.png";
+  if (key === "advisory" || key.includes("advisory")) {
+    return { name: "AARAMBHGROW ADVISORY", left: "AARAMBHGROW ADVISORY", right: "AARAMBHGROW ADVISORY" };
   }
-  if (name.includes("advisory")) {
-    return "/dp-bg1.png";
+  if (key === "services" || key.includes("services")) {
+    return { name: "AARAMBHGROW SERVICES", left: "AARAMBHGROW SERVICES", right: "AARAMBHGROW SERVICES" };
   }
-  if (name.includes("services")) {
-    return "/dp-bg1.png";
-  }
-  if (name.includes("aarambhgrow") || name.includes("aarambh")) {
-    return "/dp-bg1.png";
-  }
-
-  return DEFAULT_DP_BACKGROUND;
+  return { name: "AARAMBHGROW GROUP", left: "AARAMBHGROW GROUP", right: "AARAMBHGROW GROUP" };
 }
 
-function getCompanyDefaultLogo(company, companyName) {
-  if (company?.dpLogo) {
-    return company.dpLogo;
-  }
-  if (company?.cardLogo) {
-    return company.cardLogo;
-  }
-
-  const name = String(company?.id || company?.fullName || company?.name || companyName || "")
-    .trim()
-    .toLowerCase();
-
-  if (COMPANY_LOGOS[name]) {
-    return COMPANY_LOGOS[name];
-  }
-
-  if (name.includes("infinity")) {
-    return "/infinity.png";
-  }
-  if (name.includes("nexera")) {
-    return "/nexera2.png";
-  }
-  if (name.includes("euroasia")) {
-    return "/euroasia.png";
-  }
-  if (name.includes("advisory")) {
-    return "/advisory2.png";
-  }
-  if (name.includes("services")) {
-    return "/service2.png";
-  }
-  if (name.includes("aarambh")) {
-    return "/aarambh2.png";
-  }
-
-  return company?.logo || "/aarambh2.png";
+function escapeXml(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
 
-function drawLeaf(ctx, x, y, s, leftColor, rightColor) {
-  ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(x, y + s * 0.55);
-  ctx.quadraticCurveTo(x - s, y + s * 0.05, x - s * 0.5, y - s * 0.6);
-  ctx.quadraticCurveTo(x - s * 0.02, y - s * 0.45, x, y + s * 0.55);
-  ctx.closePath();
-  ctx.fillStyle = leftColor;
-  ctx.fill();
+export function buildBadgeSvg({
+  name = "YOUR NAME",
+  designation = "YOUR DESIGNATION",
+  deptKey = "Sales",
+  deptColor = "#0B4D1E",
+  companyName = "AARAMBHGROW",
+  companyKey = "aarambhgrow",
+  gender = "Male",
+  photo = null,
+  isWhiteRing = false,
+  showSideText = true,
+  sideLeftText = "",
+  sideRightText = "",
+}) {
+  const safeName = escapeXml((name || "YOUR NAME").trim().toUpperCase());
+  const safeRole = escapeXml((designation || "YOUR DESIGNATION").trim().toUpperCase());
+  const compSide = getCompanySideText({ id: companyKey, name: companyName }, companyKey);
+  const companyFullName = compSide.name || "AARAMBHGROW GROUP";
+  const safeLeft = escapeXml((sideLeftText || companyFullName).trim().toUpperCase());
+  const safeRight = escapeXml((sideRightText || companyFullName).trim().toUpperCase());
 
-  ctx.beginPath();
-  ctx.moveTo(x, y + s * 0.55);
-  ctx.quadraticCurveTo(x + s, y + s * 0.05, x + s * 0.5, y - s * 0.6);
-  ctx.quadraticCurveTo(x + s * 0.02, y - s * 0.45, x, y + s * 0.55);
-  ctx.closePath();
-  ctx.fillStyle = rightColor;
-  ctx.fill();
-  ctx.restore();  
-}
+  // Dynamic font sizing for smooth arc fitting (Increased sizes)
+  const nameLen = safeName.length;
+  let nameSize = 52;
+  let nameSpacing = 3;
+  if (nameLen > 24) {
+    nameSize = 34;
+    nameSpacing = 2;
+  } else if (nameLen > 18) {
+    nameSize = 40;
+    nameSpacing = 2.5;
+  } else if (nameLen > 12) {
+    nameSize = 46;
+    nameSpacing = 3;
+  }
 
-function loadCanvasImage(src) {
-  return new Promise((resolve) => {
-    if (!src) return resolve(null);
+  const roleLen = safeRole.length;
+  let roleSize = 54;
+  let roleSpacing = 3;
+  if (roleLen > 26) {
+    roleSize = 38;
+    roleSpacing = 1.5;
+  } else if (roleLen > 20) {
+    roleSize = 44;
+    roleSpacing = 2;
+  } else if (roleLen > 14) {
+    roleSize = 48;
+    roleSpacing = 2.5;
+  }
 
-    const img = new Image();
-    img.crossOrigin = "anonymous";
+  // Font sizing for company name on side arcs (Increased size)
+  const compLen = Math.max(safeLeft.length, safeRight.length);
+  let sideSize = 28;
+  let sideSpacing = 2.5;
+  if (compLen > 24) {
+    sideSize = 20;
+    sideSpacing = 1.2;
+  } else if (compLen > 18) {
+    sideSize = 24;
+    sideSpacing = 1.8;
+  } else if (compLen > 12) {
+    sideSize = 26;
+    sideSpacing = 2;
+  }
 
-    img.onload = () => resolve(img);
-    img.onerror = () => {
-      const fallback = new Image();
-      fallback.onload = () => resolve(fallback);
-      fallback.onerror = (err) => {
-        console.warn("Failed to load canvas image:", src, err);
-        resolve(null);
-      };
-      fallback.src = src;
-    };
+  // Sleek, refined medium-bold font style (not excessively bold)
+  const FONT_FAMILY = "'Montserrat', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif";
+  const FONT_WEIGHT = "600";
 
-    if (src.startsWith("data:") || src.startsWith("blob:")) {
-      img.src = src;
-    } else {
-      const sep = src.includes("?") ? "&" : "?";
-      img.src = `${src}${sep}_v=${Date.now()}`;
-    }
-  });
+  const ringFill = isWhiteRing ? "#FFFFFF" : deptColor;
+  const ringTextColor = isWhiteRing ? "#0F172A" : "#FFFFFF";
+  const ringLineStroke = isWhiteRing ? "#0F172A" : "#FFFFFF";
+  const innerBg = isWhiteRing ? "#FFFFFF" : "#F6F2EE";
+
+  // Use user's personal uploaded photo if available, otherwise use EXACT default avatar
+  const avatarSrc = photo || (gender === "Female" ? DEFAULT_FEMALE_AVATAR : DEFAULT_MALE_AVATAR);
+
+  return `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Top Arc (Designation): Clockwise from left to right along top (R=430) -->
+    <path id="badge-top-arc" d="M 110,540 A 430,430 0 0,1 970,540" fill="none" />
+    
+    <!-- Bottom Arc (Full Name): Optical center in lower curve (R=466) -->
+    <path id="badge-bottom-arc" d="M 74,540 A 466,466 0 0,0 1006,540" fill="none" />
+
+    <!-- Left Arc (Company name): Spans left 90 degrees (R=440) -->
+    <path id="badge-left-arc" d="M 229,851 A 440,440 0 0,1 229,229" fill="none" />
+    <!-- Right Arc (Company name): Spans right 90 degrees (R=440) -->
+    <path id="badge-right-arc" d="M 851,229 A 440,440 0 0,1 851,851" fill="none" />
+
+    <!-- Inner circle clip path for avatar (R=353) -->
+    <clipPath id="avatar-clip">
+      <circle cx="540" cy="540" r="353" />
+    </clipPath>
+  </defs>
+
+  <!-- Outer circle with department color (Edge-to-edge pure circular DP, R=540) -->
+  <circle cx="540" cy="540" r="540" fill="${ringFill}" />
+
+  <!-- ONLY ONE clean white ring framing the avatar -->
+  <circle cx="540" cy="540" r="356" fill="${innerBg}" stroke="${ringLineStroke}" stroke-width="${isWhiteRing ? "5" : "6"}" />
+
+  <!-- Avatar clipped inside the inner circle -->
+  <g clip-path="url(#avatar-clip)">
+    <image href="${avatarSrc}" x="187" y="187" width="706" height="706" preserveAspectRatio="xMidYMid slice" />
+  </g>
+
+  <!-- TOP DESIGNATION (ARCUATE TEXT) -->
+  <text fill="${ringTextColor}" font-family="${FONT_FAMILY}" font-weight="${FONT_WEIGHT}" font-size="${roleSize}" letter-spacing="${roleSpacing}">
+    <textPath href="#badge-top-arc" startOffset="50%" text-anchor="middle">
+      ${safeRole}
+    </textPath>
+  </text>
+
+  <!-- BOTTOM FULL NAME (ARCUATE TEXT) -->
+  <text fill="${ringTextColor}" font-family="${FONT_FAMILY}" font-weight="${FONT_WEIGHT}" font-size="${nameSize}" letter-spacing="${nameSpacing}">
+    <textPath href="#badge-bottom-arc" startOffset="50%" text-anchor="middle">
+      ${safeName}
+    </textPath>
+  </text>
+
+  <!-- BOTH SIDES: Full Company Name -->
+  ${
+    showSideText
+      ? `
+  <text fill="${ringTextColor}" font-family="${FONT_FAMILY}" font-weight="${FONT_WEIGHT}" font-size="${sideSize}" letter-spacing="${sideSpacing}" opacity="${isWhiteRing ? "0.85" : "0.92"}">
+    <textPath href="#badge-left-arc" startOffset="50%" text-anchor="middle">
+      ${safeLeft}
+    </textPath>
+  </text>
+  <text fill="${ringTextColor}" font-family="${FONT_FAMILY}" font-weight="${FONT_WEIGHT}" font-size="${sideSize}" letter-spacing="${sideSpacing}" opacity="${isWhiteRing ? "0.85" : "0.92"}">
+    <textPath href="#badge-right-arc" startOffset="50%" text-anchor="middle">
+      ${safeRight}
+    </textPath>
+  </text>
+  `
+      : ""
+  }
+</svg>`;
 }
 
 function Section({ id, no, title, sub, icon: Icon, children, theme }) {
@@ -398,46 +436,6 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
 
       {children}
     </section>
-  );
-}
-
-function Choice({ selected, onClick, icon: Icon, children, theme }) {
-  const T = theme || DEFAULT_THEME;
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="relative flex min-w-0 min-h-[64px] sm:min-h-[74px] flex-col items-center justify-center gap-1 rounded-md border-2 p-2.5 sm:py-3.5 text-xs font-semibold transition active:scale-[0.98]"
-      style={
-        selected
-          ? {
-              background: `linear-gradient(135deg,${T.primary},${T.secondary})`,
-              borderColor: T.primary,
-              color: "#FFFFFF",
-            }
-          : {
-              background: "#FFFFFF",
-              borderColor: T.border || BRAND.border,
-              color: T.primary,
-            }
-      }
-    >
-      {selected && (
-        <span
-          className="absolute right-1.5 top-1.5 grid h-4 w-4 sm:h-5 sm:w-5 place-items-center rounded-full text-[10px] text-white"
-          style={{
-            background: T.secondary,
-          }}
-        >
-          ✓
-        </span>
-      )}
-
-      {Icon && <Icon size={18} className="shrink-0" />}
-
-      <span className="truncate">{children}</span>
-    </button>
   );
 }
 
@@ -488,17 +486,17 @@ export default function WhatsAppDPGenerator({
   theme,
   onCompanyChange,
 }) {
-  const T = theme || company?.theme || DEFAULT_THEME;
   const canvasRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const [localData, setLocalData] = useState({
     ...DEFAULT_DATA,
     ...initialData,
   });
 
-  const [customLogo, setCustomLogo] = useState(null);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showSideText, setShowSideText] = useState(true);
 
   const companyKey = useMemo(() => {
     return String(company?.id || externalData?.company || localData.company || "aarambhgrow")
@@ -510,44 +508,31 @@ export default function WhatsAppDPGenerator({
     return resolveCompanyKey(company, companyKey);
   }, [company, companyKey]);
 
-  const activeLogoLayout = DP_LOGO_LAYOUT[canonicalKey] || DP_LOGO_LAYOUT.aarambhgrow;
-
-  const defaultCompanyLogo = useMemo(() => {
-    return getCompanyDefaultLogo(company, canonicalKey);
+  const defaultSide = useMemo(() => {
+    return getCompanySideText(company, canonicalKey);
   }, [company, canonicalKey]);
 
-  const activeLogo = customLogo || defaultCompanyLogo;
+  const [sideLeftCustom, setSideLeftCustom] = useState("");
+  const [sideRightCustom, setSideRightCustom] = useState("");
 
+  // Keep side text in sync with company-wise branding
   useEffect(() => {
-    setCustomLogo(null);
-  }, [companyKey]);
+    const s = getCompanySideText(company, canonicalKey);
+    setSideLeftCustom(s.left);
+    setSideRightCustom(s.right);
+  }, [canonicalKey, company]);
 
   const data = {
     ...DEFAULT_DATA,
     ...(externalData || localData),
+    gender: (externalData && externalData.gender) || localData.gender || "Male",
+    photo: (externalData && externalData.photo) || localData.photo || "",
     company: company?.fullName || externalData?.company || localData.company || DEFAULT_DATA.company,
-    logo: activeLogo,
   };
 
-  const activeTheme = useMemo(
-    () => ({
-      background: T.background || "#FFFFFF",
-      primary: T.primary || BRAND.navy,
-      secondary: T.secondary || BRAND.green,
-      accent: T.accent || BRAND.orange,
-      primaryLight: T.primaryLight || BRAND.navySoft,
-      secondaryLight: T.secondaryLight || BRAND.greenSoft,
-      accentLight: T.accentLight || BRAND.orangeSoft,
-      border: T.border || BRAND.border,
-      text: T.text || "#334155",
-      muted: T.muted || BRAND.muted,
-    }),
-    [T],
-  );
-
-  const DP_BACKGROUND = useMemo(() => {
-    return getCompanyBackground(company, data.company);
-  }, [company, data.company]);
+  const activeDeptKey = resolveDeptKey(data.dept);
+  const activeDeptConfig = DEPARTMENT_THEMES[activeDeptKey] || DEPARTMENT_THEMES.Sales;
+  const activeTheme = theme || DEFAULT_THEME;
 
   const updateData = (key, value) => {
     if (externalSetData) {
@@ -558,6 +543,47 @@ export default function WhatsAppDPGenerator({
         [key]: value,
       }));
     }
+  };
+
+  const handleSelectDept = (deptId) => {
+    updateData("dept", deptId);
+  };
+
+  const handleSelectGender = (gender) => {
+    updateData("gender", gender);
+  };
+
+  // Personal photo upload: ONLY changes photo, leaves company, designation, department color untouched!
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setNote("Personal photo should be less than 10MB");
+      setTimeout(() => setNote(""), 3000);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result;
+      if (base64) {
+        updateData("photo", base64);
+        setNote("Personal photo uploaded! Crest structure, designation & colors preserved.");
+        setTimeout(() => setNote(""), 3000);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Revert back to default Male or Female profile picture
+  const handleRemovePhoto = () => {
+    updateData("photo", "");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    setNote(`Reverted to default ${data.gender || "Male"} profile picture`);
+    setTimeout(() => setNote(""), 2400);
   };
 
   const handleSelectCompany = (comp) => {
@@ -571,14 +597,43 @@ export default function WhatsAppDPGenerator({
         company: comp.fullName,
       }));
     }
-    setCustomLogo(null);
+    const s = getCompanySideText(comp, comp.id);
+    setSideLeftCustom(s.left);
+    setSideRightCustom(s.right);
   };
 
-  /*
-   * =========================================================
-   * DRAW DOWNLOAD CANVAS (1080 x 1080)
-   * =========================================================
-   */
+  const badgeSvgString = useMemo(() => {
+    return buildBadgeSvg({
+      name: data.name || "YOUR NAME",
+      designation: data.designation || "YOUR DESIGNATION",
+      deptKey: activeDeptKey,
+      deptColor: activeDeptConfig.badgeRingColor || activeDeptConfig.colorHex,
+      companyName: company?.name || company?.fullName || "AARAMBHGROW",
+      companyKey: canonicalKey,
+      gender: data.gender || "Male",
+      photo: data.photo || null,
+      isWhiteRing: activeDeptKey === "Management",
+      showSideText: showSideText,
+      sideLeftText: sideLeftCustom || defaultSide.left,
+      sideRightText: sideRightCustom || defaultSide.right,
+    });
+  }, [
+    data.name,
+    data.designation,
+    activeDeptKey,
+    activeDeptConfig,
+    company?.name,
+    company?.fullName,
+    canonicalKey,
+    data.gender,
+    data.photo,
+    showSideText,
+    sideLeftCustom,
+    sideRightCustom,
+    defaultSide.left,
+    defaultSide.right,
+  ]);
+
   const drawCanvas = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
@@ -587,130 +642,50 @@ export default function WhatsAppDPGenerator({
     canvas.width = size;
     canvas.height = size;
 
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const ctx = canvas.getContext("2d");
     if (!ctx) return null;
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
 
-    const cx = size / 2;
-    const ORANGE = activeTheme.accent || BRAND.orange;
-    const GREEN = activeTheme.secondary || BRAND.green;
-    const NAVY = activeTheme.primary || BRAND.navy;
-    const CREAM = "#FBFBF7";
-
     ctx.clearRect(0, 0, size, size);
 
-    // 1. Background Fill & Image
-    ctx.fillStyle = CREAM;
-    ctx.fillRect(0, 0, size, size);
+    const encodedSvg = encodeURIComponent(badgeSvgString).replace(/'/g, "%27").replace(/"/g, "%22");
+    const dataUri = `data:image/svg+xml;charset=utf-8,${encodedSvg}`;
 
-    try {
-      const bgImage = await loadCanvasImage(DP_BACKGROUND);
-      if (bgImage && bgImage.naturalWidth) {
-        const bgRatio = Math.max(size / bgImage.naturalWidth, size / bgImage.naturalHeight);
-        const bgWidth = bgImage.naturalWidth * bgRatio;
-        const bgHeight = bgImage.naturalHeight * bgRatio;
-        ctx.drawImage(bgImage, (size - bgWidth) / 2, (size - bgHeight) / 2, bgWidth, bgHeight);
-      }
-    } catch (err) {
-      console.warn("Background drawing fallback applied:", err);
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    await new Promise((resolve) => {
+      img.onload = () => resolve(img);
+      img.onerror = (err) => {
+        console.warn("SVG loading warning, drawing fallback:", err);
+        resolve(null);
+      };
+      img.src = dataUri;
+    });
+
+    if (img && img.naturalWidth) {
+      ctx.drawImage(img, 0, 0, size, size);
     }
-
-    // 2. Company Logo (Per-company responsive bounding box & positioning)
-    if (activeLogo) {
-      try {
-        const logo = await loadCanvasImage(activeLogo);
-        if (logo && logo.naturalWidth) {
-          const layout = DP_LOGO_LAYOUT[canonicalKey] || DP_LOGO_LAYOUT.aarambhgrow;
-          const boxW = layout.boxW;
-          const boxH = layout.boxH;
-          const ratio = Math.min(boxW / logo.naturalWidth, boxH / logo.naturalHeight);
-          const w = logo.naturalWidth * ratio;
-          const h = logo.naturalHeight * ratio;
-
-          const logoX = (size - w) / 2;
-          const logoY = layout.offsetY + (boxH - h) / 2;
-          ctx.drawImage(logo, logoX, logoY, w, h);
-        }
-      } catch (error) {
-        console.error("Logo canvas drawing failed:", error);
-      }
-    }
-
-    // 3. Member Name
-    const memberName = data.name || "Your Name";
-    let nameSize = 98;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "alphabetic";
-    ctx.font = `800 ${nameSize}px "Plus Jakarta Sans", Arial, sans-serif`;
-
-    while (ctx.measureText(memberName).width > 760 && nameSize > 48) {
-      nameSize -= 4;
-      ctx.font = `800 ${nameSize}px "Plus Jakarta Sans", Arial, sans-serif`;
-    }
-
-    ctx.fillStyle = NAVY;
-    ctx.fillText(memberName, cx, 555);
-
-    // 4. Accent Divider Lines & Center Leaf
-    const dy = 595;
-    ctx.lineCap = "round";
-    ctx.lineWidth = 7;
-
-    // Left orange line
-    ctx.strokeStyle = ORANGE;
-    ctx.beginPath();
-    ctx.moveTo(cx - 180, dy);
-    ctx.lineTo(cx - 52, dy);
-    ctx.stroke();
-
-    // Right green line
-    ctx.strokeStyle = GREEN;
-    ctx.beginPath();
-    ctx.moveTo(cx + 52, dy);
-    ctx.lineTo(cx + 180, dy);
-    ctx.stroke();
-
-    // Center leaf emblem
-    drawLeaf(ctx, cx, dy, 26, ORANGE, GREEN);
-
-    // 5. Designation / Role
-    const memberRole = data.designation || "Your Designation";
-    let roleSize = 42;
-    ctx.font = `600 ${roleSize}px "Plus Jakarta Sans", Arial, sans-serif`;
-
-    while (ctx.measureText(memberRole).width > 640 && roleSize > 24) {
-      roleSize -= 2;
-      ctx.font = `600 ${roleSize}px "Plus Jakarta Sans", Arial, sans-serif`;
-    }
-
-    ctx.fillStyle = NAVY;
-    ctx.fillText(memberRole, cx, 665);
 
     return canvas;
   };
 
-  /*
-   * =========================================================
-   * DOWNLOAD DP AS PNG
-   * =========================================================
-   */
   const downloadDP = async () => {
     setBusy(true);
-    setNote("Generating high-resolution PNG…");
+    setNote("Generating high-resolution 1080×1080 PNG…");
 
     try {
       const canvas = await drawCanvas();
       if (!canvas) throw new Error("Could not initialize canvas");
-
       const fileName = (data.name || "whatsapp-dp")
         .toLowerCase()
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9-_]/g, "");
 
       const link = document.createElement("a");
-      link.download = `${fileName || "whatsapp-dp"}-dp.png`;
+      link.download = `${fileName || "whatsapp-dp"}-${activeDeptConfig.id.toLowerCase()}-crest.png`;
       link.href = canvas.toDataURL("image/png", 1.0);
       document.body.appendChild(link);
       link.click();
@@ -727,26 +702,28 @@ export default function WhatsAppDPGenerator({
     }
   };
 
-  /*
-   * =========================================================
-   * RESET
-   * =========================================================
-   */
   const reset = () => {
     if (externalSetData) {
       externalSetData("dept", "Sales");
-      externalSetData("name", "");
-      externalSetData("designation", "");
+      externalSetData("gender", "Male");
+      externalSetData("photo", "");
+      externalSetData("name", "Your Name");
+      externalSetData("designation", "Your Designation");
     } else {
       setLocalData((prev) => ({
         ...prev,
         dept: "Sales",
-        name: "",
-        designation: "",
+        gender: "Male",
+        photo: "",
+        name: "Your Name",
+        designation: "Your Designation",
       }));
     }
-    setCustomLogo(null);
-    setNote("Fields reset");
+    const defSide = getCompanySideText(company, canonicalKey);
+    setSideLeftCustom(defSide.left);
+    setSideRightCustom(defSide.right);
+    setShowSideText(true);
+    setNote("Reset to default Sales crest with Male avatar");
     setTimeout(() => setNote(""), 2000);
   };
 
@@ -760,22 +737,88 @@ export default function WhatsAppDPGenerator({
     }
   };
 
-  // Available logo variants for the active company
-  const logoVariants = COMPANY_LOGO_VARIANTS[canonicalKey] || [{ label: "Company Logo", src: defaultCompanyLogo }];
-
   return (
-    <div className="grid min-w-0 gap-4 p-3 sm:gap-5 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:p-6">
-      {/* =====================================================
-          LEFT COLUMN: FORM & CONTROLS
-          ===================================================== */}
+    <div className="grid min-w-0 items-start gap-4 p-3 sm:gap-5 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:p-6">
       <div className="space-y-4 sm:space-y-5">
-        {/* SECTION 1: ORGANIZATION */}
-        <Section id="s-org" no="1" title="Organization" sub="Choose your company and department." icon={FaBuilding} theme={activeTheme}>
-          {/* COMPANY SELECTOR CARDS */}
+        {/* SECTION 1: DEPARTMENT & ORGANIZATION */}
+        <Section
+          id="s-org"
+          no="1"
+          title="Department & Organization"
+          sub="Choose your department and company."
+          icon={FaBuilding}
+          theme={activeTheme}
+        >
+          {/* 4 FIXED DEPARTMENT SELECTORS */}
           <div className="mb-4">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="flex items-center gap-1.5 text-xs font-bold" style={{ color: activeTheme.primary }}>
+                <FaPeopleGroup size={13} />
+                Department Type
+              </p>
+              <span
+                className="text-[10px] sm:text-[11px] font-bold"
+                style={{
+                  color: activeDeptConfig.badgeBg === "#FFFFFF" ? "#0F172A" : activeDeptConfig.badgeBg,
+                }}
+              >
+                Active: {activeDeptConfig.label}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {DEPTS.map(({ id, label, icon: DeptIcon }) => {
+                const isSelected = resolveDeptKey(data.dept) === resolveDeptKey(id);
+                const deptConf = DEPARTMENT_THEMES[id] || DEPARTMENT_THEMES.Sales;
+
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => handleSelectDept(id)}
+                    className="relative flex min-w-0 min-h-[64px] sm:min-h-[72px] flex-col items-center justify-center gap-1 rounded-md border-2 p-2 sm:p-2.5 transition active:scale-[0.98]"
+                    style={
+                      isSelected
+                        ? {
+                            background: deptConf.buttonActiveBg,
+                            borderColor: deptConf.borderColor,
+                            color: deptConf.buttonActiveTextColor,
+                            boxShadow: "0 4px 14px rgba(0,0,0,0.14)",
+                          }
+                        : {
+                            background: "#FFFFFF",
+                            borderColor: activeTheme.border,
+                            color: deptConf.colorHex === "#FFFFFF" ? "#0F172A" : deptConf.colorHex,
+                          }
+                    }
+                  >
+                    {isSelected && (
+                      <span
+                        className="absolute right-1.5 top-1.5 grid h-4 w-4 sm:h-5 sm:w-5 place-items-center rounded-full text-[10px] text-white shadow-sm"
+                        style={{
+                          background: deptConf.colorHex === "#FFFFFF" ? "#0F172A" : deptConf.accent,
+                        }}
+                      >
+                        ✓
+                      </span>
+                    )}
+
+                    <DeptIcon size={18} className="shrink-0" />
+
+                    <div className="w-full text-center px-0.5">
+                      <span className="block truncate text-xs font-extrabold leading-tight">{label}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* COMPANY SELECTOR CARDS */}
+          <div>
             <p className="mb-2 flex items-center gap-1.5 text-xs font-bold" style={{ color: activeTheme.primary }}>
               <FaBuilding size={12} />
-              Select Company
+              Select Company Name
             </p>
 
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -787,7 +830,7 @@ export default function WhatsAppDPGenerator({
                     key={c.id}
                     type="button"
                     onClick={() => handleSelectCompany(c)}
-                    className="flex min-h-[58px] sm:min-h-[64px] flex-col items-center justify-center rounded-md border-2 p-2 text-center transition active:scale-[0.98]"
+                    className="flex min-h-[56px] sm:min-h-[62px] flex-col items-center justify-center rounded-md border-2 p-2 text-center transition active:scale-[0.98]"
                     style={
                       isSelected
                         ? {
@@ -802,54 +845,13 @@ export default function WhatsAppDPGenerator({
                           }
                     }
                   >
-                    <img src={c.headerLogo || c.logo} alt={c.name} className="h-6 sm:h-7 w-auto max-w-[90px] object-contain mb-1" />
+                    <img src={c.headerLogo || c.logo} alt={c.name} className="h-5 sm:h-6 w-auto max-w-[85px] object-contain mb-1" />
                     <span className="truncate text-[11px] font-bold w-full" style={{ color: isSelected ? activeTheme.primary : undefined }}>
                       {c.name}
                     </span>
                   </button>
                 );
               })}
-            </div>
-          </div>
-
-          {/* DEPARTMENT TYPE */}
-          <div>
-            <p className="mb-2 flex items-center gap-1.5 text-xs font-bold" style={{ color: activeTheme.primary }}>
-              <FaPeopleGroup size={13} />
-              Department Type
-            </p>
-
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {DEPTS.map(({ id, icon }) => (
-                <Choice key={id} selected={data.dept === id} onClick={() => updateData("dept", id)} icon={icon} theme={activeTheme}>
-                  {id}
-                </Choice>
-              ))}
-            </div>
-          </div>
-
-          {/* CURRENT ACTIVE COMPANY CARD */}
-          <div
-            className="mt-4 flex items-center gap-3 rounded-md border p-3 sm:p-4"
-            style={{
-              borderColor: activeTheme.border,
-              background: activeTheme.primaryLight,
-            }}
-          >
-            <img
-              src={activeLogo}
-              alt={company?.fullName || "Selected Company"}
-              className="h-9 sm:h-11 w-auto max-w-[120px] sm:max-w-[150px] object-contain shrink-0"
-            />
-
-            <div className="min-w-0 flex-1">
-              <span className="text-[10px] sm:text-[11px] font-semibold block" style={{ color: activeTheme.muted }}>
-                Selected Company
-              </span>
-
-              <p className="truncate text-xs sm:text-sm font-extrabold" style={{ color: activeTheme.primary }}>
-                {company?.fullName || data.company}
-              </p>
             </div>
           </div>
         </Section>
@@ -859,115 +861,194 @@ export default function WhatsAppDPGenerator({
           id="s-info"
           no="2"
           title="Personal Information"
-          sub="Enter your full name and designation."
+          sub="Enter your name (bottom arc) and designation (top arc)."
           icon={FaUser}
           theme={activeTheme}
         >
           <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             <Field
-              label="Full Name"
+              label="Full Name (Bottom Arc)"
               icon={FaUser}
               value={data.name}
               onChange={(value) => updateData("name", value)}
-              placeholder="e.g. John Doe"
+              placeholder="Your Name"
               theme={activeTheme}
             />
 
             <Field
-              label="Designation / Role"
+              label="Designation / Role (Top Arc)"
               icon={FaUserTie}
               value={data.designation}
               onChange={(value) => updateData("designation", value)}
-              placeholder="e.g. Senior Business Advisor"
+              placeholder="Your Designation"
               theme={activeTheme}
             />
           </div>
         </Section>
 
-        {/* SECTION 3: BRANDING & LOGO SELECTION */}
+        {/* SECTION 3: DEFAULT AVATARS (SAME-TO-SAME) & PERSONAL PHOTO UPLOAD */}
         <Section
-          id="s-theme"
+          id="s-avatar"
           no="3"
-          title="Branding & Logo"
-          sub="Company theme, background, and logo are automatically configured."
-          icon={FaImage}
+          title="Profile Picture (Default Male/Female or Personal Pic)"
+          sub="Same-to-same default avatars from screenshot, or upload personal picture."
+          icon={FaIdBadge}
           theme={activeTheme}
         >
-          {/* LOGO VARIANT SELECTION (IF MULTIPLE LOGOS EXIST) */}
-          {logoVariants.length > 1 && (
-            <div className="mb-4">
-              <p className="mb-2 text-xs font-bold" style={{ color: activeTheme.primary }}>
-                Logo Variant on DP
+          {/* DEFAULT AVATAR SELECTION BUTTONS (SAME-TO-SAME AS SCREENSHOT) */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="flex items-center gap-1.5 text-xs font-bold" style={{ color: activeTheme.primary }}>
+                Default Profile Picture (Same as screenshot)
               </p>
-
-              <div className="grid grid-cols-2 gap-2">
-                {logoVariants.map((variant) => {
-                  const isCurrent = activeLogo === variant.src;
-                  return (
-                    <button
-                      key={variant.src}
-                      type="button"
-                      onClick={() => setCustomLogo(variant.src)}
-                      className="flex items-center gap-2.5 rounded-md border-2 p-2 sm:p-3 transition active:scale-[0.98]"
-                      style={
-                        isCurrent
-                          ? {
-                              borderColor: activeTheme.secondary,
-                              background: activeTheme.secondaryLight,
-                            }
-                          : {
-                              borderColor: activeTheme.border,
-                              background: "#FFFFFF",
-                            }
-                      }
-                    >
-                      <img src={variant.src} alt={variant.label} className="h-7 w-auto max-w-[65px] object-contain shrink-0" />
-                      <div className="min-w-0 text-left">
-                        <span className="block text-xs font-bold truncate" style={{ color: activeTheme.primary }}>
-                          {variant.label}
-                        </span>
-                        {isCurrent && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold" style={{ color: activeTheme.secondary }}>
-                            <FaCheck size={9} /> Active
-                          </span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+              {!data.photo && (
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  Active as Default
+                </span>
+              )}
             </div>
-          )}
 
-          {/* ACTIVE BRANDING SUMMARY */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* DEFAULT MALE AVATAR */}
+              <button
+                type="button"
+                onClick={() => handleSelectGender("Male")}
+                className="relative flex min-h-[76px] sm:min-h-[84px] items-center gap-3 rounded-lg border-2 p-3 text-left transition active:scale-[0.98]"
+                style={
+                  data.gender === "Male" && !data.photo
+                    ? {
+                        borderColor: activeTheme.primary,
+                        background: activeTheme.primaryLight,
+                        boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
+                      }
+                    : {
+                        borderColor: activeTheme.border,
+                        background: "#FFFFFF",
+                      }
+                }
+              >
+                <img
+                  src={DEFAULT_MALE_AVATAR}
+                  alt="Default Male Avatar"
+                  className="h-12 w-12 rounded-full object-cover border-2 shadow-xs shrink-0"
+                  style={{
+                    borderColor: data.gender === "Male" && !data.photo ? activeTheme.primary : "#CBD5E1",
+                  }}
+                />
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs sm:text-sm font-extrabold" style={{ color: activeTheme.primary }}>
+                      Male 
+                    </span>
+                    {data.gender === "Male" && !data.photo && (
+                      <span className="text-xs font-bold" style={{ color: activeTheme.secondary }}>
+                        ✓
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </button>
+
+              {/* DEFAULT FEMALE AVATAR */}
+              <button
+                type="button"
+                onClick={() => handleSelectGender("Female")}
+                className="relative flex min-h-[76px] sm:min-h-[84px] items-center gap-3 rounded-lg border-2 p-3 text-left transition active:scale-[0.98]"
+                style={
+                  data.gender === "Female" && !data.photo
+                    ? {
+                        borderColor: activeTheme.primary,
+                        background: activeTheme.primaryLight,
+                        boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
+                      }
+                    : {
+                        borderColor: activeTheme.border,
+                        background: "#FFFFFF",
+                      }
+                }
+              >
+                <img
+                  src={DEFAULT_FEMALE_AVATAR}
+                  alt="Default Female Avatar"
+                  className="h-12 w-12 rounded-full object-cover border-2 shadow-xs shrink-0"
+                  style={{
+                    borderColor: data.gender === "Female" && !data.photo ? activeTheme.primary : "#CBD5E1",
+                  }}
+                />
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs sm:text-sm font-extrabold" style={{ color: activeTheme.primary }}>
+                      Female
+                    </span>
+                    {data.gender === "Female" && !data.photo && (
+                      <span className="text-xs font-bold" style={{ color: activeTheme.secondary }}>
+                        ✓
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* PERSONAL PIC UPLOAD (ONLY REPLACES PIC, NEVER TOUCHES NAME/ROLE/COLOR) */}
           <div
-            className="rounded-md border p-3 sm:p-4"
+            className="rounded-lg border p-3 sm:p-4"
             style={{
               borderColor: activeTheme.border,
-              background: activeTheme.background,
+              background: data.photo ? activeTheme.primaryLight : "#FFFFFF",
             }}
           >
-            <div className="flex items-center gap-3">
-              <span
-                className="h-11 w-11 shrink-0 rounded-full shadow-inner"
-                style={{
-                  backgroundImage: `url("${DP_BACKGROUND}")`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  border: `3px solid ${activeTheme.secondary}`,
-                }}
-              />
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: activeTheme.primary }}>
+                <FaCamera size={13} />
+                Upload Personal Profile Picture
+              </span>
 
-              <div className="min-w-0">
-                <p className="truncate text-xs sm:text-sm font-extrabold" style={{ color: activeTheme.primary }}>
-                  {company?.name || "AarambhGrow"} Theme & Background
-                </p>
+              {data.photo && (
+                <button
+                  type="button"
+                  onClick={handleRemovePhoto}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-red-600 hover:text-red-700 transition"
+                >
+                  <FaTrash size={10} />
+                  Remove &amp; Use Default {data.gender || "Male"}
+                </button>
+              )}
+            </div>
 
-                <p className="text-[11px] leading-tight" style={{ color: activeTheme.muted }}>
-                  Background asset and brand colors are dynamically matched to your company.
+            {data.photo ? (
+              <div className="flex items-center gap-3">
+                <img
+                  src={data.photo}
+                  alt="Personal uploaded profile picture"
+                  className="h-14 w-14 rounded-full object-cover border-2 shadow-sm shrink-0"
+                  style={{ borderColor: activeTheme.primary }}
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-extrabold text-slate-800 truncate">Personal Picture Active</p>
+                    <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-sm">Custom</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-tight mt-0.5">
+                    ✓ Preserved: Designation, Name, Department, and Company branding remain 100% intact.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-dashed p-3 text-center transition hover:bg-slate-50">
+                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                  <FaCamera size={14} className="text-slate-400" />
+                  <span className="text-xs font-semibold text-slate-700">Click here to upload personal photo (PNG, JPG, WebP)</span>
+                </label>
+                <p className="mt-1.5 text-[10px] text-slate-500 text-center leading-tight">
+                  If not uploaded, the <strong>same-to-same default {data.gender || "Male"} avatar</strong> is automatically applied.
                 </p>
               </div>
-            </div>
+            )}
           </div>
         </Section>
 
@@ -998,7 +1079,7 @@ export default function WhatsAppDPGenerator({
             }}
           >
             <FaDownload />
-            {busy ? "Preparing…" : "Download 1080×1080 PNG"}
+            {busy ? "Preparing…" : "Download"}
           </button>
 
           <button
@@ -1030,13 +1111,9 @@ export default function WhatsAppDPGenerator({
           </div>
         )}
       </div>
-
-      {/* =====================================================
-          RIGHT COLUMN: LIVE PREVIEW
-          ===================================================== */}
       <section
         id="s-out"
-        className="scroll-mt-24 min-w-0 rounded-lg border bg-white p-4 shadow-[0_4px_20px_rgba(3,37,76,.06)] sm:p-5"
+        className="scroll-mt-24 min-w-0 rounded-lg border bg-white p-4 shadow-[0_4px_20px_rgba(3,37,76,.06)] sm:p-5 lg:sticky lg:top-24 self-start"
         style={{
           borderColor: activeTheme.border,
         }}
@@ -1063,15 +1140,6 @@ export default function WhatsAppDPGenerator({
               >
                 Live Preview
               </h2>
-
-              <p
-                className="text-[11px] sm:text-xs leading-snug"
-                style={{
-                  color: activeTheme.muted,
-                }}
-              >
-                Your WhatsApp DP will appear like this
-              </p>
             </div>
           </div>
 
@@ -1092,147 +1160,31 @@ export default function WhatsAppDPGenerator({
           </span>
         </div>
 
-        {/* PREVIEW CANVAS CONTAINER */}
+        {/* PREVIEW CONTAINER (NO SQUARE COLORED BACKGROUND) */}
         <div
-          className="flex min-h-[380px] items-center justify-center overflow-hidden rounded-md border p-3 sm:min-h-[520px] sm:p-6"
+          className="flex min-h-[360px] items-center justify-center rounded-xl border p-4 sm:min-h-[460px] sm:p-6"
           style={{
             borderColor: activeTheme.border,
-            background: activeTheme.primaryLight,
+            background: "#FAFAFA",
           }}
         >
-          <div className="w-full max-w-[480px]">
-            {/* SQUARE WHATSAPP DP CONTAINER (RESPONSIVE CONTAINER QUERIES) */}
+          <div className="w-full max-w-[420px]">
+            {/* CIRCULAR DP BADGE (PURE CIRCULAR PROFILE PICTURE) */}
             <div
-              className="mx-auto aspect-square w-full max-w-[480px] overflow-hidden rounded-xl shadow-2xl transition-all"
+              className="mx-auto aspect-square w-full max-w-[380px] rounded-full overflow-hidden transition-all"
               style={{
-                backgroundImage: `url("${DP_BACKGROUND}")`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                containerType: "inline-size",
+                boxShadow: "0 12px 32px rgba(0,0,0,0.15), 0 3px 8px rgba(0,0,0,0.06)",
               }}
             >
-              <div className="relative h-full w-full overflow-hidden">
-                <div
-                  className="relative z-10 flex w-full flex-col items-center text-center"
-                  style={{
-                    height: "74%",
-                    paddingTop: "8%",
-                  }}
-                >
-                  {/* LOGO (SCALES SAFELY VIA CONTAINER QUERIES & BALANCED PER-COMPANY TUNING) */}
-                  {activeLogo && (
-                    <div
-                      className="flex w-full items-center justify-center px-4"
-                      style={{
-                        height: "52%",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <img
-                        src={activeLogo}
-                        alt={company?.fullName || "Company logo"}
-                        className="max-h-full w-auto h-auto object-contain drop-shadow-sm transition-all"
-                        style={{
-                          maxHeight: activeLogoLayout.previewStyle.maxHeight,
-                          maxWidth: activeLogoLayout.previewStyle.maxWidth,
-                          transform: activeLogoLayout.previewStyle.transform || "none",
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  {/* MEMBER NAME */}
-                  <div
-                    className="flex w-full items-center justify-center px-3"
-                    style={{
-                      height: "17%",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <h3
-                      className="break-words font-extrabold leading-tight"
-                      style={{
-                        color: activeTheme.primary,
-                        fontSize: "9.2cqw",
-                        maxWidth: "85cqw",
-                        margin: 0,
-                        padding: 0,
-                      }}
-                    >
-                      {data.name || "Your Name"}
-                    </h3>
-                  </div>
-
-                  {/* ORANGE & GREEN DIVIDER + LEAF */}
-                  <div
-                    className="flex w-full items-center justify-center"
-                    style={{
-                      height: "7%",
-                      gap: "2cqw",
-                      padding: 0,
-                      margin: 0,
-                      flexShrink: 0,
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: "18cqw",
-                        height: "0.65cqw",
-                        borderRadius: 999,
-                        background: activeTheme.accent,
-                      }}
-                    />
-
-                    <svg
-                      viewBox="0 0 40 40"
-                      style={{
-                        width: "5cqw",
-                        height: "5cqw",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <path d="M20 34 C6 26 6 14 13 5 C19 12 20 22 20 34 Z" fill={activeTheme.accent} />
-                      <path d="M20 34 C34 26 34 14 27 5 C21 12 20 22 20 34 Z" fill={activeTheme.secondary} />
-                    </svg>
-
-                    <span
-                      style={{
-                        width: "18cqw",
-                        height: "0.65cqw",
-                        borderRadius: 999,
-                        background: activeTheme.secondary,
-                      }}
-                    />
-                  </div>
-
-                  {/* DESIGNATION */}
-                  <div
-                    className="flex w-full items-center justify-center px-3"
-                    style={{
-                      height: "10%",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <p
-                      className="font-semibold"
-                      style={{
-                        color: activeTheme.primary,
-                        fontSize: "3.9cqw",
-                        maxWidth: "85cqw",
-                        margin: 0,
-                        padding: 0,
-                      }}
-                    >
-                      {data.designation || "Your Designation"}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              {/* REACTIVE SVG BADGE */}
+              <div
+                dangerouslySetInnerHTML={{ __html: badgeSvgString }}
+                className="w-full h-full [&>svg]:w-full [&>svg]:h-full [&>svg]:block"
+              />
             </div>
 
             {/* DIRECT MOBILE DOWNLOAD BUTTON BELOW PREVIEW */}
-            <div className="mt-3.5 sm:hidden">
+            <div className="mt-4 sm:hidden">
               <button
                 type="button"
                 onClick={downloadDP}
@@ -1247,46 +1199,17 @@ export default function WhatsAppDPGenerator({
               </button>
             </div>
 
-            <p
-              className="mt-3 text-center text-[11px] font-semibold sm:mt-4 sm:text-xs"
-              style={{
-                color: activeTheme.muted,
-              }}
-            >
-              1080 × 1080 px • Ready for WhatsApp Profile use
-            </p>
-          </div>
-        </div>
-
-        {/* METADATA / INFO FOOTER */}
-        <div
-          className="mt-4 rounded-md border p-3 sm:p-4"
-          style={{
-            borderColor: activeTheme.border,
-            background: activeTheme.background,
-          }}
-        >
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <FaImage color={activeTheme.accent} size={16} className="shrink-0" />
-
-            <div>
-              <p
-                className="text-xs sm:text-sm font-bold"
+            {/* BADGE METADATA INDICATORS */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-center">
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold"
                 style={{
-                  color: activeTheme.primary,
+                  background: activeDeptConfig.badgeRingColor === "#FFFFFF" ? "#0F172A" : activeDeptConfig.badgeRingColor,
+                  color: "#FFFFFF",
                 }}
               >
-                WhatsApp Profile Identity
-              </p>
-
-              <p
-                className="text-[10px] sm:text-xs"
-                style={{
-                  color: activeTheme.muted,
-                }}
-              >
-                Formatted for square &amp; circular WhatsApp avatars • Ultra high-res PNG export
-              </p>
+                ● {activeDeptConfig.label}
+              </span>
             </div>
           </div>
         </div>
