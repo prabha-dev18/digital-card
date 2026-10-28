@@ -23,6 +23,7 @@ import {
   FaIdBadge,
   FaGem,
   FaImage,
+  FaLaptopCode,
 } from "react-icons/fa6";
 import CardFront from "./CardFront";
 import CardBack from "./CardBack";
@@ -68,6 +69,7 @@ const DEPTS = [
   { id: "Admin", icon: FaUserTie },
   { id: "Operation", label: "Operation", icon: FaGear },
   { id: "Management", icon: FaPeopleGroup },
+  { id: "Digital", label: "Digital", icon: FaLaptopCode },
 ];
 
 const CARD_STEPS = [
@@ -98,6 +100,7 @@ const CARD_START = {
   phone: "",
   email: "",
   website: "",
+  branch: "",
   address: "",
 };
 
@@ -116,37 +119,39 @@ function CardSection({ id, no, title, sub, icon: Icon, right, children, theme })
   return (
     <section
       id={id}
-      className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+      className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-md border bg-white p-3 sm:p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
       style={{
         borderColor: B.border,
       }}
     >
-      <div className="mb-4 flex items-center gap-4">
-        <span
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-white shadow-md"
-          style={{
-            background: B.gradient,
-          }}
-        >
-          <Icon size={20} />
-        </span>
-        <div className="flex-1">
-          <h2
-            className="text-lg font-extrabold"
+      <div className="mb-3.5 flex items-center justify-between sm:mb-4">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <span
+            className="grid h-10 w-10 sm:h-12 sm:w-12 shrink-0 place-items-center rounded-full text-white shadow-md"
             style={{
-              color: B.navy,
+              background: B.gradient,
             }}
           >
-            {no}. {title}
-          </h2>
-          <p
-            className="text-xs"
-            style={{
-              color: B.muted,
-            }}
-          >
-            {sub}
-          </p>
+            <Icon size={18} className="sm:size-[20px]" />
+          </span>
+          <div className="flex-1 min-w-0">
+            <h2
+              className="text-base sm:text-lg font-extrabold truncate"
+              style={{
+                color: B.navy,
+              }}
+            >
+              {no}. {title}
+            </h2>
+            <p
+              className="text-[11px] sm:text-xs leading-snug"
+              style={{
+                color: B.muted,
+              }}
+            >
+              {sub}
+            </p>
+          </div>
         </div>
         {right}
       </div>
@@ -236,8 +241,8 @@ function Choice({ on, onClick, icon: I, children, theme }) {
   );
 }
 
-export default function BusinessCardStudio({ company, profile }) {
-  const T = company?.theme || DEFAULT_THEME;
+export default function BusinessCardStudio({ company, profile, theme }) {
+  const T = theme || company?.theme || DEFAULT_THEME;
   const B = getTheme(T);
 
   const [c, setC] = useState(() => ({
@@ -257,6 +262,7 @@ export default function BusinessCardStudio({ company, profile }) {
   const [active, setActive] = useState("c-org");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mobileTab, setMobileTab] = useState("form");
   const frontRef = useRef(null);
   const backRef = useRef(null);
   const [W, H] = CARD_SIZE[orientation];
@@ -271,6 +277,7 @@ export default function BusinessCardStudio({ company, profile }) {
       website: c.website || company?.data?.website || "",
       location: c.address || company?.data?.address || "",
       department: c.dept,
+      branch: c.branch || company?.data?.branch || "",
       company: company?.name || "",
       companyFullName: company?.fullName || "",
       companyLogo: company?.logo || "",
@@ -278,6 +285,17 @@ export default function BusinessCardStudio({ company, profile }) {
     }),
     [c, profile, company],
   );
+
+  useEffect(() => {
+    const defaultBranch = company?.branches?.[0];
+    setC((prev) => ({
+      ...prev,
+      website: company?.data?.website || prev.website || "",
+      address: defaultBranch?.address || company?.data?.address || prev.address || "",
+      branch: defaultBranch?.name || company?.data?.branch || prev.branch || "",
+      phone: prev.phone || defaultBranch?.phone || company?.data?.phone || "",
+    }));
+  }, [company?.id]);
 
   useEffect(() => {
     if (!profile) return;
@@ -481,7 +499,7 @@ export default function BusinessCardStudio({ company, profile }) {
   return (
     <>
       <aside
-        className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 flex-col justify-between overflow-hidden lg:flex"
+        className="sticky top-20 self-start hidden h-[calc(100vh-5rem)] w-72 shrink-0 flex-col justify-between overflow-hidden lg:flex"
         style={{
           background: B.gradient,
         }}
@@ -558,8 +576,58 @@ export default function BusinessCardStudio({ company, profile }) {
         </div>
       </aside>
 
-      <main className="grid min-w-0 flex-1 gap-5 p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:p-5">
-        <div className="space-y-5">
+      {/* MOBILE STICKY BLUE STEP BAR FOR BUSINESS CARD */}
+      <div
+        className="sticky top-[86px] sm:top-20 z-30 w-full overflow-x-auto no-scrollbar lg:hidden shadow-sm border-b border-white/10"
+        style={{
+          background: B.gradient,
+        }}
+      >
+        <div className="flex items-center justify-between gap-1 px-2.5 py-1.5 w-full min-w-full">
+          {CARD_STEPS.map((step, index) => {
+            const on = active === step.id;
+            const Icon = step.icon;
+            return (
+              <button
+                key={step.id}
+                type="button"
+                onClick={() => goto(step.id)}
+                className="flex-1 flex items-center justify-center gap-1 rounded-md px-1.5 py-1 text-[10px] font-bold transition whitespace-nowrap active:scale-95"
+                style={
+                  on
+                    ? {
+                        background: B.green,
+                        color: "#ffffff",
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      }
+                    : {
+                        background: "rgba(255,255,255,0.12)",
+                        color: "rgba(255,255,255,0.85)",
+                      }
+                }
+              >
+                <span
+                  className="grid h-3.5 w-3.5 place-items-center rounded-full text-[8px] font-extrabold"
+                  style={{
+                    background: on ? "#ffffff" : "rgba(255,255,255,0.25)",
+                    color: on ? B.navy : "#ffffff",
+                  }}
+                >
+                  {index + 1}
+                </span>
+                <Icon size={10} className="shrink-0" />
+                <span className="truncate">{step.title.split(" ")[0]}</span>
+                {step.id === "c-out" && (
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <main className="grid grid-cols-1 w-full max-w-full min-w-0 flex-1 items-start gap-3 p-2 sm:gap-5 sm:p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:p-5 lg:pt-3">
+        <div className="w-full min-w-0 max-w-full space-y-3.5 sm:space-y-5">
           {/* ORGANIZATION */}
           <CardSection
             id="c-org"
@@ -621,7 +689,7 @@ export default function BusinessCardStudio({ company, profile }) {
               Department Type
             </p>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
               {DEPTS.map(({ id, icon }) => (
                 <Choice
                   key={id}
@@ -695,6 +763,99 @@ export default function BusinessCardStudio({ company, profile }) {
                 placeholder="Your Address"
                 theme={T}
               />
+
+              {company?.branches && company.branches.length > 0 && (
+                <div
+                  className="sm:col-span-2 rounded-md border p-3.5"
+                  style={{
+                    borderColor: T.border,
+                    backgroundColor: T.primaryLight || "#f8fafc",
+                  }}
+                >
+                  <div className="mb-2 flex items-center justify-between">
+                    <span
+                      className="text-xs font-bold"
+                      style={{
+                        color: T.primary,
+                      }}
+                    >
+                      Select Branch
+                    </span>
+                    <span
+                      className="text-[11px] font-medium"
+                      style={{
+                        color: T.muted,
+                      }}
+                    >
+                      Auto-fills branch address & phone on card
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {company.branches.map((b) => {
+                      const isSelected =
+                        c.branch === b.name ||
+                        (!c.branch && b.id === "ahmedabad");
+
+                      return (
+                        <button
+                          key={b.id}
+                          type="button"
+                          onClick={() => {
+                            setField("branch", b.name);
+                            setField("address", b.address);
+                            if (b.phone) setField("phone", b.phone);
+                          }}
+                          className="flex items-center gap-2 rounded-md px-3.5 py-2 text-xs font-bold border transition shadow-sm"
+                          style={{
+                            backgroundColor: isSelected ? T.primary : "#ffffff",
+                            borderColor: isSelected ? T.primary : T.border,
+                            color: isSelected ? "#ffffff" : T.primary,
+                          }}
+                        >
+                          <FaBuilding size={12} />
+                          <span>{b.name}</span>
+                          {b.tag && (
+                            <span
+                              className="rounded px-1.5 py-0.5 text-[10px] font-extrabold uppercase"
+                              style={{
+                                backgroundColor: isSelected
+                                  ? "rgba(255,255,255,0.25)"
+                                  : "#FEF3C7",
+                                color: isSelected ? "#ffffff" : "#92400E",
+                              }}
+                            >
+                              {b.tag}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setField("branch", "Both Branches");
+                        const combined = company.branches
+                          .map((b) => `${b.name}: ${b.address}`)
+                          .join(" | ");
+                        setField("address", combined);
+                      }}
+                      className="flex items-center gap-1.5 rounded-md px-3.5 py-2 text-xs font-bold border transition shadow-sm"
+                      style={{
+                        backgroundColor:
+                          c.branch === "Both Branches" ? T.primary : "#ffffff",
+                        borderColor:
+                          c.branch === "Both Branches" ? T.primary : T.border,
+                        color:
+                          c.branch === "Both Branches" ? "#ffffff" : T.primary,
+                      }}
+                    >
+                      <span>Both Branches</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </CardSection>
 
@@ -704,21 +865,21 @@ export default function BusinessCardStudio({ company, profile }) {
               setSide("front");
               goto("c-out");
             }}
-            className="inline-flex w-full items-center justify-center gap-3 rounded-md py-4 text-sm font-bold text-white shadow-lg transition hover:brightness-110"
+            className="inline-flex w-full items-center justify-center gap-3 rounded-md py-3.5 text-xs font-bold text-white shadow-lg transition hover:brightness-110 active:scale-[0.99]"
             style={{
               background: B.gradient,
             }}
           >
-            <FaWandMagicSparkles size={15} />
-            Generate Preview
-            <FaArrowRight size={14} />
+            <FaWandMagicSparkles size={14} />
+            <span>View Live Card Preview ↓</span>
+            <FaArrowRight size={13} />
           </button>
         </div>
 
-        <div className="space-y-5">
+        <div className="w-full min-w-0 max-w-full space-y-3.5 sm:space-y-5 lg:sticky lg:top-20 self-start">
           <section
             id="c-out"
-            className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)] max-sm:p-3"
+            className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-md border bg-white p-3 sm:p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
             style={{
               borderColor: T.border,
               background: T.surface,
@@ -814,6 +975,43 @@ export default function BusinessCardStudio({ company, profile }) {
                   <CardBack data={cardData} orientation={orientation} company={company} theme={T} />
                 </div>
               </div>
+            </div>
+
+            {/* DIRECT MOBILE ACTION BUTTONS (MOBILE ONLY) */}
+            <div className="mt-3.5 sm:hidden space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={downloadPNG}
+                  disabled={busy}
+                  className="flex items-center justify-center gap-1.5 rounded-md p-2.5 text-xs font-bold text-white shadow-sm transition active:scale-[0.98] disabled:opacity-50"
+                  style={{ background: B.gradient }}
+                >
+                  <FaDownload size={13} />
+                  <span>Download PNG</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={downloadPDF}
+                  disabled={busy}
+                  className="flex items-center justify-center gap-1.5 rounded-md p-2.5 text-xs font-bold text-white shadow-sm transition active:scale-[0.98] disabled:opacity-50"
+                  style={{ background: `linear-gradient(90deg, ${B.green}, ${B.navy})` }}
+                >
+                  <FaFilePdf size={13} />
+                  <span>Download PDF</span>
+                </button>
+              </div>
+
+              {(note || busy) && (
+                <p
+                  className="pt-1 text-center text-[11px] font-semibold"
+                  style={{
+                    color: B.green,
+                  }}
+                >
+                  {busy ? "Preparing file…" : note}
+                </p>
+              )}
             </div>
           </section>
 
@@ -954,6 +1152,26 @@ export default function BusinessCardStudio({ company, profile }) {
         >
           <CardBack data={cardData} orientation={orientation} innerRef={backRef} company={company} theme={T} />
         </div>
+      </div>
+
+      {/* MOBILE FLOATING QUICK PREVIEW BUTTON */}
+      <div className="fixed bottom-5 right-4 z-40 lg:hidden">
+        <button
+          type="button"
+          onClick={() => {
+            const outElem = document.getElementById("c-out");
+            outElem?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+          className="flex items-center gap-1.5 rounded-full py-2.5 px-4 text-xs font-bold text-white shadow-2xl transition active:scale-95"
+          style={{
+            background: B.navy,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
+          }}
+        >
+          <FaEye size={13} />
+          <span>Card Preview</span>
+          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+        </button>
       </div>
     </>
   );

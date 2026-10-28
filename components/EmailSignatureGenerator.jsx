@@ -86,6 +86,10 @@ const DEPTS = [
     id: "Management",
     icon: "Management",
   },
+  {
+    id: "Digital",
+    icon: "Digital",
+  },
 ];
 
 function Section({ id, no, title, sub, icon: Icon, children, theme }) {
@@ -94,25 +98,25 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
   return (
     <section
       id={id}
-      className="scroll-mt-24 rounded-md border bg-white p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+      className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-md border bg-white p-3 sm:p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
       style={{
         borderColor: T.border || BRAND.border,
         background: T.surface || BRAND.white,
       }}
     >
-      <div className="mb-4 flex items-center gap-4">
+      <div className="mb-3.5 flex items-center gap-3 sm:mb-4 sm:gap-4">
         <span
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-white shadow-md"
+          className="grid h-10 w-10 sm:h-12 sm:w-12 shrink-0 place-items-center rounded-full text-white shadow-md"
           style={{
             background: T.gradient || T.primary,
           }}
         >
-          <Icon size={20} />
+          <Icon size={18} className="sm:size-[20px]" />
         </span>
 
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <h2
-            className="text-lg font-extrabold"
+            className="text-base sm:text-lg font-extrabold truncate"
             style={{
               color: T.primary,
             }}
@@ -121,7 +125,7 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
           </h2>
 
           <p
-            className="text-xs"
+            className="text-[11px] sm:text-xs leading-snug"
             style={{
               color: T.muted || BRAND.muted,
             }}
@@ -305,6 +309,8 @@ export default function EmailSignatureGenerator({
 
   const [copied, setCopied] = useState(false);
   const [note, setNote] = useState("");
+  const [mobileTab, setMobileTab] = useState("card");
+  const [mobileSectionTab, setMobileSectionTab] = useState("form");
 
   const T = theme || company?.theme || DEFAULT_THEME;
 
@@ -318,9 +324,9 @@ export default function EmailSignatureGenerator({
 
     logo: company?.logo || (externalData || localData)?.logo || DEFAULT_DATA.logo,
 
-    website: companyData.website || (externalData || localData)?.website || DEFAULT_DATA.website,
+    website: (externalData || localData)?.website || companyData.website || DEFAULT_DATA.website,
 
-    address: companyData.address || (externalData || localData)?.address || DEFAULT_DATA.address,
+    address: (externalData || localData)?.address || companyData.address || DEFAULT_DATA.address,
 
     email: (externalData || localData)?.email || companyData.email || DEFAULT_DATA.email,
 
@@ -353,7 +359,7 @@ export default function EmailSignatureGenerator({
 
     const designation = escapeHtml(data.designation || "Your Designation");
 
-    const companyName = escapeHtml(data.company || "Next-Gen Business Consultancy PVT. LTD");
+    const companyName = escapeHtml(data.company || "AarambhGrow Group of Companies");
 
     const phone = escapeHtml(data.phone || "");
     const email = escapeHtml(data.email || "");
@@ -558,7 +564,7 @@ export default function EmailSignatureGenerator({
                         font-weight:600;
                       "
                     >
-                      BRANCH
+                      ${branch === "Both Branches" ? "BRANCHES" : "BRANCH"}
                     </div>
 
                     <div
@@ -570,7 +576,7 @@ export default function EmailSignatureGenerator({
                       "
                     >
                       ${
-                        branch
+                        branch && branch !== "Both Branches"
                           ? `
                             <strong
                               style="
@@ -586,8 +592,8 @@ export default function EmailSignatureGenerator({
                       ${
                         address
                           ? `
-                            <span style="padding-left:8px;">
-                              ${address}
+                            <span style="${branch && branch !== "Both Branches" ? "padding-left:8px;" : ""}">
+                              ${address.replace(/\n/g, "<br/>")}
                             </span>
                           `
                           : ""
@@ -887,15 +893,15 @@ export default function EmailSignatureGenerator({
 
       logo: company?.logo || DEFAULT_DATA.logo,
 
-      website: companyData.website || initialData?.website || DEFAULT_DATA.website,
+      website: initialData?.website || companyData.website || DEFAULT_DATA.website,
 
-      address: companyData.address || initialData?.address || DEFAULT_DATA.address,
+      address: initialData?.address || companyData.address || company?.branches?.[0]?.address || DEFAULT_DATA.address,
 
       email: initialData?.email || companyData.email || DEFAULT_DATA.email,
 
-      phone: initialData?.phone || companyData.phone || DEFAULT_DATA.phone,
+      phone: initialData?.phone || companyData.phone || company?.branches?.[0]?.phone || DEFAULT_DATA.phone,
 
-      branch: initialData?.branch || companyData.branch || DEFAULT_DATA.branch,
+      branch: initialData?.branch || companyData.branch || company?.branches?.[0]?.name || DEFAULT_DATA.branch,
 
       facebook: initialData?.facebook || companyData.facebook || DEFAULT_DATA.facebook,
 
@@ -925,6 +931,7 @@ export default function EmailSignatureGenerator({
    */
 
   const generatePreview = () => {
+    setMobileSectionTab("preview");
     if (typeof onReady === "function") {
       onReady();
     }
@@ -932,16 +939,13 @@ export default function EmailSignatureGenerator({
 
   return (
     <div
-      className="grid min-w-0 gap-5 p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:p-5"
+      className="grid grid-cols-1 w-full max-w-full min-w-0 items-start gap-3 p-2 sm:gap-5 sm:p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:p-5 lg:pt-3"
       style={{
         background: T.background || DEFAULT_THEME.background,
       }}
     >
-      {/* =====================================================
-          LEFT SIDE
-          ===================================================== */}
-
-      <div className="space-y-5">
+      {/* LEFT SIDE */}
+      <div className="w-full min-w-0 max-w-full space-y-3.5 sm:space-y-5">
         {/* ORGANIZATION */}
 
         <Section
@@ -962,12 +966,14 @@ export default function EmailSignatureGenerator({
             Department Type
           </p>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
             {DEPTS.map((item) => (
               <Choice
                 key={item.id}
                 label={item.id}
-                selected={data.dept === item.id || (item.id.toLowerCase().startsWith("oper") && (data.dept || "").toLowerCase().startsWith("oper"))}
+                selected={
+                  data.dept === item.id || (item.id.toLowerCase().startsWith("oper") && (data.dept || "").toLowerCase().startsWith("oper"))
+                }
                 onClick={() => updateData("dept", item.id)}
                 theme={T}
               />
@@ -1039,7 +1045,7 @@ export default function EmailSignatureGenerator({
               icon={FaUser}
               value={data.name}
               onChange={(v) => updateData("name", v)}
-              placeholder="Vikas Parmar"
+              placeholder="Full Name"
               theme={T}
             />
 
@@ -1048,7 +1054,7 @@ export default function EmailSignatureGenerator({
               icon={FaUserTie}
               value={data.designation}
               onChange={(v) => updateData("designation", v)}
-              placeholder="Full-Stack Developer"
+              placeholder="Designation"
               theme={T}
             />
 
@@ -1068,7 +1074,7 @@ export default function EmailSignatureGenerator({
               type="email"
               value={data.email}
               onChange={(v) => updateData("email", v)}
-              placeholder="vikasparmar@nextgenconsultancy.in"
+              placeholder="Your Email"
               theme={T}
             />
 
@@ -1077,7 +1083,7 @@ export default function EmailSignatureGenerator({
               icon={FaGlobe}
               value={data.website}
               onChange={(v) => updateData("website", v)}
-              placeholder="https://www.nextgenbusiness.co.in"
+              placeholder="https://www..."
               theme={T}
             />
 
@@ -1089,6 +1095,94 @@ export default function EmailSignatureGenerator({
               placeholder="Ahmedabad"
               theme={T}
             />
+
+            {company?.branches && company.branches.length > 0 && (
+              <div
+                className="col-span-full rounded-md border p-3.5"
+                style={{
+                  borderColor: T.border || BRAND.border,
+                  backgroundColor: T.primaryLight || "#f8fafc",
+                }}
+              >
+                <div className="mb-2 flex items-center justify-between">
+                  <span
+                    className="text-xs font-bold"
+                    style={{
+                      color: T.primary,
+                    }}
+                  >
+                    Select Branch
+                  </span>
+                  <span
+                    className="text-[11px] font-medium"
+                    style={{
+                      color: T.muted,
+                    }}
+                  >
+                    Auto-fills branch, address & contact
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {company.branches.map((b) => {
+                    const isSelected = data.branch === b.name || (!data.branch && b.id === "ahmedabad");
+
+                    return (
+                      <button
+                        key={b.id}
+                        type="button"
+                        onClick={() => {
+                          updateData("branch", b.name);
+                          updateData("address", b.address);
+                          if (b.phone) updateData("phone", b.phone);
+                        }}
+                        className="flex items-center gap-2 rounded-md px-3.5 py-2 text-xs font-bold border transition shadow-sm"
+                        style={{
+                          backgroundColor: isSelected ? T.primary : "#ffffff",
+                          borderColor: isSelected ? T.primary : T.border || BRAND.border,
+                          color: isSelected ? "#ffffff" : T.primary,
+                        }}
+                      >
+                        <FaBuilding size={12} />
+                        <span>{b.name}</span>
+                        {b.tag && (
+                          <span
+                            className="rounded px-1.5 py-0.5 text-[10px] font-extrabold uppercase"
+                            style={{
+                              backgroundColor: isSelected ? "rgba(255,255,255,0.25)" : "#FEF3C7",
+                              color: isSelected ? "#ffffff" : "#92400E",
+                            }}
+                          >
+                            {b.tag}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateData("branch", "Both Branches");
+                      updateData(
+                        "address",
+                        company.branches
+                          .map((b) => `${b.name}${b.tag ? ` (${b.tag})` : ""}: ${b.address}${b.phone ? ` | Tel: ${b.phone}` : ""}`)
+                          .join("\n"),
+                      );
+                    }}
+                    className="flex items-center gap-1.5 rounded-md px-3.5 py-2 text-xs font-bold border transition shadow-sm"
+                    style={{
+                      backgroundColor: data.branch === "Both Branches" ? T.primary : "#ffffff",
+                      borderColor: data.branch === "Both Branches" ? T.primary : T.border || BRAND.border,
+                      color: data.branch === "Both Branches" ? "#ffffff" : T.primary,
+                    }}
+                  >
+                    <span>Both Branches</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </Section>
 
@@ -1374,7 +1468,7 @@ export default function EmailSignatureGenerator({
 
       <section
         id="s-out"
-        className="scroll-mt-24 min-w-0 rounded-md border p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)]"
+        className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-md border p-3 sm:p-5 shadow-[0_6px_24px_rgba(3,37,76,.07)] lg:sticky lg:top-20 self-start"
         style={{
           borderColor: T.border || BRAND.border,
 
@@ -1383,22 +1477,22 @@ export default function EmailSignatureGenerator({
       >
         {/* PREVIEW HEADER */}
 
-        <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="mb-4 sm:mb-5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div
-              className="grid h-12 w-12 place-items-center rounded-full shadow-md"
+              className="grid h-10 w-10 sm:h-12 sm:w-12 place-items-center rounded-full shadow-md"
               style={{
                 background: T.accentLight || BRAND.white,
 
                 color: T.accent,
               }}
             >
-              <FaEnvelope size={20} />
+              <FaEnvelope size={18} className="sm:size-[20px]" />
             </div>
 
             <div>
               <h2
-                className="text-lg font-extrabold"
+                className="text-base sm:text-lg font-extrabold"
                 style={{
                   color: T.primary,
                 }}
@@ -1435,19 +1529,65 @@ export default function EmailSignatureGenerator({
           </span>
         </div>
 
-        {/* DESKTOP PREVIEW */}
+        {/* MOBILE VIEW SELECTOR TABS (MOBILE ONLY) */}
+        <div className="mb-3.5 flex items-center gap-1.5 rounded-lg bg-slate-100 p-1 sm:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileTab("card")}
+            className="flex-1 rounded-md py-1.5 px-2.5 text-xs font-bold transition shadow-xs"
+            style={
+              mobileTab === "card"
+                ? {
+                    background: T.primary,
+                    color: "#ffffff",
+                  }
+                : {
+                    background: "transparent",
+                    color: T.muted || BRAND.muted,
+                  }
+            }
+          >
+            Mobile Template
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab("table")}
+            className="flex-1 rounded-md py-1.5 px-2.5 text-xs font-bold transition shadow-xs"
+            style={
+              mobileTab === "table"
+                ? {
+                    background: T.primary,
+                    color: "#ffffff",
+                  }
+                : {
+                    background: "transparent",
+                    color: T.muted || BRAND.muted,
+                  }
+            }
+          >
+            Full HTML Table
+          </button>
+        </div>
+
+        {/* DESKTOP TABLE PREVIEW (DEFAULT ON DESKTOP/LAPTOP, ACCESSIBLE ON MOBILE VIA TAB) */}
 
         <div
-          className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-md border p-4 sm:p-8"
+          className={`${
+            mobileTab === "table" ? "flex flex-col" : "hidden sm:flex"
+          } min-h-[380px] sm:min-h-[420px] items-center justify-center overflow-hidden rounded-md border p-3 sm:p-8`}
           style={{
             borderColor: T.border || BRAND.border,
 
             background: T.background || "#F8FAFC",
           }}
         >
+          {mobileTab === "table" && (
+            <p className="mb-2 text-center text-[10px] font-bold text-slate-500 sm:hidden">↔ Swipe horizontally to view full table</p>
+          )}
+
           <div className="w-full max-w-[850px]">
             <div
-              className="overflow-x-auto rounded-md border p-6 shadow-sm sm:p-10"
+              className="overflow-x-auto rounded-md border p-3.5 shadow-sm sm:p-10"
               style={{
                 borderColor: T.border || BRAND.border,
 
@@ -1463,130 +1603,157 @@ export default function EmailSignatureGenerator({
           </div>
         </div>
 
-        {/* MOBILE PREVIEW */}
+        {/* MOBILE TEMPLATE PREVIEW (DEFAULT ON MOBILE, HIDDEN ON DESKTOP/LAPTOP) */}
 
         <div
-          className="mt-5 rounded-md border p-5 sm:hidden"
+          className={`${mobileTab === "card" ? "block" : "hidden"} sm:hidden rounded-md border p-4 shadow-sm`}
           style={{
             borderColor: T.border || BRAND.border,
 
             background: T.surface || BRAND.white,
           }}
         >
-          <div className="mb-4 flex items-center gap-2">
-            <FaEnvelope color={T.accent} size={14} />
+          <div className="mb-3 flex items-center justify-between pb-2.5 border-b" style={{ borderColor: T.border || BRAND.border }}>
+            <div className="flex items-center gap-2">
+              <FaEnvelope color={T.accent} size={14} />
+              <span
+                className="text-xs font-bold"
+                style={{
+                  color: T.primary,
+                }}
+              >
+                Mobile Template Preview
+              </span>
+            </div>
 
-            <span
-              className="text-xs font-bold"
-              style={{
-                color: T.primary,
-              }}
+            <button
+              type="button"
+              onClick={copied ? undefined : copySignature}
+              className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold text-white shadow-xs"
+              style={{ background: copied ? T.secondary : T.primary }}
             >
-              Mobile Preview
-            </span>
+              {copied ? <FaCheck size={10} /> : <FaCopy size={10} />}
+              <span>{copied ? "Copied" : "Copy"}</span>
+            </button>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <div>
-              <div
-                className="text-lg font-bold"
-                style={{
-                  color: T.primary,
-                }}
-              >
-                {data.name || "Your Name"}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <div
+                  className="text-base font-extrabold truncate"
+                  style={{
+                    color: T.primary,
+                  }}
+                >
+                  {data.name || "Your Name"}
+                </div>
+
+                <div
+                  className="text-xs font-semibold"
+                  style={{
+                    color: T.secondary,
+                  }}
+                >
+                  {data.designation || "Your Designation"}
+                </div>
+
+                <div
+                  className="text-xs font-bold truncate"
+                  style={{
+                    color: T.primary,
+                  }}
+                >
+                  {data.company || "Company"}
+                </div>
               </div>
 
-              <div
-                className="mt-1 text-sm font-semibold"
-                style={{
-                  color: T.primary,
-                }}
-              >
-                {data.designation || "Your Designation"}
-              </div>
+              {(data.logo || company?.logo) && (
+                <div className="h-10 w-24 shrink-0 flex items-center justify-end">
+                  <img
+                    src={data.logo || company?.logo}
+                    alt={data.company || "Company Logo"}
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+              )}
+            </div>
 
-              <div
-                className="mt-1 text-sm font-semibold"
-                style={{
-                  color: T.primary,
-                }}
-              >
-                {data.company || "Company"}
-              </div>
+            <div
+              className="h-0.5 w-full rounded"
+              style={{
+                background: T.gradient || T.primary,
+              }}
+            />
 
-              <div
-                className="mt-3 h-px w-full"
-                style={{
-                  background: T.primary,
-                }}
-              />
+            <div
+              className="space-y-1.5 text-xs"
+              style={{
+                color: T.text || T.primary,
+              }}
+            >
+              {data.phone && (
+                <div className="flex items-center gap-2">
+                  <strong className="text-[11px] text-slate-500 min-w-[55px]">Phone:</strong>
+                  <a
+                    href={`tel:${data.phone.replace(/[^+\d]/g, "")}`}
+                    className="hover:underline font-semibold"
+                    style={{ color: T.primary }}
+                  >
+                    {data.phone}
+                  </a>
+                </div>
+              )}
 
-              <div
-                className="mt-4 space-y-1.5 text-xs"
-                style={{
-                  color: T.text || T.primary,
-                }}
-              >
-                {data.phone && (
-                  <div>
-                    <strong>Phone:</strong> {data.phone}
+              {data.email && (
+                <div className="flex items-center gap-2">
+                  <strong className="text-[11px] text-slate-500 min-w-[55px]">Email:</strong>
+                  <a href={`mailto:${data.email}`} className="hover:underline font-semibold truncate" style={{ color: T.accent }}>
+                    {data.email}
+                  </a>
+                </div>
+              )}
+
+              {(data.branch || data.address) && (
+                <div className="pt-1.5 border-t" style={{ borderColor: T.border || BRAND.border }}>
+                  <div className="text-[10px] font-extrabold tracking-wider uppercase mb-0.5" style={{ color: T.muted || BRAND.muted }}>
+                    {data.branch === "Both Branches" ? "BRANCHES" : "BRANCH"}
                   </div>
-                )}
-
-                {data.email && (
-                  <div>
-                    <strong>Email:</strong> {data.email}
+                  <div className="whitespace-pre-line text-xs leading-relaxed">
+                    {data.branch && data.branch !== "Both Branches" && <strong style={{ color: T.primary }}>{data.branch}: </strong>}
+                    <span>{data.address}</span>
                   </div>
-                )}
+                </div>
+              )}
 
-                {data.branch && (
-                  <div className="pt-2">
-                    <span
-                      className="font-semibold"
-                      style={{
-                        color: T.muted || BRAND.muted,
-                      }}
-                    >
-                      BRANCH
-                    </span>
-                  </div>
-                )}
+              {data.website && (
+                <div className="flex items-center gap-2 pt-1">
+                  <strong className="text-[11px] text-slate-500 min-w-[55px]">Website:</strong>
+                  <a
+                    href={data.website.startsWith("http") ? data.website : `https://${data.website}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-bold hover:underline"
+                    style={{ color: T.primary }}
+                  >
+                    {data.website.replace(/^https?:\/\//, "")}
+                  </a>
+                </div>
+              )}
+            </div>
 
-                {data.address && (
-                  <div>
-                    <strong
-                      style={{
-                        color: T.primary,
-                      }}
-                    >
-                      {data.branch}:
-                    </strong>{" "}
-                    {data.address}
-                  </div>
-                )}
-
-                {data.website && (
-                  <div className="pt-2">
-                    <strong>Website:</strong> {data.website}
-                  </div>
-                )}
-              </div>
-
-              {/* MOBILE SOCIAL */}
-
-              <div className="mt-4 flex gap-2">
+            {/* MOBILE SOCIAL */}
+            {(data.facebook || data.linkedin || data.instagram) && (
+              <div className="mt-2 flex gap-2 pt-2 border-t" style={{ borderColor: T.border || BRAND.border }}>
                 {data.facebook && (
                   <a
                     href={data.facebook}
                     target="_blank"
                     rel="noreferrer"
-                    className="grid h-8 w-8 place-items-center rounded-sm text-white"
-                    style={{
-                      background: "#1877F2",
-                    }}
+                    className="grid h-7 w-7 place-items-center rounded-sm text-white"
+                    style={{ background: "#1877F2" }}
                   >
-                    <FaFacebookF size={14} />
+                    <FaFacebookF size={12} />
                   </a>
                 )}
 
@@ -1595,12 +1762,10 @@ export default function EmailSignatureGenerator({
                     href={data.linkedin}
                     target="_blank"
                     rel="noreferrer"
-                    className="grid h-8 w-8 place-items-center rounded-sm text-white"
-                    style={{
-                      background: "#0A66C2",
-                    }}
+                    className="grid h-7 w-7 place-items-center rounded-sm text-white"
+                    style={{ background: "#0A66C2" }}
                   >
-                    <FaLinkedinIn size={14} />
+                    <FaLinkedinIn size={12} />
                   </a>
                 )}
 
@@ -1609,32 +1774,52 @@ export default function EmailSignatureGenerator({
                     href={data.instagram}
                     target="_blank"
                     rel="noreferrer"
-                    className="grid h-8 w-8 place-items-center rounded-sm text-white"
-                    style={{
-                      background: "linear-gradient(135deg,#F58529,#DD2A7B,#8134AF,#515BD4)",
-                    }}
+                    className="grid h-7 w-7 place-items-center rounded-sm text-white"
+                    style={{ background: "linear-gradient(135deg,#F58529,#DD2A7B,#8134AF,#515BD4)" }}
                   >
-                    <FaInstagram size={14} />
+                    <FaInstagram size={12} />
                   </a>
                 )}
               </div>
+            )}
 
-              {/* MOBILE DISCLAIMER */}
-
-              {data.disclaimer && (
-                <div
-                  className="mt-4 border-t pt-3 text-[10px] leading-relaxed"
-                  style={{
-                    borderColor: T.border || BRAND.border,
-
-                    color: T.muted || BRAND.muted,
-                  }}
-                >
-                  <strong>Disclaimer:</strong> {data.disclaimer}
-                </div>
-              )}
-            </div>
+            {/* MOBILE DISCLAIMER */}
+            {data.disclaimer && (
+              <div
+                className="mt-2 border-t pt-2 text-[10px] leading-relaxed"
+                style={{
+                  borderColor: T.border || BRAND.border,
+                  color: T.muted || BRAND.muted,
+                }}
+              >
+                <strong>Disclaimer:</strong> {data.disclaimer}
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* MOBILE DIRECT ACTION BUTTON UNDER PREVIEW */}
+        <div className="mt-4 sm:hidden">
+          <button
+            type="button"
+            onClick={copied ? undefined : copySignature}
+            className="flex w-full items-center justify-center gap-2 rounded-md py-3 text-xs font-bold text-white shadow-md transition active:scale-[0.99]"
+            style={{
+              background: copied ? T.secondary : T.primary,
+            }}
+          >
+            {copied ? (
+              <>
+                <FaCheck />
+                <span>Copied to Clipboard!</span>
+              </>
+            ) : (
+              <>
+                <FaCopy />
+                <span>Copy Signature to Clipboard</span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* SUCCESS MESSAGE */}
@@ -1660,6 +1845,26 @@ export default function EmailSignatureGenerator({
           </div>
         )}
       </section>
+
+      {/* MOBILE FLOATING QUICK PREVIEW BUTTON */}
+      <div className="fixed bottom-5 right-4 z-40 lg:hidden">
+        <button
+          type="button"
+          onClick={() => {
+            const outElem = document.getElementById("s-out");
+            outElem?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+          className="flex items-center gap-1.5 rounded-full py-2.5 px-4 text-xs font-bold text-white shadow-2xl transition active:scale-95"
+          style={{
+            background: T.primary,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
+          }}
+        >
+          <FaEye size={13} />
+          <span>Live Signature</span>
+          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+        </button>
+      </div>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
   FaCamera,
   FaTrash,
   FaIdBadge,
+  FaLaptopCode,
 } from "react-icons/fa6";
 
 import { COMPANY_OPTIONS } from "../lib/companyConfig";
@@ -187,6 +188,38 @@ export const DEPARTMENT_THEMES = {
     bgImageAlpha: 0.95,
     description: "Fixed White badge with crisp dark lettering and White DP background",
   },
+  Digital: {
+    id: "Digital",
+    label: "Digital",
+    colorLabel: "Purple",
+    colorHex: "#6B21A8",
+    colorDot: "#9333EA",
+    buttonActiveBg: "linear-gradient(135deg, #7E22CE, #4C1D95)",
+    buttonActiveTextColor: "#FFFFFF",
+    theme: {
+      primary: "#3B0764",
+      secondary: "#6B21A8",
+      accent: "#9333EA",
+      primaryLight: "#FAF5FF",
+      secondaryLight: "#F3E8FF",
+      accentLight: "#FAF5FF",
+      border: "#D8B4FE",
+      text: "#3B0764",
+      muted: "#7E22CE",
+    },
+    canvasBgStart: "#FAF5FF",
+    canvasBgEnd: "#F3E8FF",
+    radialEdgeColor: "rgba(107, 33, 168, 0.25)",
+    previewBgGradient: "linear-gradient(145deg, #FAF5FF 0%, #F3E8FF 55%, #E9D5FF 100%)",
+    borderColor: "#6B21A8",
+    badgeRingColor: "#6B21A8",
+    badgeTextColor: "#FFFFFF",
+    badgeBg: "#6B21A8",
+    badgeText: "#FFFFFF",
+    badgeBorder: "#6B21A8",
+    bgImageAlpha: 0.82,
+    description: "Fixed Purple badge with matching Purple DP background",
+  },
 };
 
 export const DEPTS = [
@@ -194,6 +227,7 @@ export const DEPTS = [
   { id: "Admin", label: "Admin", icon: FaUserTie },
   { id: "Operation", label: "Operation", icon: FaGear },
   { id: "Management", label: "Management", icon: FaPeopleGroup },
+  { id: "Digital", label: "Digital", icon: FaLaptopCode },
 ];
 
 export function resolveDeptKey(dept) {
@@ -203,6 +237,7 @@ export function resolveDeptKey(dept) {
   if (d.includes("admin")) return "Admin";
   if (d.includes("oper")) return "Operation";
   if (d.includes("manage")) return "Management";
+  if (d.includes("digit")) return "Digital";
   return "Sales";
 }
 
@@ -398,7 +433,7 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
   return (
     <section
       id={id}
-      className="scroll-mt-24 rounded-lg border bg-white p-4 shadow-[0_4px_20px_rgba(3,37,76,.06)] sm:p-5"
+      className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-lg border bg-white p-3 sm:p-5 shadow-[0_4px_20px_rgba(3,37,76,.06)]"
       style={{
         borderColor: T.border || BRAND.border,
       }}
@@ -514,6 +549,7 @@ export default function WhatsAppDPGenerator({
 
   const [sideLeftCustom, setSideLeftCustom] = useState("");
   const [sideRightCustom, setSideRightCustom] = useState("");
+  const [mobileTab, setMobileTab] = useState("form");
 
   // Keep side text in sync with company-wise branding
   useEffect(() => {
@@ -728,6 +764,7 @@ export default function WhatsAppDPGenerator({
   };
 
   const generatePreview = () => {
+    setMobileTab("preview");
     if (typeof onReady === "function") {
       onReady();
     }
@@ -738,8 +775,8 @@ export default function WhatsAppDPGenerator({
   };
 
   return (
-    <div className="grid min-w-0 items-start gap-4 p-3 sm:gap-5 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:p-6">
-      <div className="space-y-4 sm:space-y-5">
+    <div className="grid grid-cols-1 w-full max-w-full min-w-0 items-start gap-3 p-2 sm:gap-5 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:p-6 lg:pt-3">
+      <div className="w-full min-w-0 max-w-full space-y-3.5 sm:space-y-5">
         {/* SECTION 1: DEPARTMENT & ORGANIZATION */}
         <Section
           id="s-org"
@@ -766,7 +803,7 @@ export default function WhatsAppDPGenerator({
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
               {DEPTS.map(({ id, label, icon: DeptIcon }) => {
                 const isSelected = resolveDeptKey(data.dept) === resolveDeptKey(id);
                 const deptConf = DEPARTMENT_THEMES[id] || DEPARTMENT_THEMES.Sales;
@@ -776,7 +813,7 @@ export default function WhatsAppDPGenerator({
                     key={id}
                     type="button"
                     onClick={() => handleSelectDept(id)}
-                    className="relative flex min-w-0 min-h-[64px] sm:min-h-[72px] flex-col items-center justify-center gap-1 rounded-md border-2 p-2 sm:p-2.5 transition active:scale-[0.98]"
+                    className="relative flex min-w-0 min-h-[58px] sm:min-h-[72px] flex-col items-center justify-center gap-1 rounded-md border-2 p-1.5 sm:p-2.5 transition active:scale-[0.98]"
                     style={
                       isSelected
                         ? {
@@ -794,7 +831,7 @@ export default function WhatsAppDPGenerator({
                   >
                     {isSelected && (
                       <span
-                        className="absolute right-1.5 top-1.5 grid h-4 w-4 sm:h-5 sm:w-5 place-items-center rounded-full text-[10px] text-white shadow-sm"
+                        className="absolute right-1 top-1 grid h-4 w-4 sm:h-5 sm:w-5 place-items-center rounded-full text-[9px] sm:text-[10px] text-white shadow-sm"
                         style={{
                           background: deptConf.colorHex === "#FFFFFF" ? "#0F172A" : deptConf.accent,
                         }}
@@ -803,10 +840,10 @@ export default function WhatsAppDPGenerator({
                       </span>
                     )}
 
-                    <DeptIcon size={18} className="shrink-0" />
+                    <DeptIcon size={16} className="shrink-0 sm:size-[18px]" />
 
-                    <div className="w-full text-center px-0.5">
-                      <span className="block truncate text-xs font-extrabold leading-tight">{label}</span>
+                    <div className="w-full text-center px-0.5 min-w-0">
+                      <span className="block truncate text-[11px] sm:text-xs font-extrabold leading-tight">{label}</span>
                     </div>
                   </button>
                 );
@@ -830,7 +867,7 @@ export default function WhatsAppDPGenerator({
                     key={c.id}
                     type="button"
                     onClick={() => handleSelectCompany(c)}
-                    className="flex min-h-[56px] sm:min-h-[62px] flex-col items-center justify-center rounded-md border-2 p-2 text-center transition active:scale-[0.98]"
+                    className="flex min-w-0 min-h-[52px] sm:min-h-[62px] flex-col items-center justify-center rounded-md border-2 p-1.5 sm:p-2 text-center transition active:scale-[0.98]"
                     style={
                       isSelected
                         ? {
@@ -845,8 +882,8 @@ export default function WhatsAppDPGenerator({
                           }
                     }
                   >
-                    <img src={c.headerLogo || c.logo} alt={c.name} className="h-5 sm:h-6 w-auto max-w-[85px] object-contain mb-1" />
-                    <span className="truncate text-[11px] font-bold w-full" style={{ color: isSelected ? activeTheme.primary : undefined }}>
+                    <img src={c.headerLogo || c.logo} alt={c.name} className="h-4 sm:h-6 w-auto max-w-[75px] sm:max-w-[85px] object-contain mb-1 shrink-0" />
+                    <span className="truncate text-[10px] sm:text-[11px] font-bold w-full block min-w-0" style={{ color: isSelected ? activeTheme.primary : undefined }}>
                       {c.name}
                     </span>
                   </button>
@@ -908,12 +945,12 @@ export default function WhatsAppDPGenerator({
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {/* DEFAULT MALE AVATAR */}
               <button
                 type="button"
                 onClick={() => handleSelectGender("Male")}
-                className="relative flex min-h-[76px] sm:min-h-[84px] items-center gap-3 rounded-lg border-2 p-3 text-left transition active:scale-[0.98]"
+                className="relative flex min-w-0 min-h-[66px] sm:min-h-[84px] items-center gap-2 sm:gap-3 rounded-lg border-2 p-2 sm:p-3 text-left transition active:scale-[0.98]"
                 style={
                   data.gender === "Male" && !data.photo
                     ? {
@@ -930,15 +967,15 @@ export default function WhatsAppDPGenerator({
                 <img
                   src={DEFAULT_MALE_AVATAR}
                   alt="Default Male Avatar"
-                  className="h-12 w-12 rounded-full object-cover border-2 shadow-xs shrink-0"
+                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 shadow-xs shrink-0"
                   style={{
                     borderColor: data.gender === "Male" && !data.photo ? activeTheme.primary : "#CBD5E1",
                   }}
                 />
 
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs sm:text-sm font-extrabold" style={{ color: activeTheme.primary }}>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs sm:text-sm font-extrabold truncate" style={{ color: activeTheme.primary }}>
                       Male 
                     </span>
                     {data.gender === "Male" && !data.photo && (
@@ -954,7 +991,7 @@ export default function WhatsAppDPGenerator({
               <button
                 type="button"
                 onClick={() => handleSelectGender("Female")}
-                className="relative flex min-h-[76px] sm:min-h-[84px] items-center gap-3 rounded-lg border-2 p-3 text-left transition active:scale-[0.98]"
+                className="relative flex min-w-0 min-h-[66px] sm:min-h-[84px] items-center gap-2 sm:gap-3 rounded-lg border-2 p-2 sm:p-3 text-left transition active:scale-[0.98]"
                 style={
                   data.gender === "Female" && !data.photo
                     ? {
@@ -971,15 +1008,15 @@ export default function WhatsAppDPGenerator({
                 <img
                   src={DEFAULT_FEMALE_AVATAR}
                   alt="Default Female Avatar"
-                  className="h-12 w-12 rounded-full object-cover border-2 shadow-xs shrink-0"
+                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 shadow-xs shrink-0"
                   style={{
                     borderColor: data.gender === "Female" && !data.photo ? activeTheme.primary : "#CBD5E1",
                   }}
                 />
 
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs sm:text-sm font-extrabold" style={{ color: activeTheme.primary }}>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs sm:text-sm font-extrabold truncate" style={{ color: activeTheme.primary }}>
                       Female
                     </span>
                     {data.gender === "Female" && !data.photo && (
@@ -995,7 +1032,7 @@ export default function WhatsAppDPGenerator({
 
           {/* PERSONAL PIC UPLOAD (ONLY REPLACES PIC, NEVER TOUCHES NAME/ROLE/COLOR) */}
           <div
-            className="rounded-lg border p-3 sm:p-4"
+            className="rounded-lg border p-2.5 sm:p-4 min-w-0 max-w-full"
             style={{
               borderColor: activeTheme.border,
               background: data.photo ? activeTheme.primaryLight : "#FFFFFF",
@@ -1024,13 +1061,13 @@ export default function WhatsAppDPGenerator({
                 <img
                   src={data.photo}
                   alt="Personal uploaded profile picture"
-                  className="h-14 w-14 rounded-full object-cover border-2 shadow-sm shrink-0"
+                  className="h-12 w-12 sm:h-14 sm:w-14 rounded-full object-cover border-2 shadow-sm shrink-0"
                   style={{ borderColor: activeTheme.primary }}
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
                     <p className="text-xs font-extrabold text-slate-800 truncate">Personal Picture Active</p>
-                    <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-sm">Custom</span>
+                    <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-sm shrink-0">Custom</span>
                   </div>
                   <p className="text-[11px] text-slate-600 leading-tight mt-0.5">
                     ✓ Preserved: Designation, Name, Department, and Company branding remain 100% intact.
@@ -1039,10 +1076,10 @@ export default function WhatsAppDPGenerator({
               </div>
             ) : (
               <div>
-                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-dashed p-3 text-center transition hover:bg-slate-50">
+                <label className="flex flex-col sm:flex-row cursor-pointer items-center justify-center gap-1 sm:gap-2 rounded-md border-2 border-dashed p-2.5 sm:p-3 text-center transition hover:bg-slate-50 min-w-0">
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-                  <FaCamera size={14} className="text-slate-400" />
-                  <span className="text-xs font-semibold text-slate-700">Click here to upload personal photo (PNG, JPG, WebP)</span>
+                  <FaCamera size={14} className="text-slate-400 shrink-0" />
+                  <span className="text-xs font-semibold text-slate-700 break-words text-center">Click here to upload personal photo (PNG, JPG, WebP)</span>
                 </label>
                 <p className="mt-1.5 text-[10px] text-slate-500 text-center leading-tight">
                   If not uploaded, the <strong>same-to-same default {data.gender || "Male"} avatar</strong> is automatically applied.
@@ -1110,10 +1147,27 @@ export default function WhatsAppDPGenerator({
             {note}
           </div>
         )}
+
+        {/* MOBILE DIRECT PREVIEW SWITCHER BUTTON */}
+        <button
+          type="button"
+          onClick={() => {
+            const outElem = document.getElementById("s-out");
+            outElem?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+          className="lg:hidden flex w-full items-center justify-center gap-2 rounded-md py-3 text-xs font-bold text-white shadow-lg transition active:scale-[0.99]"
+          style={{
+            background: `linear-gradient(90deg,${activeTheme.secondary},${activeTheme.primary})`,
+          }}
+        >
+          <FaEye size={14} />
+          <span>View Live Preview &amp; Download ↓</span>
+        </button>
       </div>
+
       <section
         id="s-out"
-        className="scroll-mt-24 min-w-0 rounded-lg border bg-white p-4 shadow-[0_4px_20px_rgba(3,37,76,.06)] sm:p-5 lg:sticky lg:top-24 self-start"
+        className="scroll-mt-24 w-full min-w-0 max-w-full rounded-lg border bg-white p-3 sm:p-5 shadow-[0_4px_20px_rgba(3,37,76,.06)] lg:sticky lg:top-20 self-start"
         style={{
           borderColor: activeTheme.border,
         }}
@@ -1160,9 +1214,9 @@ export default function WhatsAppDPGenerator({
           </span>
         </div>
 
-        {/* PREVIEW CONTAINER (NO SQUARE COLORED BACKGROUND) */}
+        {/* PREVIEW CONTAINER */}
         <div
-          className="flex min-h-[360px] items-center justify-center rounded-xl border p-4 sm:min-h-[460px] sm:p-6"
+          className="flex min-h-[290px] sm:min-h-[460px] items-center justify-center rounded-xl border p-3 sm:p-6"
           style={{
             borderColor: activeTheme.border,
             background: "#FAFAFA",
@@ -1171,10 +1225,7 @@ export default function WhatsAppDPGenerator({
           <div className="w-full max-w-[420px]">
             {/* CIRCULAR DP BADGE (PURE CIRCULAR PROFILE PICTURE) */}
             <div
-              className="mx-auto aspect-square w-full max-w-[380px] rounded-full overflow-hidden transition-all"
-              style={{
-                boxShadow: "0 12px 32px rgba(0,0,0,0.15), 0 3px 8px rgba(0,0,0,0.06)",
-              }}
+              className="mx-auto aspect-square w-full max-w-[250px] xs:max-w-[275px] sm:max-w-[340px] md:max-w-[380px] rounded-full overflow-hidden transition-all shadow-xl"
             >
               {/* REACTIVE SVG BADGE */}
               <div
@@ -1184,7 +1235,7 @@ export default function WhatsAppDPGenerator({
             </div>
 
             {/* DIRECT MOBILE DOWNLOAD BUTTON BELOW PREVIEW */}
-            <div className="mt-4 sm:hidden">
+            <div className="mt-3.5 sm:hidden">
               <button
                 type="button"
                 onClick={downloadDP}
@@ -1217,6 +1268,26 @@ export default function WhatsAppDPGenerator({
         {/* HIDDEN CANVAS FOR EXPORT */}
         <canvas ref={canvasRef} className="hidden" />
       </section>
+
+      {/* MOBILE FLOATING QUICK PREVIEW BUTTON */}
+      <div className="fixed bottom-5 right-4 z-40 lg:hidden">
+        <button
+          type="button"
+          onClick={() => {
+            const outElem = document.getElementById("s-out");
+            outElem?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+          className="flex items-center gap-1.5 rounded-full py-2.5 px-4 text-xs font-bold text-white shadow-2xl transition active:scale-95"
+          style={{
+            background: activeTheme.primary,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
+          }}
+        >
+          <FaEye size={13} />
+          <span>Live Preview</span>
+          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+        </button>
+      </div>
     </div>
   );
 }

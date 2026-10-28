@@ -17,10 +17,16 @@ export const metadata = {
     "Create, flip and download your own Aarambh Grow 3D digital business card. Self-serve — no signup, no backend. Everything stays in your browser.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${poppins.variable} ${kaushan.variable}`}>
-      <body className="min-h-screen font-sans antialiased overflow-x-hidden selection:bg-orange-100">{children}</body>
+      <body className="min-h-screen font-sans antialiased overflow-x-clip selection:bg-orange-100">{children}</body>
     </html>
   );
 }
