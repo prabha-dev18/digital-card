@@ -373,7 +373,12 @@ export default function EmailSignatureGenerator({
 
     const disclaimer = escapeHtml(data.disclaimer || "");
 
-    const logo = escapeHtml(data.logo || "/aarambh.png");
+    const rawLogo = data.logo || "/aarambh.png";
+    const absoluteLogo =
+      typeof window !== "undefined" && rawLogo.startsWith("/")
+        ? `${window.location.origin}${rawLogo}`
+        : rawLogo;
+    const logo = escapeHtml(absoluteLogo);
     const logoDim = getEmailLogoDimensions(company, data.logo);
 
     const primary = T.primary || DEFAULT_THEME.primary;
@@ -1428,9 +1433,12 @@ export default function EmailSignatureGenerator({
               borderColor: T.border || BRAND.border,
             }}
           >
-            <div>
-              <strong style={{ color: T.primary }}>Gmail:</strong> Settings ⚙ → See all settings → Signature → New → paste with{" "}
-              <code
+          <div>
+            <strong style={{ color: T.primary }}>Gmail Setup Steps:</strong>
+            <ol className="mt-2 list-decimal pl-4 space-y-1">
+              <li>Open Gmail, click <strong>Settings ⚙ → See all settings</strong>.</li>
+              <li>Under the <strong>General</strong> tab, scroll down to <strong>Signature</strong>.</li>
+              <li>Click <strong>+ Create new</strong>, name it, and paste into the box with <code
                 className="rounded px-1.5 py-0.5 font-mono"
                 style={{
                   background: T.surface || BRAND.white,
@@ -1439,8 +1447,13 @@ export default function EmailSignatureGenerator({
                 }}
               >
                 Ctrl+V
-              </code>
-            </div>
+              </code>.</li>
+              <li>
+                <strong>Important:</strong> Under <em>Signature defaults</em>, change <strong>FOR NEW EMAILS USE</strong> to your new signature name!
+              </li>
+              <li>Scroll all the way to the bottom and click <strong>Save Changes</strong>.</li>
+            </ol>
+          </div>
           </div>
         </div>
 
@@ -1840,7 +1853,9 @@ export default function EmailSignatureGenerator({
             <div>
               <p className="text-sm font-bold">Signature copied successfully</p>
 
-              <p className="mt-0.5 text-xs">Open Gmail, or your email settings and paste the signature into the signature section.</p>
+              <p className="mt-0.5 text-xs">
+                Open Gmail Settings &rarr; Paste signature &rarr; Select it under <strong>Signature defaults</strong> &rarr; Click <strong>Save Changes</strong>.
+              </p>
             </div>
           </div>
         )}
