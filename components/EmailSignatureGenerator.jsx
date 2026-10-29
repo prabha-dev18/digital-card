@@ -55,7 +55,7 @@ const DEFAULT_DATA = {
 
   website: "https://www.example.com",
 
-  branch: "Your Branch",
+  branch: "Our Branch",
 
   address: "Your Business Address",
 
