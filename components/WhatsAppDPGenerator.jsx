@@ -299,6 +299,7 @@ export function buildBadgeSvg({
   showSideText = true,
   sideLeftText = "",
   sideRightText = "",
+  ringWidth = 130,
 }) {
   const safeName = escapeXml((name || "YOUR NAME").trim().toUpperCase());
   const safeRole = escapeXml((designation || "YOUR DESIGNATION").trim().toUpperCase());
@@ -307,48 +308,62 @@ export function buildBadgeSvg({
   const safeLeft = escapeXml((sideLeftText || companyFullName).trim().toUpperCase());
   const safeRight = escapeXml((sideRightText || companyFullName).trim().toUpperCase());
 
-  // Dynamic font sizing for smooth arc fitting (Increased sizes)
+  // Fixed ring width of 130px
+  const clampedRingWidth = 130;
+  const innerR = 540 - clampedRingWidth; // 410
+  const imageOffset = clampedRingWidth; // 130
+  const imageSize = innerR * 2; // 820
+  const strokeR = innerR + 2; // 412
+
+  // Arc path radiuses centered within the 130px ring band
+  const rMid = (540 + innerR) / 2; // 475
+  const rTop = Math.round(rMid - clampedRingWidth * 0.05); // 468
+  const rBottom = Math.round(rMid + clampedRingWidth * 0.09); // 487
+  const rSide = Math.round(rMid); // 475
+  const sideOffset = Math.round(rSide * 0.707107); // 336
+
+  // Dynamic font sizing for smooth arc fitting
   const nameLen = safeName.length;
-  let nameSize = 52;
-  let nameSpacing = 3;
+  let nameSize = 42;
+  let nameSpacing = 2.5;
   if (nameLen > 24) {
-    nameSize = 34;
-    nameSpacing = 2;
+    nameSize = 28;
+    nameSpacing = 1.5;
   } else if (nameLen > 18) {
-    nameSize = 40;
-    nameSpacing = 2.5;
+    nameSize = 33;
+    nameSpacing = 2;
   } else if (nameLen > 12) {
-    nameSize = 46;
-    nameSpacing = 3;
+    nameSize = 38;
+    nameSpacing = 2.2;
   }
 
   const roleLen = safeRole.length;
-  let roleSize = 54;
-  let roleSpacing = 3;
+  let roleSize = 42;
+  let roleSpacing = 2.5;
   if (roleLen > 26) {
-    roleSize = 38;
-    roleSpacing = 1.5;
+    roleSize = 30;
+    roleSpacing = 1.2;
   } else if (roleLen > 20) {
-    roleSize = 44;
-    roleSpacing = 2;
+    roleSize = 35;
+    roleSpacing = 1.6;
   } else if (roleLen > 14) {
-    roleSize = 48;
-    roleSpacing = 2.5;
+    roleSize = 39;
+    roleSpacing = 2;
   }
 
-  // Font sizing for company name on side arcs (Increased size)
+  // Font sizing for company name on side arcs
   const compLen = Math.max(safeLeft.length, safeRight.length);
-  let sideSize = 28;
-  let sideSpacing = 2.5;
+  let sideSize = 22;
+  let sideSpacing = 2;
   if (compLen > 24) {
-    sideSize = 20;
-    sideSpacing = 1.2;
+    sideSize = 16;
+    sideSpacing = 1;
   } else if (compLen > 18) {
-    sideSize = 24;
-    sideSpacing = 1.8;
+    sideSize = 18;
+    sideSpacing = 1.4;
   } else if (compLen > 12) {
-    sideSize = 26;
-    sideSpacing = 2;
+    sideSize = 20;
+    sideSpacing = 1.7;
   }
 
   // Sleek, refined medium-bold font style (not excessively bold)
@@ -365,20 +380,20 @@ export function buildBadgeSvg({
 
   return `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Top Arc (Designation): Clockwise from left to right along top (R=430) -->
-    <path id="badge-top-arc" d="M 110,540 A 430,430 0 0,1 970,540" fill="none" />
+    <!-- Top Arc (Designation): Clockwise from left to right along top -->
+    <path id="badge-top-arc" d="M ${540 - rTop},540 A ${rTop},${rTop} 0 0,1 ${540 + rTop},540" fill="none" />
     
-    <!-- Bottom Arc (Full Name): Optical center in lower curve (R=466) -->
-    <path id="badge-bottom-arc" d="M 74,540 A 466,466 0 0,0 1006,540" fill="none" />
+    <!-- Bottom Arc (Full Name): Optical center in lower curve -->
+    <path id="badge-bottom-arc" d="M ${540 - rBottom},540 A ${rBottom},${rBottom} 0 0,0 ${540 + rBottom},540" fill="none" />
 
-    <!-- Left Arc (Company name): Spans left 90 degrees (R=440) -->
-    <path id="badge-left-arc" d="M 229,851 A 440,440 0 0,1 229,229" fill="none" />
-    <!-- Right Arc (Company name): Spans right 90 degrees (R=440) -->
-    <path id="badge-right-arc" d="M 851,229 A 440,440 0 0,1 851,851" fill="none" />
+    <!-- Left Arc (Company name): Spans left 90 degrees -->
+    <path id="badge-left-arc" d="M ${540 - sideOffset},${540 + sideOffset} A ${rSide},${rSide} 0 0,1 ${540 - sideOffset},${540 - sideOffset}" fill="none" />
+    <!-- Right Arc (Company name): Spans right 90 degrees -->
+    <path id="badge-right-arc" d="M ${540 + sideOffset},${540 - sideOffset} A ${rSide},${rSide} 0 0,1 ${540 + sideOffset},${540 + sideOffset}" fill="none" />
 
-    <!-- Inner circle clip path for avatar (R=353) -->
+    <!-- Inner circle clip path for avatar (R=${innerR}) -->
     <clipPath id="avatar-clip">
-      <circle cx="540" cy="540" r="353" />
+      <circle cx="540" cy="540" r="${innerR}" />
     </clipPath>
   </defs>
 
@@ -386,11 +401,11 @@ export function buildBadgeSvg({
   <circle cx="540" cy="540" r="540" fill="${ringFill}" />
 
   <!-- ONLY ONE clean white ring framing the avatar -->
-  <circle cx="540" cy="540" r="356" fill="${innerBg}" stroke="${ringLineStroke}" stroke-width="${isWhiteRing ? "5" : "6"}" />
+  <circle cx="540" cy="540" r="${strokeR}" fill="${innerBg}" stroke="${ringLineStroke}" stroke-width="${isWhiteRing ? "4" : "5"}" />
 
   <!-- Avatar clipped inside the inner circle -->
   <g clip-path="url(#avatar-clip)">
-    <image href="${avatarSrc}" x="187" y="187" width="706" height="706" preserveAspectRatio="xMidYMid slice" />
+    <image href="${avatarSrc}" x="${imageOffset}" y="${imageOffset}" width="${imageSize}" height="${imageSize}" preserveAspectRatio="xMidYMid slice" />
   </g>
 
   <!-- TOP DESIGNATION (ARCUATE TEXT) -->
@@ -433,7 +448,7 @@ function Section({ id, no, title, sub, icon: Icon, children, theme }) {
   return (
     <section
       id={id}
-      className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-lg border bg-white p-3 sm:p-5 shadow-[0_4px_20px_rgba(3,37,76,.06)]"
+      className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-md border bg-white p-3 sm:p-5 shadow-[0_4px_20px_rgba(3,37,76,.06)]"
       style={{
         borderColor: T.border || BRAND.border,
       }}
@@ -950,7 +965,7 @@ export default function WhatsAppDPGenerator({
               <button
                 type="button"
                 onClick={() => handleSelectGender("Male")}
-                className="relative flex min-w-0 min-h-[66px] sm:min-h-[84px] items-center gap-2 sm:gap-3 rounded-lg border-2 p-2 sm:p-3 text-left transition active:scale-[0.98]"
+                className="relative flex min-w-0 min-h-[66px] sm:min-h-[84px] items-center gap-2 sm:gap-3 rounded-md border-2 p-2 sm:p-3 text-left transition active:scale-[0.98]"
                 style={
                   data.gender === "Male" && !data.photo
                     ? {
@@ -991,7 +1006,7 @@ export default function WhatsAppDPGenerator({
               <button
                 type="button"
                 onClick={() => handleSelectGender("Female")}
-                className="relative flex min-w-0 min-h-[66px] sm:min-h-[84px] items-center gap-2 sm:gap-3 rounded-lg border-2 p-2 sm:p-3 text-left transition active:scale-[0.98]"
+                className="relative flex min-w-0 min-h-[66px] sm:min-h-[84px] items-center gap-2 sm:gap-3 rounded-md border-2 p-2 sm:p-3 text-left transition active:scale-[0.98]"
                 style={
                   data.gender === "Female" && !data.photo
                     ? {
@@ -1032,7 +1047,7 @@ export default function WhatsAppDPGenerator({
 
           {/* PERSONAL PIC UPLOAD (ONLY REPLACES PIC, NEVER TOUCHES NAME/ROLE/COLOR) */}
           <div
-            className="rounded-lg border p-2.5 sm:p-4 min-w-0 max-w-full"
+            className="rounded-md border p-2.5 sm:p-4 min-w-0 max-w-full"
             style={{
               borderColor: activeTheme.border,
               background: data.photo ? activeTheme.primaryLight : "#FFFFFF",
@@ -1067,7 +1082,7 @@ export default function WhatsAppDPGenerator({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
                     <p className="text-xs font-extrabold text-slate-800 truncate">Personal Picture Active</p>
-                    <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-sm shrink-0">Custom</span>
+                    <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-md shrink-0">Custom</span>
                   </div>
                   <p className="text-[11px] text-slate-600 leading-tight mt-0.5">
                     ✓ Preserved: Designation, Name, Department, and Company branding remain 100% intact.
@@ -1167,7 +1182,7 @@ export default function WhatsAppDPGenerator({
 
       <section
         id="s-out"
-        className="scroll-mt-24 w-full min-w-0 max-w-full rounded-lg border bg-white p-3 sm:p-5 shadow-[0_4px_20px_rgba(3,37,76,.06)] lg:sticky lg:top-20 self-start"
+        className="scroll-mt-24 w-full min-w-0 max-w-full rounded-md border bg-white p-3 sm:p-5 shadow-[0_4px_20px_rgba(3,37,76,.06)] lg:sticky lg:top-20 self-start"
         style={{
           borderColor: activeTheme.border,
         }}
@@ -1216,7 +1231,7 @@ export default function WhatsAppDPGenerator({
 
         {/* PREVIEW CONTAINER */}
         <div
-          className="flex min-h-[290px] sm:min-h-[460px] items-center justify-center rounded-xl border p-3 sm:p-6"
+          className="flex min-h-[290px] sm:min-h-[460px] items-center justify-center rounded-md border p-3 sm:p-6"
           style={{
             borderColor: activeTheme.border,
             background: "#FAFAFA",

@@ -1530,7 +1530,7 @@ export default function EmailSignatureGenerator({
         </div>
 
         {/* MOBILE VIEW SELECTOR TABS (MOBILE ONLY) */}
-        <div className="mb-3.5 flex items-center gap-1.5 rounded-lg bg-slate-100 p-1 sm:hidden">
+        <div className="mb-3.5 flex items-center gap-1.5 rounded-md bg-slate-100 p-1 sm:hidden">
           <button
             type="button"
             onClick={() => setMobileTab("card")}
@@ -1750,7 +1750,7 @@ export default function EmailSignatureGenerator({
                     href={data.facebook}
                     target="_blank"
                     rel="noreferrer"
-                    className="grid h-7 w-7 place-items-center rounded-sm text-white"
+                    className="grid h-7 w-7 place-items-center rounded-md text-white"
                     style={{ background: "#1877F2" }}
                   >
                     <FaFacebookF size={12} />
@@ -1762,7 +1762,7 @@ export default function EmailSignatureGenerator({
                     href={data.linkedin}
                     target="_blank"
                     rel="noreferrer"
-                    className="grid h-7 w-7 place-items-center rounded-sm text-white"
+                    className="grid h-7 w-7 place-items-center rounded-md text-white"
                     style={{ background: "#0A66C2" }}
                   >
                     <FaLinkedinIn size={12} />
@@ -1774,7 +1774,7 @@ export default function EmailSignatureGenerator({
                     href={data.instagram}
                     target="_blank"
                     rel="noreferrer"
-                    className="grid h-7 w-7 place-items-center rounded-sm text-white"
+                    className="grid h-7 w-7 place-items-center rounded-md text-white"
                     style={{ background: "linear-gradient(135deg,#F58529,#DD2A7B,#8134AF,#515BD4)" }}
                   >
                     <FaInstagram size={12} />
